@@ -3,7 +3,8 @@
  * The Universal Permissive License (UPL), Version 1.0
  */
 define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
-    'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'ojs/ojselectcombobox'],
+    'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
+    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource'],
         function (oj, ko, utils, data, $)
         {
             function PeopleViewModel() {
@@ -22,29 +23,32 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 self.url = ko.observable('/solr/CoreOne/select?indent=on&wt=json&rows=24');
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
-                self.facetField = ko.observable('&facet.field=add_country&facet.field=add_city&facet=on');
+                self.facetField = ko.observable('&facet.field=add_country&facet.field=add_city&facet.field=lis_name&facet=on');
                 self.scoreField = ko.observable('&fl=*,score');
                 self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE pw=0.8 f=nam_comp_name}');
                 self.fqField = ko.observable('&fq=');
+                /**/
 
-
-                //Observable for the HIGHLIGHTING data group
+                //Observable array for the HIGHLIGHTING data group
                 self.allHighlighting = ko.observableArray([]);
                 self.nameHighlight = ko.observableArray([]);
-                
-                self.facets = ko.observableArray([]);
-                self.facetsCities = ko.observableArray([]);
+
+                //Observable array for Facets
+                self.facetsCountries = ko.observableArray([]);
+                self.facetsLists = ko.observableArray([]);
 
                 //variables to control data requests
                 var nameBeforeUpdate = '';
 
 
-                //filter for the queries
-                var fqQueries = "";
 
 
-                //new tree filter
+                //Observable array for the filter tree
                 self.filterTree = ko.observableArray([]);
+                self.fq = ko.observable("");
+                self.filterTreeList = ko.observableArray([]);
+                self.fqList = ko.observable("");
+                //Observable for the comunication from the selection function "filteredAllPeople" to tree change events
                 self.filterTreeObs = ko.observable("");
 
                 //data tree observable array
@@ -53,113 +57,97 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 //control access to tree method
                 self.treeInit = ko.observable("");
 
+                //Observable array for the filter to apear on the combobox when it is selcted
                 self.comboboxSelectValue = ko.observable([]);
+                self.comboObservable = ko.observable("");
+                //Observable array to transport filter information from the tree change event to valueChangeHandleCombobox function
                 self.arrSelCheckbox = ko.observableArray([]);
 
 
+                //nodes for OJ Tree
+                self.nodeTreeCountry = ko.observableArray([]);
+                self.nodeTreeList = ko.observableArray([]);
+
+                //workers
+                self.worker = new Worker('js/viewModels/worker.js');
+                self.workerList = new Worker('js/viewModels/workerList.js');
+
+//              self.worker.onmessage = function(event){
+//              console.log(event.data);  
+//              };
+//
+//              self.worker.postMessage("hello worker");
+
+
+                //store the worker result
+                self.workerResult = ko.observableArray([]);
+                self.workerListResult = ko.observableArray([]);
+
+
+                //something temporary for the expand feature of the tree
+                var treeExpanded = false;
+
+
+                self.searched = ko.observableArray([]);
+
+
+                self.keepFilter = false;
+                
+                
+                //a ko observable to display the number of hits
+                self.numberMatches = ko.observable("six");
+                
+
+                //self.filterTreeObs.extend({rateLimit: {timeout: 300, method: "notifyWhenChangesStop"}});
+
                 /************************************** FILTER FUNCTION ***********************************************************/
+
+                //limit the retrieve data for every search input
+                self.nameSearch.extend({rateLimit: {timeout: 300, method: "notifyWhenChangesStop"}});
+
 
                 self.filteredAllPeople = ko.computed(function () {
                     var peopleFilter = new Array();
-                    var name;
-                    var index = 0;
 
-                    var childs = new Array();
-
-                    //var to store fq fields for filter
-                    var fqFilter = "";
-
-
-                    if (self.nameSearch().length === 0)
-                    {
+                    //console.log("before first if");
+                    
+                    
+                    
+                    if (self.nameSearch().length === 0) {
                         peopleFilter = [];
+                        self.facetsCountries([""]);
+                        self.numberMatches("");
+//                        self.keepFilter = false;
+//                        for (var i = 0; i < self.comboboxSelectValue().length; ++i) {
+//                            if (self.comboboxSelectValue()[i] === undefined)
+//                                self.comboboxSelectValue().splice(i, 1);
+//                        }
+                        //self.facetsCountries([""]);
+                        
+                        //$('#tree').ojTree("refresh");
+                        //self.facetsCountries([""]);
+                        //self.filterTree([]);
+                        //$("#tree").ojTree("deselectAll");
+
                     } else {
 
-                        /************************************* FILTER FACETS ************************************************/
+                        if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready") {
 
-                        if (self.filterTreeObs() === "load filter" || self.filterTreeObs() === "remove filter") {
-                            console.log("FILTER FACETS inside if and filterTreeObs length: " + self.filterTreeObs().toString());
-                            //for the tree to stop creating itself again and as a node only the filtered element
-                            self.treeInit("stop");
-                            //self.filterTreeObs("");
+                            if (self.filterTreeObs() === "done")
+                                self.keepFilter = false;
+                            
+                            if (self.filterTreeObs() === "ready")
+                                self.keepFilter = true;
+                            
+                            if(self.comboObservable() === "combobox")
+                                self.keepFilter = false;
+                            
+                            
 
-                            var ind = 0;
+                            //Facets Filter
+                            var fqQueries = self.fq();
 
-                            if (self.filterTree().length > 0) {
-                                fqFilter = "add_country:" + "\"" + self.filterTree()[ind].toString().substring(0, 2) + "\"";
-                                for (ind = 1; ind < self.filterTree().length; ++ind)
-                                    fqFilter = fqFilter + " OR " + "add_country:" + "\"" + self.filterTree()[ind].toString().substring(0, 2) + "\"";
-                                //console.log(fqFilter);
-
-                                fqFilter = "&fq=" + fqFilter;
-
-                            }
-                            if (self.filterTree().length === 0)
-                                fqFilter = "";
-
-                            fqQueries = fqFilter;
-                            self.allPeople("");
-                            self.allHighlighting("");
-                            self.facets("");
-                            self.facetsCities("");
-
-                            /*** To replace the whitespaces with "~" *********/
-                            name = self.nameSearch().replace(/\s+/g, '~ ');
-                            /*** To delete the whitespaces from the end of the words ***/
-                            name = name.replace(/\s*$/, "");
-                            /*** Add "~" for more than 3 chars ***/
-                            if (name.length >= 3)
-                                name = name + "~";
-                            /*** Remove multiple "~" ***/
-                            name = name.replace(/\~+/g, '~');
-                            console.log("name Filtered: " + name);
-                            if (fqFilter.search("undefined") !== -1)
-                                fqFilter = "";
-
-                            $.getJSON(
-                                    self.url().toString() +
-                                    self.highlightField().toString() +
-                                    self.groupField().toString() +
-                                    self.facetField().toString() +
-                                    self.scoreField().toString() + fqFilter +
-                                    self.queryField().toString() +
-                                    name).then(function (people) {
-                                self.allPeople(people.grouped.ent_id.groups);
-                                self.allHighlighting(people.highlighting);
-                                self.facets(people.facet_counts.facet_fields.add_country);
-                                self.facetsCities(people.facet_counts.facet_fields.add_country);
-
-                                //self.filterTreeObs("done");
-
-                                //call to the checkbox tree
-                                //self.createCheckboxTree();
-
-
-                            }).fail(function (error) {
-                                console.log('Error in getting People data: ' + error.message);
-                            });
-                            if (self.filterTreeObs() === "load filter")
-                                self.filterTreeObs("done loading");
-                            if (self.filterTreeObs() === "remove filter")
-                                self.filterTreeObs("done removing");
-
-                            console.log("filteredAllPeople in facet if")
-
-                            nameBeforeUpdate = self.nameSearch();
-                            //console.log(nameUpdate);
-
-                            peopleFilter = self.allPeople();
-                        }
-
-
-                        /*******************************************RETRIEVE DATA *******************************/
-
-                        if (self.nameSearch() !== nameBeforeUpdate) {
-
-
-                            fqQueries = "";
-                            self.filterTree([]);
-
+                            var name = "";
                             /*** To replace the whitespaces with "~" *********/
                             name = self.nameSearch().replace(/\s+/g, '~ ');
                             /*** To delete the whitespaces from the end of the words ***/
@@ -181,250 +169,53 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                                     self.scoreField().toString() + fqQueries +
                                     self.queryField().toString() +
                                     name).then(function (people) {
-                                self.allPeople(people.grouped.ent_id.groups);
+                                self.allPeople(people);
                                 self.allHighlighting(people.highlighting);
-                                self.facets(people.facet_counts.facet_fields.add_country);
-                                self.facetsCities(people.facet_counts.facet_fields.add_city);
-
-                                self.treeInit("");
-
-                                //self.createCheckboxTree();
-                                console.log("filteredAllPeople in nameSearch if")
-
+                                self.facetsCountries(people.facet_counts.facet_fields.add_country);
+                                self.facetsLists(people.facet_counts.facet_fields.lis_name);
+                                self.numberMatches(people.grouped.ent_id.ngroups +" Hits")
+                               
+                               
                             }).fail(function (error) {
                                 console.log('Error in getting People data: ' + error.message);
                             });
+                            //self.fq("");
+
+                            self.filterTreeObs("done");
+                            self.comboObservable("done");
+                            nameBeforeUpdate = self.nameSearch();
+                            
+                            
+                            
                         }
-                        nameBeforeUpdate = self.nameSearch();
-                        //self.treeInit("stop");
-
                         
-
+                        if (self.allPeople().grouped !== undefined)
+                            peopleFilter = self.allPeople().grouped.ent_id.groups;
                         
-                        for (var i = 0;i< self.allPeople().length; ++i) {
-                            var sse_id = self.allPeople()[i].doclist.docs[0].sse_id;
-                            for (var key in self.allHighlighting())
-                            if (sse_id === key){
-                                var name = self.allHighlighting()[sse_id].nam_comp_name[0];
-                                self.nameHighlight(name);
-                                self.allPeople()[i].doclist.docs[0].nam_comp_name = name;
-                            }
-                        }
-
-
-
-                        /*if(self.allHighlighting().length > 0){
-                         for(var i = 0; self.allPeople().length; ++i){
-                         var sse_id = self.allPeople()[i].doclist.docs[0].sse_id;
-                         if(self.allHighlighting()[sse_id] !== "undefined")
-                         self.allPeople()[i].doclist.docs[0].nam_comp_name = self.allHighlighting()[sse_id].nam_comp_name[0];
-                         } 
-                         }*/
-                        peopleFilter = self.allPeople();
+                        
 
                     }
-
+                    //console.log(self.comboboxSelectValue());
+                    
+                    //if (self.allPeople().grouped !== undefined)
+                        //self.numberMatches(self.allPeople().grouped.ent_id.ngroups);
+                    
                     self.ready(true);
                     return peopleFilter;
                 });
+                
+                
+                
+                //self.filteredAllPeople.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
 
 
-
-                /***********************************CheckBox Tree**************************************/
-
-
-
-                self.addItem = function (parentUL, branch) {
-
-                    for (var key in branch.children) {
-                        var item = branch.children[key];
-                        $item = $('<li>', {
-                            id: "item" + item.id
-                        });
-                        $item.append($('<input>', {
-                            type: "checkbox",
-                            id: "item" + item.id,
-                            name: "item" + item.id
-                        }));
-                        $item.append($('<label>', {
-                            for : "item" + item.id,
-                            text: item.title,
-                            value: "val"
-                        }));
-                        parentUL.append($item);
-                        if (item.children) {
-                            var $ul = $('<ul>', {
-                                style: 'display: none; list-style:none;'
-                            }).appendTo($item);
-                            $item.append();
-                            self.addItem($ul, item);
-                        }
-                    }
+                self.getNodeDataCountry = function (node, fn) {
+                    fn(self.workerResult());
                 };
 
-                self.createCheckboxTree = ko.computed(function () {
-                    //console.log("createCheckboxTree out if")
-                    if (self.nameSearch().length !== 0) {
-                        console.log("createCheckboxTree in if")
-
-                        var index = 0;
-                        var id = 2;
-                        var country = new Array();
-                        var city = new Array();
-
-                        if (self.treeInit().length === 0) {
-                            for (index; index < parseInt(self.facets().length / 2); ++index) {
-
-                                var nameCountry = self.facets()[index];
-                                index = index + 1;
-                                var valueCountry = self.facets()[index];
-
-                                if (valueCountry !== 0) {
-                                    var cityNode = {id: id + 100, title: "City"};
-                                    city.push(cityNode);
-
-                                    var countryNode = {id: id, title: nameCountry + ", " + valueCountry, children: city};
-                                    country.push(countryNode);
-                                    id = id + 1;
-                                }
-                            }
-                            console.log("tree add data");
-                        }
-                        var countries = [{id: 1, title: "Country", children: country}];
-                        self.dataTree({id: 0, title: "root", children: countries});
-
-
-
-                        $(function () {
-                            console.log("$function: " + self.treeInit());
-                            if (self.treeInit().length === 0) {
-                                $("#root").empty();
-                                self.addItem($('#root'), self.dataTree());
-                                console.log("$function in 1if");
-                            }
-
-                            $(':checkbox').change(function () {
-                                //console.log("$function in checkbox out 1if");
-                                //self.filterTreeObs("done");
-                                console.log("$function in checkbox");
-                                //$(this).closest('li').children('ul').slideToggle();
-                                $(this).closest('li').find(':checkbox').prop('checked', $(this).prop('checked'));
-                                //self.filterTreeObs("ready");
-
-                                if ($(this).prop('checked') && $(this).attr("id") !== "item1") {
-
-                                    self.arrSelCheckbox().push([$(this).next("label").text(), $(this).attr("id")])
-
-                                    var searchEl = [$(this).next("label").text()].toString();
-                                    var lon = self.filterTree().length;
-                                    var arrEl;
-                                    if (self.filterTree().length > 0)
-                                        if (lon === 0)
-                                            arrEl = self.filterTree()[0].toString();
-                                        else
-                                            arrEl = self.filterTree()[lon - 1].toString();
-
-                                    if (searchEl !== arrEl) {
-                                        self.filterTree().push([$(this).next("label").text()]);
-                                        self.comboboxSelectValue(self.filterTree());
-                                        self.filterTreeObs("load filter");
-
-                                    }
-                                    //self.filterTreeObs("");
-                                }
-                                //console.log("$function in Checkox After the if Add: " + self.filterTree() + "," + self.filterTreeObs());
-
-                                if (!$(this).prop('checked') && $(this).attr("id") !== "item1") {
-                                    //self.filterTreeObs("done");
-                                    var deleteEl = $(this).next("label").text().substring(0, 2);
-                                    var filteredArray = self.filterTree().filter(function (el) {
-                                        console.log("times filtering on removing");
-                                        var bool = false;
-                                        var elCheck = el.toString().substring(0, 2);
-                                        if (deleteEl !== elCheck)
-                                        {
-                                            bool = true;
-                                        }
-                                        return bool;
-                                    });
-                                    console.log("" + self.filterTreeObs());
-                                    if (self.filterTree().length !== filteredArray.length) {
-                                        self.filterTree(filteredArray);
-                                        self.filterTreeObs("remove filter");
-                                        self.comboboxSelectValue(self.filterTree());
-                                        self.filterTreeObs("stop combo update");
-                                    }
-                                }
-
-                                if ($(this).prop('checked') && $(this).attr("id") === "item1") {
-                                    alert("Cannot select all");
-                                }
-
-                            });
-
-                            var slideClick = true;
-
-                            $('label').click(function (el) {
-                                //$(this).closest('li').find(':checkbox').trigger('click');
-                                el.stopImmediatePropagation();
-                                $(this).closest('li').children('ul').slideToggle();
-                                if (slideClick) {
-
-                                    slideClick = false;
-                                }
-                            });
-
-
-
-
-                        });
-
-                    } else {
-                        // When there is a search query and a filter, and then it is emptied the search input, it is needed to get inside the if search name
-                        nameBeforeUpdate = "start again on search";
-
-                        $("#root").empty();
-                    }
-                });
-                /**/
-                /******************************************************************************/
-
-
-
-                self.valueChangeHandlerCombobox = function (context, valueParam) {
-
-                    if (valueParam.option === "value") {
-
-                        if (valueParam.value.length < valueParam.previousValue.length) {
-
-
-                            //$(this).closest('li').find(':checkbox').trigger('click');
-
-                            if (self.filterTreeObs() !== "stop combo update") {
-                                var diff = self.filterTree().filter(function (el) {
-                                    var bool = false;
-                                    var ser = el.toString();
-                                    var arr = self.comboboxSelectValue();
-                                    var inArr = $.inArray(ser, arr)
-                                    if (inArr === -1) {
-                                        bool = true;
-                                    }
-                                    return bool;
-                                });
-                                for (var i = 0; i < self.arrSelCheckbox().length; ++i)
-                                    if (self.arrSelCheckbox()[i][0] === diff[0].toString()) {
-                                        $("#" + self.arrSelCheckbox()[i][1]).closest('li').find(':checkbox').prop('checked', false);
-                                        break;
-                                    }
-                                self.filterTree(valueParam.value);
-                                self.filterTreeObs("remove filter");
-
-                            }
-                        }
-                        console.log("comboboxChangeValue: " + valueParam);
-                    }
-                }
-
+                self.getNodeDataList = function (node, fn) {
+                    fn(self.workerListResult());
+                };
 
                 /*/
                  self.listViewDataSource = ko.computed(function () {
@@ -436,13 +227,139 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 self.cardViewPagingDataSource = ko.computed(function () {
                     return new oj.ArrayPagingDataSource((self.filteredAllPeople()));
                 });
+
+                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 20, method: "notifyWhenChangesStop"}});
+
+                self.cardViewPagingDataSource.subscribe(function (newValue) {
+                    
+                    if (self.keepFilter === false) {
+                        self.worker.postMessage(self.facetsCountries());
+                        self.worker.onmessage = function (m) {
+                            self.workerResult(m.data);
+                            $('#tree').ojTree("refresh");
+                            $('#tree').ojTree("expandAll");
+                        };
+                        self.workerList.postMessage(self.facetsLists());
+                        self.workerList.onmessage = function (m) {
+                            self.workerListResult(m.data);
+                            $('#treeList').ojTree("refresh");
+                            $('#treeList').ojTree("expandAll");
+                        };
+                    }
+                    if (!self.keepFilter && self.nameSearch().length === 0) {
+                        self.workerResult("");
+                        $('#tree').ojTree("refresh");
+                    }
+
+                    $("#combobox").on("ojoptionchange", function (event, data) {
+                        //for the delete of an element from combobox
+                        //$("#combobox").ojCombobox( { "disabled": true } );
+                        if (data.previousValue.length > data.value.length) {
+                            var id = self.filterTree()[self.filterTree().length - 1];
+                            self.filterTreeList(self.comboboxSelectValue());
+                            self.filterTree(self.comboboxSelectValue());
+                            self.comboObservable("combobox");
+                            self.processFilter();
+                        }
+                        event.stopImmediatePropagation();
+                    });
+
+                    $("#tree").on("ojoptionchange", function (e, ui) {
+                        if (ui.option === "selection") {
+                            var filterValue = $(ui.value).attr("id");
+                            if (filterValue !== "country" && filterValue !== undefined) {
+                                var foundDuplicate = self.filterTree().find(function (el) {
+                                    return filterValue === el;
+                                });
+                                if (foundDuplicate === undefined) {
+                                    self.filterTree().push(filterValue);
+                                    self.keepFilter = true;
+                                    self.filterTreeObs("load");
+                                    self.processFilter();
+                                    $("#tree").ojTree("deselectAll");
+                                }
+                            }
+                            e.stopImmediatePropagation();
+                        }
+                    });
+                    
+                    $("#treeList").on("ojoptionchange", function (e, ui) {
+                        if (ui.option === "selection") {
+                            var pos = $(ui.value).text().indexOf(",");
+                            var filterValue = $(ui.value).text().substring(0,pos);
+                            if (filterValue !== "list" && filterValue !== undefined) {
+                                var foundDuplicate = self.filterTreeList().find(function (el) {
+                                    return filterValue === el;
+                                });
+                                if (foundDuplicate === undefined) {
+                                    self.filterTreeList().push(filterValue);
+                                    self.keepFilter = true;
+                                    self.filterTreeObs("load");
+                                    self.processFilter();
+                                    $("#treeList").ojTree("deselectAll");
+                                }
+                            }
+                            e.stopImmediatePropagation();
+                        }
+                    });
+                    
+                    self.comboboxSelectValue(self.filterTree());
+                    self.comboboxSelectValue().push(self.filterTreeList());
+                    //self.filterTreeObs("ready");
+
+                });
                 /**/
+
+//                self.filterTree.subscribe(function(newValue){
+//                    self.filterTreeObs("ready");
+//                });
+
+                self.processFilter = function () {
+                    var fq = "";
+                    if (self.filterTree().length > 0) {
+                        fq = "add_country:" + "\"" + self.filterTree()[0] + "\"";
+                        for (var i = 1; i < self.filterTree().length; ++i) {
+                            if(self.filterTree()[i] !== undefined)
+                                fq = fq + " OR " + "add_country:" + "\"" + self.filterTree()[i] + "\"";
+                        }
+                        fq = "&fq=" + fq;
+                    }
+                    if (self.filterTree().length === 0)
+                        fq = "";
+
+                    self.fq(fq);
+                    
+                    
+                    //For the Lists Filter
+                    
+                    var fqList = ""; 
+                    if (self.filterTreeList().length > 0) {
+                        fqList = "add_country:" + "\"" + self.filterTreeList()[0] + "\"";
+                        for (var i = 1; i < self.filterTreeList().length; ++i) {
+                            if(self.filterTreeList()[i] !== undefined)
+                                fqList = fqList + " OR " + "add_country:" + "\"" + self.filterTreeList()[i] + "\"";
+                        }
+                        fqList = "&fq=" + fqList;
+                    }
+                    if (self.filterTreeList().length === 0)
+                        fqList = "";
+
+                    self.fqList(fqList);
+                    
+                    
+                    self.filterTreeObs("ready");
+                    
+                }
 
                 /**/
                 self.cardViewDataSource = ko.computed(function () {
                     return self.cardViewPagingDataSource().getWindowObservable();
                 });
+                //self.cardViewDataSource.extend({rateLimit: {timeout: 1000, method: "notifyWhenChangesStop"}});
                 /**/
+
+                //self.cardViewDataSource.extend({rateLimit : { timeout: 100, method: "notifyWhenChangesStop"}});
+
 
                 self.getPhoto = function (empId) {
                     var src;
@@ -462,23 +379,14 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 /**/
                 /**/
                 self.getName = function (company) {
-                    var name = company.doclist.docs[0].nam_comp_name;
-                    var span = "";
-                    //if(self.nameSearch() === "pe")
-                    if(name.indexOf("</") !== -1){
-                        var first = self.nameHighlight().indexOf("<");
-                        var last = self.nameHighlight().indexOf("n>")
-                        span = self.nameHighlight().substring(first,last+2);
-                        span;
-                        var extractName = self.nameHighlight().substring(first+24,last-5);
-                        
-                        var div = document.getElementById('nameEntity')
-                        //div.insertAdjacentHTML('afterend', span)
-                        //name = " "
-                        //$( "#nameEntity" ).append( self.nameHighlight() );
-                    }
-                        
-                    return name ;
+                    //var name = company.doclist.docs[0].nam_comp_name;
+                    //var name = self.allHighlighting()[company.doclist.docs[0].sse_id].nam_comp_name[0];
+                    if (self.allPeople().grouped.ent_id.groups.length !== 0) {
+                        var sse_id = self.allPeople().grouped.ent_id.groups[0].doclist.docs[0].sse_id;
+                        var name = self.allPeople().highlighting[sse_id].nam_comp_name;
+                    } else
+                        var name = "";
+                    return name;
                 };
                 /**/
                 /**/
@@ -495,8 +403,11 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 };
                 /**/
                 /**/
-                self.getMatches = function (company) {
-                    var matches = company.doclist.numFound;
+                self.getHits = function (company) {
+                    var matches;
+                    if (self.allPeople().grouped.ent_id.groups.length !== 0)
+                        matches = "Hits: " +company.doclist.numFound;
+                    else matches = "";
                     return matches;
                 };
                 /**/
@@ -535,6 +446,16 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                     if (!address)
                         address = "without address";
                     return address;
+                };
+                /**/
+                /**/
+                self.getNumberMatches = function (company) {
+                    var matches;
+                    if (self.allPeople().grouped.ent_id.groups.length !== 0)
+                        matches = self.allPeople().grouped.ngroups;
+                    else
+                        matches = 0;
+                    return matches;
                 };
                 /**/
 
