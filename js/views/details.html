@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="css/style_details.css">
+    <script type="text/javascript" src="js/libs/d3/d3.min.js"></script>
+
+</head>
+
+<body class="body-style" onresize="reCalculateLayoutWhenResize()" >
+    <div class="tooltip">Tipsy!</div>
+
+
+    <div id="main_layout" class=layout data-bind="svg:jsonUrl">
+        
+        <div id=profile_container>
+            <div id="profile_of_node" class=profile>
+                <!--	<div id="image_main_node" class=div_in_profile>Image of the node </div>
+                        <div id="name_main_node" class=div_in_profile>Name of the node</div>
+                        <div id="address_main_node" class=div_in_profile>Address of the node</div>
+                        <div id="list_main_node" class=div_in_profile>List that node is in </div>
+                        <div id="measure_main_node" class=div_in_profile>Activity that is banned</div>-->
+                <!--<form id="searchbox" action="">
+                <input id="search" type="text" placeholder="">
+                <!--	<button id="submit" type="image">-->
+                <!--</form>
+                <div class=advanced_search>
+                <text>Advanced Search</text>
+                </div>-->
+            </div>
+        </div>
+        <div id="associate_info" class=associate_info>
+            <div id="associate_info_node" class=associate_info_node>
+                <div id="detail_info" class=line_by_line>
+
+                    <div id="name_and_address_container" class=name_and_address_container>
+                        <div id="name" class=nameandAddress>
+                            <label class="name_label">Name </label>
+                        </div>
+                        <div id="address" class=nameandAddress>
+                            <label class="address_label">Primary Address </label>
+                        </div>
+                    </div>
+                    <div id=measure_detail class=measure_detail>
+                        <div id="measure_label" class=measure_label>
+                            <label class="label-style" >Measures against this entity * </label>
+                            <div class=measure>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="name_and_address_container" class=name_and_address_container>
+                        <div id="identification_container" class=nameandAddress>
+                            <label id="identification_label" class="name_label">Identification  </label>
+                        </div>
+                        <div id="country_container" class=nameandAddress>
+                            <label class="address_label">Country </label>
+                        </div>
+                    </div>
+                    <div id=measure_detail class=measure_detail>
+                        <div id="measure_label" class=measure_label>
+                            <label class="label-style">Actions </label>
+                            <div class=measure>
+                                <img class=measure_icon src="resources/notify.svg"> </img>
+                                <img class=measure_icon src="resources/whitelist.svg"> </img>
+                                <img class=measure_icon src="resources/pdf.svg"> </img>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="list_and_program_container" class=list_and_program_container>
+                        <div id="numList" class=numListandaka>
+                            <label>Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists
+                            </label>
+                        </div>
+                        <div id="listList" class=line_by_line_small>
+                        </div>
+                    </div>
+                    <div id="also_known_as_name_and" class=list_and_program_container >
+                        <div id="aka" class=numListandaka>
+                            <label class="name_label">Have <label id="numOfName" class=numOfList></label> known names</label>
+                        </div>
+                        <div id="listAKA" class=line_by_line_small>
+                        </div>
+                    </div>
+                    <div id="known_address" class=list_and_program_container >
+                        <div id="known_address" class=numListandaka>
+                            <label class="name_label">Have <label id="numOfAddress" class=numOfList></label> known addresses</label>
+                        </div>
+                        <div id="listKA" class=line_by_line_small>
+                        </div>
+                    </div>
+                    <div id="related_sanction_entity" class=list_and_program_container >
+                        <div id="related_sanction_entity" class=numListandaka>
+                            <label class="name_label">Have relationship with <label id="numOfRelatedSanctionEntity" class=numOfList></label> entities on Sanction List</label>
+                        </div>
+                        <div id="listSE" class=line_by_line_small>
+                        </div>
+                    </div>
+                </div>
+                <div id="list" class="line_by_line ul-style li-style"> 
+
+                </div>
+            </div>	
+            <div id="visualization" class=associate_info_node>
+                <div class=toolbox>
+                    <span id="expand_forcelayout" onclick="expandForceLayout()" class=close style="font-size:18px;"> <<< </span>
+                    <label class=checkboxname><input id="node_check_box" type="checkbox"> Hide node's name</label>
+                    <label class=checkboxlink><input id="link_check_box" type="checkbox" checked=''> Hide link's type</label>
+                    <label class=buttonroot><input id="root_button" type="checkbox" > Return to primary search</label>
+                </div>
+                <!--<script type="text/javascript" src="concep3_forcelayout.js"></script>-->
+                <!--<script type="text/javascript" src="js/viewModels/detail.js"></script>-->
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay">
+        <div id="overlay_window">
+            <div class=overlay_container>
+                <span class="close">x</span>
+                <p>INFORMATION IN THE LIST</p>
+            </div>
+            <div class=overlay_container>
+                <div class=heading>Known Names</div>
+                <table class=table-style style="width:100%">
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Last Name</th>		
+                        <th>Middle Name</th>
+                        <th>First Name</th>
+                        <th>Source</th>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class=overlay_container>
+                <div class=heading>Known Addresses</div>
+                <table class=table-style style="width:100%">
+                    <tr>
+                        <th>Country</th>		
+                        <th>City</th>
+                        <th>District</th>
+                        <th>Zip</th>
+                        <th>Street</th>
+                        <th>House Nr</th>		
+                        <th>Building</th>
+                        <th>Room Nr</th>
+                        <th>Sources</th>
+                    </tr>
+                    <tr>
+                        <td>Germany</td>
+                        <td>Jenaaaaaaaaaaaaaaaaaaa</td>
+                        <td>Beuternbug</td>		
+                        <td></td>
+                        <td>Blabla street</td>
+                        <td>Some house number very longofndjk fdjsbgk fjusgs fgsuifbs gfsugf</td>		
+                        <td>Center</td>
+                        <td>1</td>
+                        <td>76RF 67059</td>
+                    </tr>
+                    <tr>
+                        <td>Germany</td>
+                        <td>Jena</td>
+                        <td>Beuternbug</td>		
+                        <td></td>
+                        <td>Blabla street</td>
+                        <td>Some house number</td>		
+                        <td>Center</td>
+                        <td>1</td>
+                        <td>76RF 67059</td>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Smith Jill</td>
+                        <td>Jill</td>
+                        <td></td>		
+                        <td>Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Germany</td>
+                        <td>Jenaaaaaaaaaaaaaaaaaaa</td>
+                        <td>Beuternbug</td>		
+                        <td></td>
+                        <td>Blabla street</td>
+                        <td>Some house number very longofndjk fdjsbgk fjusgs fgsuifbs gfsugf</td>		
+                        <td>Center</td>
+                        <td>1</td>
+                        <td>76RF 67059</td>
+                    </tr>
+                </table>
+            </div>
+            <div class=overlay_container>
+                <div class=heading>General Information</div>
+                <div class=general_info_container>
+                    <div class=general_info>
+                        This Company is really dangerous blalbalabl fsibhuijkg fsughuigf gfuihfjksh   isdhfsdfhsd fihsdfsdhfdbsf 343tz27bdbds fsfds
+                    </div>
+                    <div class=general_info>
+                        Expiration Date is 2024
+                    </div>
+                    <div class=general_info>
+                        I see death people
+                    </div>
+                    <div class=general_info>
+                        This Company is really dangerous blalbalabl 
+                    </div>
+                    <div class=general_info>
+                        Expiration Date is 2024
+                    </div>
+                    <div class=general_info>
+                        I see death people
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>

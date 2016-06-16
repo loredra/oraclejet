@@ -22,6 +22,10 @@
         <meta name="viewport" content="user-scalable=yes,width=device-width,initial-scale=1.0,maximum-scale=5.0" />
         <link rel="icon" href="css/images/favicon.ico" type="image/x-icon" />
 
+        <!-- For the details page -->
+        
+        <script type="text/javascript" src="js/libs/d3/d3.min.js"></script>
+        
         <!-- This is the main css file for the default Alta theme -->
         <link id="css" rel="stylesheet" href="css/libs/oj/v2.0.1/alta/oj-alta-min.css" type="text/css"/>
 
@@ -31,8 +35,6 @@
         <!-- This is where you would add any app specific styling -->
         <link rel="stylesheet" href="css/override.css" type="text/css"/>
         
-        <!-- For the jstree -->
-        <link rel="stylesheet" href="js/libs/jsTree/themes/default/style.css"/>
         
 
         <!-- RequireJS bootstrap file -->
@@ -48,7 +50,7 @@
                 ** medium or smaller media query size. It moves the App Navigation into a drawer
                 -->
                 <!-- off-canvas content -->
-                <!-- ->
+                <!-- -->
                 <div id="appDrawer" class="oj-contrast-marker oj-web-applayout-offcanvas oj-offcanvas-start"
                   data-bind="ojModule: {name: 'header', viewName: 'demoAppHeaderOffCanvasTemplate'}"></div>
                 <!-- -->
@@ -59,7 +61,7 @@
                         <!-- Header section which contains the Global Branding, Global Navigation,
                         ** and Application Navigation code. Template is located in /js/views/header.html
                         -->
-                        <!-- ->
+                        <!-- -->
                         <header role="banner" class="oj-web-applayout-header" data-bind="ojModule: 'header'"></header>
                         <!-- -->
                         <!-- This is where your main page content will be loaded -->
@@ -70,6 +72,9 @@
                         </div>
                         <!-- ->
                         <div id ="tree" data-bind="ojModule: {name: 'treeParallel'}" > </div>
+                        <!-- -->
+                        <!-- ->
+                        <div id ="tree" data-bind="ojModule: {name: 'testD3'}" > </div>
                         <!-- -->
                     </div>
                 </div>

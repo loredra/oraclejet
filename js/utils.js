@@ -5,6 +5,25 @@
 define(['knockout'],
         function (ko)
         {
+            var self = this;
+            
+            self.previousName = ko.observable("");
+            self.previousFilterCountry = ko.observableArray([]);
+            self.previousFilterList = ko.observableArray([]);
+            
+            function rememberState(name,filterTreeCountry,filterTreeList){
+                self.previousName(name);
+                self.previousFilterCountry(filterTreeCountry);
+                self.previousFilterList(filterTreeList);
+            };
+            function resetState(){
+                var previous = new Array();
+                previous.push(self.previousName());
+                previous.push(self.previousFilterCountry());
+                previous.push(self.previousFilterList());
+                return previous;
+            };
+            
             // cookie utility classes
             function createCookie(name, value, days) {
                 if (days) {
@@ -75,6 +94,6 @@ define(['knockout'],
                 return query_string;
             };
 
-            return {createCookie: createCookie, readCookie: readCookie, eraseCookie: eraseCookie, readSettings: readSettings, QueryString: QueryString};
+            return {rememberState:rememberState, resetState:resetState, createCookie: createCookie, readCookie: readCookie, eraseCookie: eraseCookie, readSettings: readSettings, QueryString: QueryString};
 
         });

@@ -4,12 +4,12 @@
  */
 define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
     'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
-    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource'],
-        function (oj, ko, utils, data, $)
+    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber' ],
+        function (oj, ko, utils, data, $ )
         {
             function PeopleViewModel() {
                 var self = this;
-
+               
                 /**/
                 self.peopleLayoutType = ko.observable('peopleCardLayout');
 
@@ -20,12 +20,14 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
 
                 /**/
                 self.nameSearch = ko.observable('');
-                self.url = ko.observable('/solr/CoreOne/select?indent=on&wt=json&rows=24');
+                self.url = ko.observable('/solr/CoreOne/select?indent=on&wt=json');
+                self.rows = ko.observable('&rows=20000');
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
-                self.facetField = ko.observable('&facet.field=add_country&facet.field=add_city&facet.field=lis_name&facet=on');
+                self.facetField = ko.observable('&facet.field=add_country&facet.field=lis_name&facet=on');
                 self.scoreField = ko.observable('&fl=*,score');
-                self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE pw=0.8 f=nam_comp_name}');
+                //self.wordPercentage = ko.observable('')
+                self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE f=nam_comp_name}');
                 self.fqField = ko.observable('&fq=');
                 /**/
 
@@ -39,8 +41,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
 
                 //variables to control data requests
                 var nameBeforeUpdate = '';
-
-
 
 
                 //Observable array for the filter tree
@@ -72,11 +72,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 self.worker = new Worker('js/viewModels/worker.js');
                 self.workerList = new Worker('js/viewModels/workerList.js');
 
-//              self.worker.onmessage = function(event){
-//              console.log(event.data);  
-//              };
-//
-//              self.worker.postMessage("hello worker");
 
 
                 //store the worker result
@@ -96,9 +91,31 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
 
                 //a ko observable to display the number of hits
                 self.numberMatches = ko.observable("");
-                
+
                 //a ko observable to display when there are no results
                 self.noResults = ko.observable("");
+
+                //for the advanced Menu
+                //for the word percentage
+                self.wordPercentage = ko.observable(80);
+                self.step = ko.observable(10);
+                self.setInputWordPerNumberValueTo80 = function ()
+                {
+                    self.wordPercentage(80);
+                };
+                //For the phrase percentage
+                self.phrasePercentage = ko.observable(80);
+                self.step = ko.observable(10);
+                self.setInputPhrasePerNumberValueTo80 = function ()
+                {
+                    self.phrasePercentage(80);
+                };
+                self.fqTotalPercentage = ko.observable("");
+                //For the score algorithm
+                self.scoreAlgorithm = ko.observable("QUERY_SIDE");
+                //For the words distance algorithm
+                self.wordsDistanceAlgorithm = ko.observable("DA_LV");
+
 
 
                 //self.filterTreeObs.extend({rateLimit: {timeout: 300, method: "notifyWhenChangesStop"}});
@@ -108,35 +125,53 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 //limit the retrieve data for every search input
                 self.nameSearch.extend({rateLimit: {timeout: 300, method: "notifyWhenChangesStop"}});
 
+                //Temporary solution to start the Advance Search Dialog
+                self.nameSearch(" ");
+                var start = true;
+                                             
+               
+                
+                // Retrieve data from SOLR for the tree filter
+                self.nameQ = ko.observable("");
+                self.oneTimeRetrieveSolrTree = true;
+                self.getSolrDataTree = function () {
+                    $.getJSON(
+                            self.url().toString() + "&rows=0" +
+                            self.groupField().toString() +
+                            self.facetField().toString() + self.fqTotalPercentage() +
+                            self.queryField().toString() +
+                            self.nameQ()).then(function (people) {
+                        self.facetsCountries(people.facet_counts.facet_fields.add_country);
+                        self.facetsLists(people.facet_counts.facet_fields.lis_name);
+                    }).fail(function (error) {
+                        console.log('Error in getting People data: ' + error.message);
+                    });
+                };
 
-                self.filteredAllPeople = ko.computed(function () {
+                self.filteredAllPeople = ko.pureComputed(function () {
                     var peopleFilter = new Array();
 
-                    //console.log("before first if");
-
-
-
-                    if (self.nameSearch().length === 0) {
+                    if (self.nameSearch().search(/\w/) === -1) {
                         peopleFilter = [];
                         self.facetsCountries([""]);
+                        self.facetsLists([""]);
                         self.numberMatches("");
-                        
-//                        self.keepFilter = false;
-//                        for (var i = 0; i < self.comboboxSelectValue().length; ++i) {
-//                            if (self.comboboxSelectValue()[i] === undefined)
-//                                self.comboboxSelectValue().splice(i, 1);
-//                        }
-                        //self.facetsCountries([""]);
-
-                        //$('#tree').ojTree("refresh");
-                        //self.facetsCountries([""]);
-                        //self.filterTree([]);
-                        //$("#tree").ojTree("deselectAll");
-
+                        self.noResults("");
+                        self.nameQ("");
+                        nameBeforeUpdate = "";
+                        self.fqTotalPercentage("");
+                        self.keepFilter = false;
+                        //self.getSolrDataTree();
+                        //self.oneTimeRetrieveSolrTree = false;
                     } else {
+                        if (self.nameSearch() === " " && !start)
+                            self.nameSearch("");
 
                         if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready") {
-
+                            
+                            //To store this state if the details page is clicked
+                            utils.rememberState(self.nameSearch());
+                            
                             if (self.filterTreeObs() === "done")
                                 self.keepFilter = false;
 
@@ -144,7 +179,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                                 self.keepFilter = true;
 
                             if (self.comboObservable() === "combobox")
-                                if(self.comboboxSelectValue().length === 0)
+                                if (self.comboboxSelectValue().length === 0)
                                     self.keepFilter = false;
 
 
@@ -155,56 +190,82 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
 
                             var name = "";
                             /*** To replace the whitespaces with "~" *********/
-                            name = self.nameSearch().replace(/\s+/g, '~ ');
+                            name = self.nameSearch().replace(/$\s+/g, '~ ');
                             /*** To delete the whitespaces from the end of the words ***/
                             name = name.replace(/\s*$/, "");
                             /*** Add "~" for more than 3 chars ***/
                             if (name.length >= 3)
                                 name = name + "~";
+                            /*** Add "~" between words at spliting **/
+                            if (name.search(/\w\s/) !== -1)
+                                name = name.replace(/\s+/g, "~ ");
                             /*** Remove multiple "~" ***/
                             name = name.replace(/\~+/g, '~');
                             console.log("name Query: " + name);
                             if (fqCountries.search("undefined") !== -1)
                                 fqCountries = "";
-                            
-                            
+
+
+                            //Integrate the percentage values into the self.queryField()
+//                            var oldQuery = self.queryField();
+//                            var firstPart = oldQuery.substring(0,self.queryField().indexOf("pw"));
+//                            var middle = oldQuery.substring(self.queryField().indexOf("pw"),self.queryField().indexOf("pw")+6);
+//                            var lastPart = oldQuery.substring(self.queryField().indexOf("pw")+6, self.queryField().length);
+//                            var wordPercentage = "pw="+"0."+self.wordPercentage().toString().substring(0,2);
+//                            self.queryField(firstPart+wordPercentage+lastPart);
+                            var wordPercentage = "pw=" + "0." + self.wordPercentage().toString().substring(0, 2);
+                            var phrasePercentage = "0." + self.phrasePercentage().toString().substring(0, 2);
+                            self.queryField("&q={!percentage f=nam_comp_name" + " " + "t=" + self.scoreAlgorithm() + " " +
+                                    wordPercentage + " " + "alg=" + self.wordsDistanceAlgorithm() + "}");
+                            self.fqTotalPercentage("&fq={!frange l=" + phrasePercentage + " " + "}query($q)");
+                            if (name === "" || name === " ")
+                                self.fqTotalPercentage("");
+
+                            self.nameQ(name);
 
                             $.getJSON(
-                                    self.url().toString() +
+                                    self.url().toString() + self.rows() +
                                     self.highlightField().toString() +
                                     self.groupField().toString() +
-                                    self.facetField().toString() +
-                                    self.scoreField().toString() + fqCountries + fqLists +
+                                    self.scoreField().toString() + fqCountries + fqLists + self.fqTotalPercentage() +
                                     self.queryField().toString() +
                                     name).then(function (people) {
                                 self.allPeople(people);
                                 self.allHighlighting(people.highlighting);
-                                self.facetsCountries(people.facet_counts.facet_fields.add_country);
-                                self.facetsLists(people.facet_counts.facet_fields.lis_name);
+                                //self.facetsCountries(people.facet_counts.facet_fields.add_country);
+                                //self.facetsLists(people.facet_counts.facet_fields.lis_name);
                                 self.numberMatches(people.grouped.ent_id.ngroups + " Hits");
+                                //self.oneTimeRetrieveSolrTree = true;
 
+                                if (self.numberMatches() === "0 Hits") {
+                                  self.noResults("No Results");
+                                } 
+                                else if (self.numberMatches() !== "0 Hits") {
+                                    self.noResults("");
+                                }
 
                             }).fail(function (error) {
                                 console.log('Error in getting People data: ' + error.message);
                             });
-                            //self.fq("");
 
                             self.filterTreeObs("done");
                             self.comboObservable("done");
                             nameBeforeUpdate = self.nameSearch();
 
 
-
+                            self.getSolrDataTree();
+                            //self.oneTimeRetrieveSolrTree = false;
                         }
 
                         if (self.allPeople().grouped !== undefined)
                             peopleFilter = self.allPeople().grouped.ent_id.groups;
-                        
-                        
 
                     }
+
+
+
                     //console.log(self.comboboxSelectValue());
-                    
+
                     //if (self.allPeople().grouped !== undefined)
                     //self.numberMatches(self.allPeople().grouped.ent_id.ngroups);
 
@@ -212,7 +273,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                     return peopleFilter;
                 });
 
-
+                //self.filteredAllPeople();
 
                 //self.filteredAllPeople.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
 
@@ -222,8 +283,19 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 };
 
                 self.getNodeDataList = function (node, fn) {
+                    //Something to shorten the list title                    
+//                    if(self.workerListResult().length !== 0)
+//                    if(self.workerListResult()[0].children !== undefined)
+//                    for (var i = 0; i < self.workerListResult()[0].children.length; ++i){
+//                        var title = self.workerListResult()[0].children[i].title;
+//                        var trim = title.substring(0, 10) + "..." + title.substring(title.indexOf(","), title.length);
+//                        self.workerListResult()[0].children[i].title = trim;
+//                    }
                     fn(self.workerListResult());
                 };
+
+
+
 
                 /*/
                  self.listViewDataSource = ko.computed(function () {
@@ -232,21 +304,28 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                  /**/
 
                 /**/
-                self.cardViewPagingDataSource = ko.computed(function () {
+                self.cardViewPagingDataSource = ko.pureComputed(function () {
+                    //start the Advanced Search Dialog
+                    self.handleOpen = $("#buttonOpener").click(function () {
+                        $("#modalDialog1").ojDialog("open");
+                    });
+
+                    self.handleOKClose = $("#okButton").click(function (event) {
+                        $("#modalDialog1").ojDialog("close");
+                        self.filterTreeObs("ready");
+                        event.stopImmediatePropagation();
+                        self.keepFilter = false;
+                    });
+
                     return new oj.ArrayPagingDataSource((self.filteredAllPeople()));
                 });
-
-                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 20, method: "notifyWhenChangesStop"}});
+                
+                //In order to wait for the facets to load so that the tree update can be done
+                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 1, method: "notifyWhenChangesStop"}});
 
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
-                    if(self.numberMatches() === "0 Hits"){
-                        self.numberMatches("");
-                        self.noResults("No Results");
-                    }
-                    if(self.numberMatches() !== "0 Hits" && self.numberMatches() !== ""){
-                        self.noResults("");
-                    }
+
                     if (self.keepFilter === false) {
                         self.worker.postMessage(self.facetsCountries());
                         self.worker.onmessage = function (m) {
@@ -307,11 +386,11 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                                 self.processFilterLists();
                                 //self.comboObservable("combobox");
                             }
-                              
+
 //                            if(data.value.length === 0 )
 //                            self.comboObservable("combobox");
                         }
-                        
+
                         event.stopImmediatePropagation();
                     });
 
@@ -353,8 +432,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                             e.stopImmediatePropagation();
                         }
                     });
-
+                    
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
+                
                     //self.filterTreeObs("ready");
 
                 });
@@ -405,15 +485,14 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 };
 
                 /**/
-                self.cardViewDataSource = ko.computed(function () {
+                self.cardViewDataSource = ko.pureComputed(function () {
                     return self.cardViewPagingDataSource().getWindowObservable();
                 });
-                //self.cardViewDataSource.extend({rateLimit: {timeout: 1000, method: "notifyWhenChangesStop"}});
                 /**/
-
-                //self.cardViewDataSource.extend({rateLimit : { timeout: 100, method: "notifyWhenChangesStop"}});
-
-
+                
+                
+               
+                
                 self.getPhoto = function (empId) {
                     var src;
                     if (empId < 188) {
@@ -435,8 +514,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                     //var name = company.doclist.docs[0].nam_comp_name;
                     //var name = self.allHighlighting()[company.doclist.docs[0].sse_id].nam_comp_name[0];
                     if (self.allPeople().grouped.ent_id.groups.length !== 0) {
-                        var sse_id = self.allPeople().grouped.ent_id.groups[0].doclist.docs[0].sse_id;
-                        var name = self.allPeople().highlighting[sse_id].nam_comp_name;
+                        var sse_id = company.doclist.docs[0].sse_id;
+                        if (self.allPeople().highlighting[sse_id] !== undefined)
+                            var name = self.allPeople().highlighting[sse_id].nam_comp_name;
                     } else
                         var name = "";
                     return name;
@@ -531,16 +611,25 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
 
                 /**/
                 self.loadPersonPage = function (comp) {
-                    if (comp.sse_id) {
+                    if (comp.doclist.docs[0].sse_id) {
+                        id = comp.doclist.docs[0].sse_id;
                         // Temporary code until go('person/' + emp.empId); is checked in 1.1.2
-                        history.pushState(null, '', 'index.html?root=person&comp=' + comp.sse_id);
+                        history.pushState(null, '', 'index.html?root=details&sse_id=' + id);
                         oj.Router.sync();
-                    } else {
-                        // Default id for person is 100 so no need to specify.
-                        oj.Router.rootInstance.go('person');
+                        utils.rememberState(self.nameSearch(),self.filterTree(),self.filterTreeList());
                     }
+                    
                 };
                 /**/
+                
+                //To establish the previous state after returning from details page
+                 if(oj.Router.rootInstance.Rt){
+                    self.filterTree(utils.resetState()[1]);
+                    self.filterTreeList(utils.resetState()[2]);
+                    self.processFilterCountries();
+                    self.processFilterLists();
+                    self.nameSearch(utils.resetState()[0]);
+                }
 
 
 

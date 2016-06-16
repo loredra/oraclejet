@@ -1,0 +1,158 @@
+{
+  "nodes":[
+    {"id":"30", "name":"ETCO INTERNATIONAL COMMODITIES LIMITED","type":"company","trust":20,"status":"Active",
+    "isListedIn":[
+		  {"USSDN":[
+			  {"Name":"ETCO INTERNATIONAL COMMODITIES",
+			   "Address":"Address1, Street2, Building 3"
+			  },
+			  {"Name":"ETCO INTERNATIONAL COMMODITIES Name 2",
+			   "Address":"Address21, Street21, Building 31"
+			  }],
+		  "Name":"USSDN",
+		  "Measure":["arms","technical","money"],
+		  "General Information":["This Company is really dangerous","Expiration Date is 2024", "I see death people"],
+          "Expiration":"23-12-2016"
+		  },
+		  {"Canadian List":[
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 3",
+			   "Address":"Address111, Street222, Building 333"
+			  },
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 4",
+			   "Address":"Address221, Street221, Building 321"
+			  }]
+			  ,
+		  "Name":"Canadian List",
+          "Measure":["arms","technical","money"],
+		  "General Information":["This Company is dangerous", "Black sheep wall"],
+          "Expiration":"None"
+		  }
+		  ,
+		  {"Canadian List 1":[
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 3",
+			   "Address":"Address111, Street222, Building 333"
+			  },
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 4",
+			   "Address":"Address221, Street221, Building 321"
+			  }]
+			  ,
+		  "Name":"Canadian List"  
+		  }
+		  ,
+		  {"Canadian List 2":[
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 3",
+			   "Address":"Address111, Street222, Building 333"
+			  },
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 4",
+			   "Address":"Address221, Street221, Building 321"
+			  }]
+			  ,
+		  "Name":"Canadian List 2"
+		  }
+		  ,
+		  {"Canadian List 3":[
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 3",
+			   "Address":"Address111, Street222, Building 333"
+			  },
+			  {"Name":"ETCO CANADIAN COMMODITIES Name 4",
+			   "Address":"Address221, Street221, Building 321"
+			  }]
+			  ,
+		  "Name":"Canadian List 3"
+		  }
+    
+		  ],
+	"Identification":"24601",
+    "address":"Devonshire House, Devonshire Street 1 London GB",
+    "AKA":["ETCO INTERNATIONAL COMMODITIES"
+    ,"ETCO INTERNATIONAL COMMODITIES Name 2"
+    ,"ETCO CANADIAN COMMODITIES Name 3"
+    ,"ETCO CANADIAN COMMODITIES Name 4"
+    ,"Name not in anyList"
+    ,"Name not in anyList2"
+    ,"ETCO INTERNATIONAL COMMODITIES Name 2"
+    ,"ETCO CANADIAN COMMODITIES Name 3"
+    ,"ETCO CANADIAN COMMODITIES Name 4"
+    ,"Name not in anyList"
+    ,"Name not in anyList2"
+    
+    ],
+    "KnownAddress":["Address1, Street2, Building 3"
+    ,"Address21, Street21, Building 31"
+    ,"Address111, Street222, Building 333"
+    ,"Address221, Street221, Building 321"
+    ,"Address which is not in List"
+    ],
+    "AllMeasures":["arms","technical","money"],
+    "country":"USA"
+    },
+    {"id": "1","name":"PINKERTON, Steven Thomas","type":"human","trust":30,"status":"Active",
+    "isListedIn": [
+		  {"USSDN Personal List":[
+			  {"Name":"Pinkerton the tormenter",
+			   "Address":"Address111, Street222, Building 333"
+			  }],
+		    "Name":"USSDN Personal List"  
+		  }
+		  ],
+    "address":"Example2, Some fake address",
+    "AKA":["Pinkerton the tormenter"]
+     },
+    {"id": "2","name":"DIAZ ALFONSO, Liudis","type":"human","trust":25,"status":"Active",
+    "isListedIn":["USSDN","Canadian list","Random List 3"],
+    "AKA":["Lionel Messi","Lusen Carf","Dummy Name 1","Dummy Name 2","Dummy Name 3","Dummy Name 4","Dummy Name 5"]
+      },
+    {"id": "3","name":"PEREZ GUILLAMA, Osmani De La Caridad","type":"human","trust":80,"status":"Inactive"},
+    {"id": "4","name":"RODRIGUEZ DELGADO, Minerva Aleida","type":"human","trust":80,"status":"Active"},
+    {"id": "5","name":"WILSON GREEN PROPERTY LIMITED","type":"company","trust":80,"status":"Active"},
+    {"id": "6","name":"WATSON, Caroline","type":"politician","trust":80,"status":"Active"},
+    {"id": "7","name":"UK GLOBAL COMMODITIES LIMITED","type":"bank","trust":80,"status":"Active"},
+    {"id": "8","name":"ALL WORLD FOODS LIMITED","type":"company","trust":80,"status":"Active"},
+    {"id": "9","name":"DA SILVA, Jose Antonio Goncalves","type":"terrorist","trust":80,"status":"Active"},
+    {"id": "10","name":"MUSSI VAZQUEZ, Eidel Manuel","type":"prisoner","trust":80,"status":"Active"},
+    {"id": "11","name":"Mother Company","type":"company","trust":80,"status":"Active"},
+    {"id":"12", "name":"ETCO INTERNATIONAL COMPANY LIMITED","type":"company","trust":50,
+    "isListedIn":["USSDN"],"status":"Active",
+    "address":"Kanda Nishiki Cho 1-5 Housenumber Kawabe building"   },
+      {"id":"13", "name":"ETCO China INTERNATIONAL Trading COMPANY LIMITED","type":"company","trust":50,"status":"Inactive",
+    "isListedIn":["Anti-Dumping List"],
+    "address":"Somewhere in China, Kunfu Panda 3",
+    "AKA":["ETCO Industrial"]   },
+     {"id": "14","name":"Aircraft 241","type":"vehicle3","trust":25,"status":"Active",
+    "isListedIn": [
+		  {"USSDN Personal List":[
+			  {"Name":"Pinkerton the tormenter",
+			   "Address":"Address111, Street222, Building 333"
+			  }],
+		    "Name":"USSDN Personal List"  
+		  }
+		  ],
+    "AKA":["Lionel Messi","Lusen Carf","Dummy Name 1","Dummy Name 2","Dummy Name 3","Dummy Name 4","Dummy Name 5"]
+      }
+    ],
+"links":[
+{"source":1,"target":0,"linktype":"Secretary"},
+{"source":1,"target":0,"linktype":"Director"},
+{"source":2,"target":0,"linktype":"Director"},
+{"source":3,"target":0,"linktype":"Director"},
+{"source":4,"target":0,"linktype":"Director"},
+{"source":1,"target":5,"linktype":"Director"},
+{"source":6,"target":5,"linktype":"Director"},
+{"source":1,"target":7,"linktype":"Secretary"},
+{"source":2,"target":7,"linktype":"Director"},
+{"source":1,"target":8,"linktype":"Resigned"},
+{"source":9,"target":8,"linktype":"Secretary"},
+{"source":10,"target":8,"linktype":"Director"},
+{"source":0,"target":11,"linktype":"Subsidiary"},
+{"source":0,"target":12,"linktype":"Related"},
+{"source":0,"target":13,"linktype":"Related"},
+{"source":12,"target":13,"linktype":"Related"}
+],
+
+"level_trust":[
+{"Message":"Dangerous","color":"red"},
+{"Message":"Shady Business","color":"yellow"},
+{"Message":"Safe for now","color":"green"},
+{"Message":"Inactive","color":"grey"}
+]
+}

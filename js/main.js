@@ -68,6 +68,7 @@ require(['ojs/ojcore',
     'ojs/ojtoolbar',
     'ojs/ojmenu',
     'ojs/ojinputtext'
+    
 ],
         function (oj, ko, $, utils) {
 
@@ -77,14 +78,13 @@ require(['ojs/ojcore',
             router.configure({
                 //'dashboard': {label: 'Dashboard', isDefault: true},
                 'people': {label: 'People', isDefault:true},
-                //'organization': {label: 'Organization'},
-                'person': {label: 'Person',
+                'details': {label: 'Details',
                     exit: function () {
                         var childRouter = router.currentState().value;
                         childRouter.dispose();
                     },
                     enter: function () {
-                        var childRouter = router.createChildRouter('emp');
+                        var childRouter = router.createChildRouter('sse_id');
                         childRouter.defaultStateId = '100';
                         router.currentState().value = childRouter;
                     }

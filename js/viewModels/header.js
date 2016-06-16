@@ -111,14 +111,11 @@ define(['knockout', 'ojs/ojcore', 'ojs/ojknockout', 'ojs/ojnavigationlist', 'ojs
                 name: router.states[1].label,
                 id: router.states[1].id,
                 disabled: 'false',
-                iconClass: 'demo-navi-person-icon oj-navigationlist-item-icon'
+                iconClass: 'demo-navi-person-icon oj-navigationlist-item-icon',
             },
-            {
-                name: router.states[2].label,
-                id: router.states[2].id,
-                disabled: 'true',
-                iconClass: 'oj-disabled demo-navi-people-icon oj-navigationlist-item-icon'
-            }];
+            
+            
+        ];
 
         self.dataSource = new oj.ArrayTableDataSource(appNavData, {idAttribute: 'id'});
         //self.selectedItem = ko.observable("dashboard");
