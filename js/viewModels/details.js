@@ -4,9 +4,9 @@ define(['ojs/ojcore', 'knockout', 'jquery'
 
     ko.bindingHandlers.svg = {
         init: function (element, valueAccessor) {
-
-            var urlValue = ko.unwrap(valueAccessor());
             
+            var urlValue = ko.unwrap(valueAccessor());
+
 
             var width = d3.select("#associate_info").node().getBoundingClientRect().width / 2;
             var height = width;
@@ -966,6 +966,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                 click(d3.select("#list").select("li").datum());
             });
 
+
         },
         update: function (element, valueAccessor) {
 
@@ -1014,7 +1015,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
         self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE f=nam_comp_name}');
         self.fqField = ko.observable('&fq=');
 
-        
+
 
         self.loadData = function (id) {
             return new Promise(function (resolve, reject) {
@@ -1028,7 +1029,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                 });
             });
         };
-        
+
         self.jsonUrl = ko.observable(self.url + "&q=" + "sse_id" + self.sseid());
         /*
          * 
@@ -1050,11 +1051,12 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                 {name: "Twilight Sparkle", value: 5}
             ];
         },
-        
-        //self.barChartData = ko.observable(ponies());
-        self.barChartData = ko.observable("");
-         
-         
+                //self.barChartData = ko.observable(ponies());
+                self.barChartData = ko.observable("");
+
+
+
+
 
     }
     return testD3ContentViewModel;

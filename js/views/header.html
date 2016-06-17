@@ -22,11 +22,7 @@
   <div class="oj-flex-bar-end">
     <!-- Responsive Toolbar -->
     <div data-bind="ojComponent: {component:'ojToolbar'}">
-      <button data-bind="ojComponent: {component:'ojButton',
-        label: 'Search', display: 'icons', chroming: 'half',
-        icons: {start:'oj-fwk-icon-magnifier oj-fwk-icon'}}">
-      </button>
-      <span class="oj-toolbar-separator" role="separator" aria-orientation="vertical"></span>
+      
       <button id="userMenu"
         data-bind="ojComponent: {component: 'ojButton', label: userName,
         display: $root.smallOnly() ? 'icons' : 'all',

@@ -13,7 +13,13 @@ define(['knockout'],
             
             function rememberState(name,filterTreeCountry,filterTreeList){
                 self.previousName(name);
+                if(filterTreeCountry===undefined)
+                    self.previousFilterCountry([""]);
+                else
                 self.previousFilterCountry(filterTreeCountry);
+                if(filterTreeList === undefined)
+                    self.previousFilterList([""]);
+                else
                 self.previousFilterList(filterTreeList);
             };
             function resetState(){

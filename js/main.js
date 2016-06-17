@@ -85,7 +85,7 @@ require(['ojs/ojcore',
                     },
                     enter: function () {
                         var childRouter = router.createChildRouter('sse_id');
-                        childRouter.defaultStateId = '100';
+                        //childRouter.defaultStateId = '100';
                         router.currentState().value = childRouter;
                     }
                 }

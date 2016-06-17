@@ -7,6 +7,12 @@
     <div class="oj-flex oj-flex-items-pad">
         <div class="oj-flex-items oj-sm-12" >
             <div class="oj-flex oj-flex-items-pad">
+                <div class="oj-flex-items oj-sm-8 oj-lg-9" style="max-width:31%; width:26%;">
+                    <input id="searchText" aria-label="search box" placeholder="search" data-bind="value: nameSearch, valueUpdate: 'afterkeydown', 
+                                ojComponent: {component: 'ojInputText', rootAttributes:{'style':'max-width:99%; '}}"/>
+                    <div id="searchIcon" class="demo-icon-sprite demo-icon-search demo-search-position"></div>
+                </div>
+
                 <div id="dialogWrapper" style="position:relative; max-height:30%; max-width:30%;  ">
                     <div style="display:none" id="modalDialog1" title="Advanced Search" 
                          data-bind="ojComponent:{component: 'ojDialog', initialVisibility: 'hide' }">
@@ -81,25 +87,17 @@
 
                 </div>
 
-
-                <div class="oj-flex-items oj-sm-8 oj-lg-9" style="max-width:35%; width:26%;">
-                    <input id="searchText" aria-label="search box" placeholder="search" data-bind="value: nameSearch, valueUpdate: 'afterkeydown', 
-                                ojComponent: {component: 'ojInputText', rootAttributes:{'style':'max-width:400px; '}}"/>
-                    <div id="searchIcon" class="demo-icon-sprite demo-icon-search demo-search-position"></div>
+                <div id="hits" class="oj-flex-items oj-sm-2" style="position: relative; right:100px; top:47px; font-family: Courier New;" 
+                     data-bind="text: numberMatches">
                 </div>
-
-
-                <form id="form1" style="  position: relative; width: 50%;">
+                
+                <form id="form1" style="  position: relative; width:77%; left:36%; bottom: 44px;">
                     <input id="combobox"  data-bind="ojComponent: {component: 'ojCombobox', 
                                                         multiple: true, 
                                                         value: comboboxSelectValue,
-                                                        rootAttributes: {style:'max-width:54em'}}"/>
+                                                        rootAttributes: {style:'max-width:77em'}}"/>
                 </form>
-                <div class="oj-flex-items oj-sm-2">
-                    <div id="hits" style="position: relative; left:363px; font-family: Courier New;" 
-                         data-bind="text: numberMatches">
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -107,35 +105,36 @@
 
     </div>
 
-    <div id="tree" 
-         data-bind="ojComponent:
-               {
-                 component: 'ojTree',
-                 icons : false,
-                 data : { data: getNodeDataCountry },
-                 rootAttributes: {style:'width:220px; height:200px; left:1423px; position: relative; top:10px; overflow-y: auto'}
-               }">
-    </div>
-    <div id="treeList" style="width:220px; height:200px; left:1423px; position: relative; top:20px; overflow-y: auto; overflow-x: hidden"
-         data-bind="ojComponent:
-               {
-                 component: 'ojTree',
-                 icons : false,
-                 data : { data: getNodeDataList }
-               }">
-    </div>
+
+
 
 
 
     <!-- there are two different layouts for displaying the people data. The template binding below sets whether it should load the listView template or the cardLayout template -->
 
     <!-- ko if: ready -->
-    <div id="peoplelistview" style="position:relative; bottom:400px" >
+    <div id="peoplelistview" style="position:relative;" >
         <div class="oj-flex oj-flex-items-pad" data-bind="template: peopleLayoutType()"></div>
     </div>
     <!-- /ko -->
 </div>
 <!-- -->
+<div id="tree" class="draggable" style="width:220px; height:200px; left:88%; position: absolute; top:20%; overflow-y: auto; background:burlywood"
+     data-bind="ojComponent:
+               {
+                 component: 'ojTree',
+                 icons : false,
+                 data : { data: getNodeDataCountry }
+               }">
+</div>
+<div id="treeList" class="draggable" style="width:220px; height:200px; left:88%; position: absolute; top:45%; overflow-y: auto; overflow-x: hidden; background: #EBE6F5"
+     data-bind="ojComponent:
+               {
+                 component: 'ojTree',
+                 icons : false,
+                 data : { data: getNodeDataList }
+               }">
+</div>
 <div id="nores" style="position: absolute; top:228px; left:333px; opacity: 0.3; font-family: Courier New; font-size: 700%" 
      data-bind="text: noResults">
 </div>
@@ -148,11 +147,11 @@
             <!-- ko foreach: cardViewDataSource()  -->
             <div class="oj-flex-items oj-sm-12 oj-md-6 oj-lg-4 oj-xl-3" data-bind="event:{keypress:$parent.onEnter}">
 
-                <div class="oj-panel oj-panel-alt1" style="height: 226px; margin: 5px 0px 10px 0px; min-width: 333px" data-bind="click: $parent.loadPersonPage">
+                <div class="oj-panel oj-panel-alt1" style="height: 226px; margin: 5px 0px 10px 0px; min-width: 333px" >
 
                     <div class="oj-flex oj-flex-items-pad" >
-                        <div class="oj-flex-items oj-sm-4">
-                            <img alt="employee image" class="demo-circular demo-employee-photo" data-bind="attr: {src: $parent.getPhoto($data['empId'])}"/>
+                        <div class="oj-flex-items oj-sm-4" data-bind="click: $parent.loadPersonPage">
+                            <img alt="employee image" class="demo-circular demo-employee-photo" style="cursor:pointer" data-bind="attr: {src: $parent.getPhoto($data['empId'])}"/>
                         </div>
                         <div class="oj-flex-items oj-sm-8">
                             <h2 id="nameEntity" class="demo-employee-name" aria-label="employee name" data-bind="html: $parent.getName($data)" tabindex="0"></h2>

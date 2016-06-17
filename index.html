@@ -23,8 +23,10 @@
         <link rel="icon" href="css/images/favicon.ico" type="image/x-icon" />
 
         <!-- For the details page -->
-        
         <script type="text/javascript" src="js/libs/d3/d3.min.js"></script>
+
+        <!-- This is for the interaction with the lists -->
+        <script type="text/javascript" src="js/libs/interact/interact.js"></script>
         
         <!-- This is the main css file for the default Alta theme -->
         <link id="css" rel="stylesheet" href="css/libs/oj/v2.0.1/alta/oj-alta-min.css" type="text/css"/>
@@ -34,13 +36,13 @@
 
         <!-- This is where you would add any app specific styling -->
         <link rel="stylesheet" href="css/override.css" type="text/css"/>
-        
-        
+
 
         <!-- RequireJS bootstrap file -->
         <script data-main="js/main" src="js/libs/require/require.js"></script>
+
         
-        
+
     </head>
     <body>
         <div id="globalBody" class="oj-web-applayout-offcanvas-wrapper oj-offcanvas-outer-wrapper">
@@ -52,7 +54,7 @@
                 <!-- off-canvas content -->
                 <!-- -->
                 <div id="appDrawer" class="oj-contrast-marker oj-web-applayout-offcanvas oj-offcanvas-start"
-                  data-bind="ojModule: {name: 'header', viewName: 'demoAppHeaderOffCanvasTemplate'}"></div>
+                     data-bind="ojModule: {name: 'header', viewName: 'demoAppHeaderOffCanvasTemplate'}"></div>
                 <!-- -->
 
 

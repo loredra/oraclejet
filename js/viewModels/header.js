@@ -110,7 +110,7 @@ define(['knockout', 'ojs/ojcore', 'ojs/ojknockout', 'ojs/ojnavigationlist', 'ojs
             {
                 name: router.states[1].label,
                 id: router.states[1].id,
-                disabled: 'false',
+                disabled: 'true',
                 iconClass: 'demo-navi-person-icon oj-navigationlist-item-icon',
             },
             

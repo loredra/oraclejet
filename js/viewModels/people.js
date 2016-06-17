@@ -2,17 +2,18 @@
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
+define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
     'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
-    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber' ],
-        function (oj, ko, utils, data, $ )
+    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber'],
+        function (oj, ko, utils, $)
         {
             function PeopleViewModel() {
                 var self = this;
                
+
+
                 /**/
                 self.peopleLayoutType = ko.observable('peopleCardLayout');
-
                 self.allPeople = ko.observableArray([]);
                 self.ready = ko.observable(false);
                 /**/
@@ -128,9 +129,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 //Temporary solution to start the Advance Search Dialog
                 self.nameSearch(" ");
                 var start = true;
-                                             
-               
-                
+
+
+
                 // Retrieve data from SOLR for the tree filter
                 self.nameQ = ko.observable("");
                 self.oneTimeRetrieveSolrTree = true;
@@ -151,6 +152,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                 self.filteredAllPeople = ko.pureComputed(function () {
                     var peopleFilter = new Array();
 
+//                    $("#ojPagingControl").on("ojoptionchange", function (event, data){
+//                        alert(11);
+//                    });
+
                     if (self.nameSearch().search(/\w/) === -1) {
                         peopleFilter = [];
                         self.facetsCountries([""]);
@@ -168,10 +173,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                             self.nameSearch("");
 
                         if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready") {
-                            
+
                             //To store this state if the details page is clicked
-                            utils.rememberState(self.nameSearch());
-                            
+                            //utils.rememberState(self.nameSearch());
+
                             if (self.filterTreeObs() === "done")
                                 self.keepFilter = false;
 
@@ -238,9 +243,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                                 //self.oneTimeRetrieveSolrTree = true;
 
                                 if (self.numberMatches() === "0 Hits") {
-                                  self.noResults("No Results");
-                                } 
-                                else if (self.numberMatches() !== "0 Hits") {
+                                    self.noResults("No Results");
+                                } else if (self.numberMatches() !== "0 Hits") {
                                     self.noResults("");
                                 }
 
@@ -319,7 +323,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
 
                     return new oj.ArrayPagingDataSource((self.filteredAllPeople()));
                 });
-                
+
                 //In order to wait for the facets to load so that the tree update can be done
                 self.cardViewPagingDataSource.extend({rateLimit: {timeout: 1, method: "notifyWhenChangesStop"}});
 
@@ -394,6 +398,87 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                         event.stopImmediatePropagation();
                     });
 
+
+
+
+                    // target elements with the "draggable" class
+                    interact('.draggable')
+                            .draggable({
+                                // enable inertial throwing
+                                inertia: true,
+                                // keep the element within the area of it's parent
+//                                restrict: {
+//                                    restriction: "parent",
+//                                    endOnly: true,
+//                                    elementRect: {top: 0, left: 1, bottom: 1, right: 0}
+//                                },
+                                // enable autoScroll
+                                //autoScroll: true,
+                                // call this function on every dragmove event
+                                onmove: dragMoveListener,
+                                // call this function on every dragend event
+//                                onend: function (event) {
+//                                    var textEl = event.target.querySelector('p');
+//
+//                                    textEl && (textEl.textContent =
+//                                            'moved a distance of '
+//                                            + (Math.sqrt(event.dx * event.dx +
+//                                                    event.dy * event.dy) | 0) + 'px');
+//                                }
+                            }).resizable({
+                        margin: 67,
+                        //preserveAspectRatio: true,
+                        edges: {left: false, right: true, bottom: true, top: false}
+                    }).on('resizemove', function (event) {
+                        var target = event.target,
+                                x = (parseFloat(target.getAttribute('data-x')) || 0),
+                                y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+                        // update the element's style
+                        target.style.width = event.rect.width + 'px';
+                        target.style.height = event.rect.height + 'px';
+
+                        // translate when resizing from top or left edges
+                        //console.log(x+" + "+event.deltaRect.left+ ", "+y +" + "+event.deltaRect.left);
+                        x += event.deltaRect.left;
+                        y += event.deltaRect.top;
+
+
+
+
+                        target.style.webkitTransform = target.style.transform =
+                                'translate(' + x + 'px,' + y + 'px)';
+
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                        //target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
+                    });
+
+                    function dragMoveListener(event) {
+                        var target = event.target,
+                                // keep the dragged position in the data-x/data-y attributes
+                                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                        // translate the element
+                        target.style.webkitTransform =
+                                target.style.transform =
+                                'translate(' + x + 'px, ' + y + 'px)';
+
+                        // update the posiion attributes
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                    }
+
+                    // this is used later in the resizing and gesture demos
+                    window.dragMoveListener = dragMoveListener;
+
+
+                    /*
+                     * End of interaction
+                     */
+
+
                     $("#tree").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
                             var filterValue = $(ui.value).attr("id");
@@ -432,9 +517,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                             e.stopImmediatePropagation();
                         }
                     });
-                    
+
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
-                
+
                     //self.filterTreeObs("ready");
 
                 });
@@ -489,10 +574,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                     return self.cardViewPagingDataSource().getWindowObservable();
                 });
                 /**/
-                
-                
-               
-                
+
+
+
+
                 self.getPhoto = function (empId) {
                     var src;
                     if (empId < 188) {
@@ -616,19 +701,21 @@ define(['ojs/ojcore', 'knockout', 'utils', 'data/data', 'jquery', 'ojs/ojrouter'
                         // Temporary code until go('person/' + emp.empId); is checked in 1.1.2
                         history.pushState(null, '', 'index.html?root=details&sse_id=' + id);
                         oj.Router.sync();
-                        utils.rememberState(self.nameSearch(),self.filterTree(),self.filterTreeList());
+                        utils.rememberState(self.nameSearch(), self.filterTree(), self.filterTreeList());
                     }
-                    
+
                 };
                 /**/
-                
+
                 //To establish the previous state after returning from details page
-                 if(oj.Router.rootInstance.Rt){
+                if (oj.Router.rootInstance.tx === "back") {
                     self.filterTree(utils.resetState()[1]);
                     self.filterTreeList(utils.resetState()[2]);
                     self.processFilterCountries();
                     self.processFilterLists();
+                    self.filterTreeObs("done");
                     self.nameSearch(utils.resetState()[0]);
+
                 }
 
 
