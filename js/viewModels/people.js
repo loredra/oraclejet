@@ -1,16 +1,16 @@
+/* global interact */
+
 /**
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
+define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
     'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
     'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber'],
         function (oj, ko, utils, $)
         {
             function PeopleViewModel() {
                 var self = this;
-               
-
 
                 /**/
                 self.peopleLayoutType = ko.observable('peopleCardLayout');
@@ -131,7 +131,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
                 var start = true;
 
 
-
                 // Retrieve data from SOLR for the tree filter
                 self.nameQ = ko.observable("");
                 self.oneTimeRetrieveSolrTree = true;
@@ -155,6 +154,25 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
 //                    $("#ojPagingControl").on("ojoptionchange", function (event, data){
 //                        alert(11);
 //                    });
+
+                    //set the position of the filter tree panels after returning from the details page
+                    if (oj.Router.rootInstance.tx === "back") {
+                        //$("#tree").css({'top': utils.resetTreesPos()[0].top, 'left' :utils.resetTreesPos()[0].left });
+                        $("#tree").css({
+                            "width": utils.resetTreesPos()[0].width,
+                            "height": utils.resetTreesPos()[0].height,
+                            "top": utils.resetTreesPos()[1].top,
+                            "left": utils.resetTreesPos()[1].left
+                        });
+
+                        $("#treeList").css({
+                            "width": utils.resetTreesPos()[2].width,
+                            "height": utils.resetTreesPos()[2].height,
+                            "top": utils.resetTreesPos()[3].top,
+                            "left": utils.resetTreesPos()[3].left
+                        });
+                    }
+
 
                     if (self.nameSearch().search(/\w/) === -1) {
                         peopleFilter = [];
@@ -309,6 +327,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
 
                 /**/
                 self.cardViewPagingDataSource = ko.pureComputed(function () {
+                    $("#searchedItemsContainer").scroll(function (event) {
+                        alert(event);
+                    });
+                    
                     //start the Advanced Search Dialog
                     self.handleOpen = $("#buttonOpener").click(function () {
                         $("#modalDialog1").ojDialog("open");
@@ -388,70 +410,54 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
                                 });
                                 self.filterTreeList(newTreeList);
                                 self.processFilterLists();
-                                //self.comboObservable("combobox");
                             }
-
-//                            if(data.value.length === 0 )
-//                            self.comboObservable("combobox");
                         }
 
                         event.stopImmediatePropagation();
                     });
 
 
-
+                    /*
+                     * Filter Tree Panels interaction
+                     */
 
                     // target elements with the "draggable" class
                     interact('.draggable')
                             .draggable({
+                                // ***changed line 65 from interact.js so the cursor on hovering will not change
                                 // enable inertial throwing
                                 inertia: true,
                                 // keep the element within the area of it's parent
-//                                restrict: {
-//                                    restriction: "parent",
-//                                    endOnly: true,
-//                                    elementRect: {top: 0, left: 1, bottom: 1, right: 0}
-//                                },
-                                // enable autoScroll
-                                //autoScroll: true,
+                                restrict: {
+                                    restriction: "#topDiv",
+                                    endOnly: true,
+                                    elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+                                },
                                 // call this function on every dragmove event
-                                onmove: dragMoveListener,
-                                // call this function on every dragend event
-//                                onend: function (event) {
-//                                    var textEl = event.target.querySelector('p');
-//
-//                                    textEl && (textEl.textContent =
-//                                            'moved a distance of '
-//                                            + (Math.sqrt(event.dx * event.dx +
-//                                                    event.dy * event.dy) | 0) + 'px');
-//                                }
+                                onmove: dragMoveListener
                             }).resizable({
-                        margin: 67,
-                        //preserveAspectRatio: true,
+                        margin: 37,
                         edges: {left: false, right: true, bottom: true, top: false}
                     }).on('resizemove', function (event) {
                         var target = event.target,
                                 x = (parseFloat(target.getAttribute('data-x')) || 0),
                                 y = (parseFloat(target.getAttribute('data-y')) || 0);
 
-                        // update the element's style
-                        target.style.width = event.rect.width + 'px';
-                        target.style.height = event.rect.height + 'px';
 
-                        // translate when resizing from top or left edges
-                        //console.log(x+" + "+event.deltaRect.left+ ", "+y +" + "+event.deltaRect.left);
-                        x += event.deltaRect.left;
-                        y += event.deltaRect.top;
+                        if (event.rect.width > 77 && event.rect.height > 30) {
+                            // update the element's style
+                            target.style.width = event.rect.width + 'px';
+                            target.style.height = event.rect.height + 'px';
 
+                            // translate when resizing from top or left edges
+                            x += event.deltaRect.left;
+                            y += event.deltaRect.top;
 
+                            target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
 
-
-                        target.style.webkitTransform = target.style.transform =
-                                'translate(' + x + 'px,' + y + 'px)';
-
-                        target.setAttribute('data-x', x);
-                        target.setAttribute('data-y', y);
-                        //target.textContent = Math.round(event.rect.width) + '×' + Math.round(event.rect.height);
+                            target.setAttribute('data-x', x);
+                            target.setAttribute('data-y', y);
+                        }
                     });
 
                     function dragMoveListener(event) {
@@ -461,23 +467,33 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
                                 y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
                         // translate the element
-                        target.style.webkitTransform =
-                                target.style.transform =
-                                'translate(' + x + 'px, ' + y + 'px)';
+                        target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
                         // update the posiion attributes
                         target.setAttribute('data-x', x);
                         target.setAttribute('data-y', y);
                     }
 
-                    // this is used later in the resizing and gesture demos
-                    window.dragMoveListener = dragMoveListener;
-
-
                     /*
                      * End of interaction
                      */
 
+                    $('#tree').on("ojcollapse", function (e, ui) {
+                        $("#tree").css({"height": 30});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#tree').on("ojexpand", function (e, ui) {
+                        $("#tree").css({"height": 220});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeList').on("ojcollapse", function (e, ui) {
+                        $("#treeList").css({"height": 30});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeList').on("ojexpand", function (e, ui) {
+                        $("#treeList").css({"height": 220});
+                        e.stopImmediatePropagation();
+                    });
 
                     $("#tree").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
@@ -502,7 +518,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
                         if (ui.option === "selection") {
                             var pos = $(ui.value).text().indexOf(",");
                             var filterValue = $(ui.value).children("a").children("span").text().substring(0, pos - 2);
-                            if (filterValue !== "list" && filterValue !== undefined && filterValue !== "") {
+                            if (filterValue !== "List" && filterValue !== undefined && filterValue !== "") {
                                 var foundDuplicate = self.filterTreeList().find(function (el) {
                                     return filterValue === el;
                                 });
@@ -702,10 +718,18 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
                         history.pushState(null, '', 'index.html?root=details&sse_id=' + id);
                         oj.Router.sync();
                         utils.rememberState(self.nameSearch(), self.filterTree(), self.filterTreeList());
+                        //Store the position of the Filter Tree Panels
+                        var sizeTreeCountry = $("#tree").css(["width", "height"]);
+                        var posTreeCountry = $("#tree").position();
+                        var sizeTreeList = $("#treeList").css(["width", "height"]);
+                        var posTreeList = $("#treeList").position();
+                        utils.rememberPositionTrees(sizeTreeCountry, posTreeCountry, sizeTreeList, posTreeList);
                     }
 
                 };
                 /**/
+                //$("#tree").css('transform', 'translate(-200px, -2px)');
+
 
                 //To establish the previous state after returning from details page
                 if (oj.Router.rootInstance.tx === "back") {
@@ -715,7 +739,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery',  'ojs/ojrouter', 'ojs/ojkno
                     self.processFilterLists();
                     self.filterTreeObs("done");
                     self.nameSearch(utils.resetState()[0]);
-
                 }
 
 

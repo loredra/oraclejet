@@ -19,8 +19,8 @@
     <span role="img" class="oj-sm-only-hide oj-icon logo-icon" ></span>
     <!--<span class="oj-web-applayout-header-title" title="Application Name" data-bind="text: $root.smallOnly() ? ($root.router.stateId() === 'dashboard' ? 'Dashboard' : 'People') : appName, css: {'demo-employee-name-person-detail-phone' : $root.smallOnly() == true}"></span>-->
   </div>
-  <div class="oj-flex-bar-end">
-    <!-- Responsive Toolbar -->
+<!--  <div class="oj-flex-bar-end">
+     Responsive Toolbar 
     <div data-bind="ojComponent: {component:'ojToolbar'}">
       
       <button id="userMenu"
@@ -30,9 +30,9 @@
         chroming: 'half', menu: '#demoAppheaderGlobalNavMenuId'}">
       </button>
       <ul id="demoAppheaderGlobalNavMenuId" data-bind="ojComponent: {component: 'ojMenu', select: menuItemSelect}" style="display:none">
-        <!-- ko foreach: globalNavItems -->
+         ko foreach: globalNavItems 
         <li data-bind="attr: {id: label}"> <a data-bind="text: label, href: url"> <span class=""></span>  </a></li>
-        <!-- /ko -->
+         /ko 
       </ul>
       <div style="display:none" id="aboutDialog" title="About JET QuickStart Basic"
         data-bind="ojComponent:{component: 'ojDialog',
@@ -47,12 +47,12 @@
           comments for more information. For a full reference on what can be done
           with the JET framework, please visit the <a href='http://oraclejet.org'>JET Website</a>
         </div>
-<!--        <footer class="oj-dialog-footer oj-web-applayout-footer"
+        <footer class="oj-dialog-footer oj-web-applayout-footer"
           role="contentinfo" data-bind="ojModule: 'footer'">
-        </footer>-->
+        </footer>
       </div>
     </div>
-  </div>
+  </div>-->
 </div>
 <div id="ojAppNav"
   class="oj-web-applayout-navbar oj-sm-only-hide oj-web-applayout-max-width oj-navigationlist-item-dividers oj-md-condense oj-md-justify-content-center oj-lg-justify-content-flex-end"

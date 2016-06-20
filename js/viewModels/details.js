@@ -1,10 +1,16 @@
 
+/* global d3 */
+
 define(['ojs/ojcore', 'knockout', 'jquery'
 ], function (oj, ko, $) {
 
     ko.bindingHandlers.svg = {
         init: function (element, valueAccessor) {
             
+            //In order to use events, functions should be referenced with "self"
+            var self = this;
+            
+            //Just to test the unwrap function
             var urlValue = ko.unwrap(valueAccessor());
 
 
@@ -25,13 +31,13 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                     .origin(function (d) {
                         return d;
                     })
-                    .on("dragstart", dragstarted)
-                    .on("drag", dragged)
-                    .on("dragend", dragended);
+                    .on("dragstart", self.dragstarted)
+                    .on("drag", self.dragged)
+                    .on("dragend", self.dragended);
 
             var zoom = d3.behavior.zoom()
                     .scaleExtent([0.4, 6])
-                    .on("zoom", zoomed)
+                    .on("zoom", self.zoomed)
 
 
             var svg = d3.select("body").select("#associate_info")
@@ -44,7 +50,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
 
             var container = svg.append("g");
 
-            function reCalculateLayoutWhenResize() {
+            self.reCalculateLayoutWhenResize = function() {
                 if (IsExpanded == false) {
                     width = d3.select("#associate_info").node().getBoundingClientRect().width / 2;
                     height = d3.select("#associate_info").node().getBoundingClientRect().height;
@@ -56,7 +62,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
             }
 
 
-            function expandForceLayout() {
+            self.expandForceLayout = function () {
                 if (IsExpanded == false) {
                     d3.select("#associate_info_node").
                             style("display", "none");
@@ -78,10 +84,12 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                             .text(">>>");
                     IsExpanded = true;
                 } else {
-                    collapseForceLayout();
+                    self.collapseForceLayout();
                 }
             }
-            function collapseForceLayout() {
+
+
+            self.collapseForceLayout = function() {
 
                 d3.select("#associate_info_node").
                         style("display", null);
@@ -105,35 +113,34 @@ define(['ojs/ojcore', 'knockout', 'jquery'
             }
 
 
-            function linkToolTip(link) {
+            self.linkToolTip = function(link) {
 
                 var text = link.attr("type");
                 tooltip.text(text);
                 tooltip.style("visibility", "visible");
-            }
+            };
 
-            function zoomed() {
+            self.zoomed = function() {
 //     container.attr("transform", "translate(0,0 )scale(1)");
                 container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            }
-            function dragstarted(d) {
+            };
+            self.dragstarted = function(d) {
                 d3.event.sourceEvent.stopPropagation();
                 d3.select(this).classed("dragging", true);
 
-            }
+            };
 
-            function dragged(d) {
+            self.dragged = function(d) {
                 root = d;
                 root.fixed = true;
                 d3.select(this).attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
-            }
+            };
 
-            function dragended(d) {
+            self.dragended = function(d) {
                 d3.select(this).classed("dragging", false);
+            };
 
-            }
-
-            function translateBeforeChose(x, y) {
+            self.translateBeforeChose = function(x, y) {
                 var dcx = (width / 2 - x * zoom.scale());
                 var dcy = (height / 2 - y * zoom.scale());
                 zoom.translate([dcx, dcy]);
@@ -142,11 +149,11 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                         .transition()
                         .duration(750)
                         .attr("transform", "translate(" + dcx + "," + dcy + ")scale(" + zoom.scale() + ")");
-
-            }
-            function trust_to_color(trust, status) {
+            };
+            
+            self.trust_to_color = function(trust, status) {
                 try {
-                    if (status == "Inactive")
+                    if (status === "Inactive")
                         return"grey";
                 } catch (err) {
 
@@ -161,8 +168,8 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                     return "red";
 
                 }
-            }
-            function clickImage(node) {
+            };
+            self.clickImage = function(node) {
                 //root.fixed = false;
 
                 if (d3.event.defaultPrevented)
@@ -181,7 +188,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                         .attr("opacity", 0);
 
 ///////////////Translte selected node to middle////////////////////////	
-                translateBeforeChose(node.x, node.y);
+                self.translateBeforeChose(node.x, node.y);
 
 ////////////////////////////Set the node with isChosen yes to bigger/////////////
                 d3.select(this)
@@ -222,7 +229,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
 ////////////////////////////Call function on detail.js////////////////////////////////	
                 populateDetailPage(node);
 
-            }
+            };
 
 
             d3.json("js/data/pst2.json", function (error, graph) {
@@ -279,7 +286,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                             return d.linktype;
                         })
                         .on("mouseover", function (d) {
-                            linkToolTip(d3.select(this));
+                            self.linkToolTip(d3.select(this));
                         })
                         .on("mouseout", function (d) {
                             tooltip
@@ -351,7 +358,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                         .on("mouseover", mouseover)
                         .on("mousemove", mousemove)
                         .on("mouseout", mouseout)
-                        .on("click", clickImage)
+                        .on("click", self.clickImage)
                         .on("dblclick.zoom", null)
                         .on("dblclick", dblclick);
 
@@ -361,7 +368,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                         .append("circle")
                         .attr("r", 26)
                         .style("fill", function (d) {
-                            return trust_to_color(d.trust, d.status)
+                            return self.trust_to_color(d.trust, d.status)
                         });
 
                 var image_node = node
@@ -600,8 +607,8 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                 {"name": "Short"},
                 {"name": "CSFDSFSS"}];
 
-// Dummy data and execution for Advanced Search
-            function showAdvancedSearch() {
+            // Dummy data and execution for Advanced Search
+            /*function showAdvancedSearch() {
                 if (isFirstAdvancedSearchOpen) {
                     advanced_search = d3.select("#main_layout").insert("div", ":first-child");
 
@@ -678,7 +685,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                             .style("display", "none");
                     isAdvancedSearchClose = true;
                 }
-            }
+            }*/
 
             function mouseOverList(date) {
                 try {
@@ -871,7 +878,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                 el = d3.select("#overlay");
                 el
                         .style("visibility",
-                                (el.style("visibility") == "visible") ? "hidden" : "visible")
+                                (el.style("visibility") === "visible") ? "hidden" : "visible")
                         .on("click", closeOverlay);
                 ;
 
@@ -922,7 +929,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                         .attr("transform", "scale(1,1)")
                         .attr("opacity", 0.7);
 
-                translateBeforeChose(node.datum().x, node.datum().y);
+                self.translateBeforeChose(node.datum().x, node.datum().y);
 
 ///////////////First load then color the first node/////////////////////////
 
@@ -1031,32 +1038,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
         };
 
         self.jsonUrl = ko.observable(self.url + "&q=" + "sse_id" + self.sseid());
-        /*
-         * 
-         * Testing KO Custom Binding Handler for SVG
-         * 
-         */
-
-
-
-
-
-        ponies = function () {
-            return [
-                {name: "Rainbow Dash", value: 10},
-                {name: "Rarity", value: 8},
-                {name: "Fluttershy", value: 15},
-                {name: "Pinkie Pie", value: 2},
-                {name: "Applejack", value: 11},
-                {name: "Twilight Sparkle", value: 5}
-            ];
-        },
-                //self.barChartData = ko.observable(ponies());
-                self.barChartData = ko.observable("");
-
-
-
-
+ 
 
     }
     return testD3ContentViewModel;

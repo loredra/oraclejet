@@ -13,7 +13,7 @@
     <div class="tooltip">Tipsy!</div>
 
 
-    <div id="main_layout" class=layout data-bind="svg:barChartData">
+    <div id="main_layout" class=layout data-bind="svg:jsonUrl">
 
         <div id=profile_container>
             <div id="profile_of_node" class=profile>
@@ -107,7 +107,7 @@
             </div>	
             <div id="visualization" class=associate_info_node>
                 <div class=toolbox>
-                    <span id="expand_forcelayout" onclick="expandForceLayout()" class=close style="font-size:18px;"> <<< </span>
+                    <span id="expand_forcelayout" onclick="expandForceLayout()"  class=close style="font-size:18px;"> <<< </span>
                     <label class=checkboxname><input id="node_check_box" type="checkbox"> Hide node's name</label>
                     <label class=checkboxlink><input id="link_check_box" type="checkbox" checked=''> Hide link's type</label>
                     <label class=buttonroot><input id="root_button" type="checkbox" > Return to primary search</label>
