@@ -22,7 +22,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 /**/
                 self.nameSearch = ko.observable('');
                 self.url = ko.observable('/solr/CoreOne/select?indent=on&wt=json');
-                self.rows = ko.observable('&rows=20000');
+                self.start = ko.observable(0);
+                self.rows = ko.observable(24);
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
                 self.facetField = ko.observable('&facet.field=add_country&facet.field=lis_name&facet=on');
@@ -128,7 +129,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                 //Temporary solution to start the Advance Search Dialog
                 self.nameSearch(" ");
-                var start = true;
+                var starting = true;
 
 
                 // Retrieve data from SOLR for the tree filter
@@ -148,12 +149,18 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     });
                 };
 
+                //Live scroll variables
+                var stopScroll = false;
+
+                self.nameSearch.subscribe(function (newValue) {
+                    $("#searchedItemsContainer").scrollTop(0);
+                    self.start(0);
+                    self.rows(48);
+                });
+
+
                 self.filteredAllPeople = ko.pureComputed(function () {
                     var peopleFilter = new Array();
-
-//                    $("#ojPagingControl").on("ojoptionchange", function (event, data){
-//                        alert(11);
-//                    });
 
                     //set the position of the filter tree panels after returning from the details page
                     if (oj.Router.rootInstance.tx === "back") {
@@ -185,16 +192,20 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         nameBeforeUpdate = "";
                         self.fqTotalPercentage("");
                         self.keepFilter = false;
+
                         self.getSolrDataTree();
                         self.oneTimeRetrieveSolrTree = false;
+
                     } else {
-                        if (self.nameSearch() === " " && !start)
+                        if (self.nameSearch() === " " && !starting)
                             self.nameSearch("");
 
-                        if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready") {
+                        if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready" || stopScroll === true) {
 
-                            //To store this state if the details page is clicked
-                            //utils.rememberState(self.nameSearch());
+                            //For Live Scrolling it is needed the stopScroll to perform only one request
+                            if (stopScroll) {
+                                stopScroll = false;
+                            }
 
                             if (self.filterTreeObs() === "done")
                                 self.keepFilter = false;
@@ -230,13 +241,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                                 fqCountries = "";
 
 
+
                             //Integrate the percentage values into the self.queryField()
-//                            var oldQuery = self.queryField();
-//                            var firstPart = oldQuery.substring(0,self.queryField().indexOf("pw"));
-//                            var middle = oldQuery.substring(self.queryField().indexOf("pw"),self.queryField().indexOf("pw")+6);
-//                            var lastPart = oldQuery.substring(self.queryField().indexOf("pw")+6, self.queryField().length);
-//                            var wordPercentage = "pw="+"0."+self.wordPercentage().toString().substring(0,2);
-//                            self.queryField(firstPart+wordPercentage+lastPart);
                             var wordPercentage = "pw=" + "0." + self.wordPercentage().toString().substring(0, 2);
                             var phrasePercentage = "0." + self.phrasePercentage().toString().substring(0, 2);
                             self.queryField("&q={!percentage f=nam_comp_name" + " " + "t=" + self.scoreAlgorithm() + " " +
@@ -248,7 +254,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                             self.nameQ(name);
 
                             $.getJSON(
-                                    self.url().toString() + self.rows() +
+                                    self.url().toString() + '&start=' + self.start() + '&rows=' + self.rows() +
                                     self.highlightField().toString() +
                                     self.groupField().toString() +
                                     self.scoreField().toString() + fqCountries + fqLists + self.fqTotalPercentage() +
@@ -327,14 +333,67 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                  /**/
 
                 /**/
+
                 self.cardViewPagingDataSource = ko.pureComputed(function () {
-                    $("#searchedItemsContainer").scroll(function (event) {
-                        //alert(event);
-                    });
+                    var earlyFilteredPeoplee;
+                    var lastScrollTop = 0;
+                    var scrollTimer, lastScrollFireTime = 0;
                     
+                    //For the Live Scroll
+                    $("#searchedItemsContainer").scroll(function (event) {
+
+                        if (self.allPeople().grouped.ent_id.ngroups > 48) {
+                            var minScrollTime = 500;
+                            var now = new Date().getTime();
+                            function processScroll() {
+                                if ($("#searchedItemsContainer").scrollTop() > lastScrollTop) {
+                                    //Scroll Downward
+                                    if ($("#searchedItemsContainer").scrollTop() + $("#searchedItemsContainer").innerHeight() >= $("#searchedItemsContainer")[0].scrollHeight) {
+                                        stopScroll = true;
+                                        self.start(self.start() + 12);
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        self.filterTreeObs("scrolling");
+                                        $("#searchedItemsContainer").scrollTop(1800);
+                                    }
+                                } else {
+                                    //Scroll Upward
+                                    if ($("#searchedItemsContainer").scrollTop() <= 0 && self.start() >= 12) {
+                                        stopScroll = true;
+                                        if (self.start() > 12) {
+                                            self.start(self.start() - 12);
+                                            $("#searchedItemsContainer").scrollTop(300);
+                                        }
+                                        if (self.start() === 12){
+                                            self.start(0);
+                                            $("#searchedItemsContainer").scrollTop(300);
+                                        }
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        self.filterTreeObs("scrolling downwards");
+                                    }
+                                }
+                                lastScrollTop = $("#searchedItemsContainer").scrollTop();
+                            }
+
+                            if (!scrollTimer) {
+                                if (now - lastScrollFireTime > (3 * minScrollTime)) {
+                                    processScroll();   // fire immediately on first scroll
+                                    lastScrollFireTime = now;
+                                }
+                                scrollTimer = setTimeout(function () {
+                                    scrollTimer = null;
+                                    lastScrollFireTime = new Date().getTime();
+                                    processScroll();
+                                }, minScrollTime);
+                            }
+                        }
+                    });
+
                     //start the Advanced Search Dialog
                     self.handleOpen = $("#buttonOpener").click(function () {
                         $("#modalDialog1").ojDialog("open");
+                        event.stopImmediatePropagation();
                     });
 
                     self.handleOKClose = $("#okButton").click(function (event) {
@@ -343,16 +402,17 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         event.stopImmediatePropagation();
                         self.keepFilter = false;
                     });
-
+                    if (earlyFilteredPeoplee !== undefined)
+                        //allFiltered.push(self.filteredAllPeople());
+                        //self.filteredAllPeople().push(earlyFilteredPeople);
+                        console.log("return oj.ArrayPagingDataSource");
                     return new oj.ArrayPagingDataSource((self.filteredAllPeople()));
                 });
 
-                //In order to wait for the facets to load so that the tree update can be done
-                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 1, method: "notifyWhenChangesStop"}});
-
+                //Used for the live scrolling, among other uses. It is needed some time to process the data in order to visualize it.
+                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
-
                     if (self.keepFilter === false) {
                         self.worker.postMessage(self.facetsCountries());
                         self.worker.onmessage = function (m) {
@@ -382,8 +442,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                                 if ($.inArray(el, data.value) === -1)
                                     selected.push(el);
                             });
-                            selected;
-
 
                             var isCountry = self.filterTree().find(function (el) {
                                 return el === selected[0];
@@ -413,10 +471,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                                 self.processFilterLists();
                             }
                         }
-
                         event.stopImmediatePropagation();
                     });
-
 
                     /*
                      * Filter Tree Panels interaction
@@ -537,14 +593,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
 
-                    //self.filterTreeObs("ready");
-
                 });
                 /**/
 
-//                self.filterTree.subscribe(function(newValue){
-//                    self.filterTreeObs("ready");
-//                });
 
                 //Process filter for countries
                 self.processFilterCountries = function () {
@@ -591,9 +642,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     return self.cardViewPagingDataSource().getWindowObservable();
                 });
                 /**/
-
-
-
+                
+                //Mainly used for the Live Scroll. It is needed to wait time before visualizing the information
+                self.cardViewDataSource.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
 
                 self.getPhoto = function (empId) {
                     var src;
@@ -695,23 +746,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 };
                 /**/
 
-
-
-
-                /**
-                 self.loadPersonPage = function (emp) {
-                 if (emp.empId) {
-                 // Temporary code until go('person/' + emp.empId); is checked in 1.1.2
-                 history.pushState(null, '', 'index.html?root=person&emp=' + emp.empId);
-                 oj.Router.sync();
-                 } else {
-                 // Default id for person is 100 so no need to specify.
-                 oj.Router.rootInstance.go('person');
-                 }
-                 };
-                 /**/
-
-                /**/
+                
+                //To load the details page when click on an entity
                 self.loadPersonPage = function (comp) {
                     if (comp.doclist.docs[0].sse_id) {
                         id = comp.doclist.docs[0].sse_id;
@@ -728,10 +764,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     }
 
                 };
-                /**/
-                //$("#tree").css('transform', 'translate(-200px, -2px)');
-
-
+                
                 //To establish the previous state after returning from details page
                 if (oj.Router.rootInstance.tx === "back") {
                     self.filterTree(utils.resetState()[1]);
@@ -742,9 +775,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     self.nameSearch(utils.resetState()[0]);
                 }
 
-
-
             }
-
             return PeopleViewModel;
         });

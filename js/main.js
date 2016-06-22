@@ -16,6 +16,7 @@ requirejs.config({
         'knockout-amd-helpers': 'libs/knockout/knockout-amd-helpers.min',
         'jquery': 'libs/jquery/jquery-2.1.3.min',
         'jqueryui-amd': 'libs/jquery/jqueryui-amd-1.11.4.min',
+        'd3' : 'libs/d3/d3.min',
         'promise': 'libs/es6-promise/promise-1.0.0.min',
         'ojs': 'libs/oj/v2.0.1/min',
         'ojL10n': 'libs/oj/v2.0.1/ojL10n',

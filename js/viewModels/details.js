@@ -1,8 +1,8 @@
 
 /* global d3 */
 
-define(['ojs/ojcore', 'knockout', 'jquery'
-], function (oj, ko, $) {
+define(['ojs/ojcore', 'knockout', 'jquery', 'd3'
+], function (oj, ko, $, d3) {
 
     ko.bindingHandlers.svg = {
         init: function (element, valueAccessor) {
@@ -86,7 +86,7 @@ define(['ojs/ojcore', 'knockout', 'jquery'
                 } else {
                     self.collapseForceLayout();
                 }
-            }
+            };
 
 
             self.collapseForceLayout = function() {
