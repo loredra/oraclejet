@@ -173,7 +173,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         });
                     }
 
-
+                       //Comment missing 
+                       //Most likely this is used for resetting result when there is no search text
                     if (self.nameSearch().search(/\w/) === -1) {
                         peopleFilter = [];
                         self.facetsCountries([""]);
@@ -184,8 +185,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         nameBeforeUpdate = "";
                         self.fqTotalPercentage("");
                         self.keepFilter = false;
-                        //self.getSolrDataTree();
-                        //self.oneTimeRetrieveSolrTree = false;
+                        self.getSolrDataTree();
+                        self.oneTimeRetrieveSolrTree = false;
                     } else {
                         if (self.nameSearch() === " " && !start)
                             self.nameSearch("");
@@ -328,7 +329,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 /**/
                 self.cardViewPagingDataSource = ko.pureComputed(function () {
                     $("#searchedItemsContainer").scroll(function (event) {
-                        alert(event);
+                        //alert(event);
                     });
                     
                     //start the Advanced Search Dialog
@@ -478,22 +479,22 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                      * End of interaction
                      */
 
-                    $('#tree').on("ojcollapse", function (e, ui) {
-                        $("#tree").css({"height": 30});
-                        e.stopImmediatePropagation();
-                    });
-                    $('#tree').on("ojexpand", function (e, ui) {
-                        $("#tree").css({"height": 220});
-                        e.stopImmediatePropagation();
-                    });
-                    $('#treeList').on("ojcollapse", function (e, ui) {
-                        $("#treeList").css({"height": 30});
-                        e.stopImmediatePropagation();
-                    });
-                    $('#treeList').on("ojexpand", function (e, ui) {
-                        $("#treeList").css({"height": 220});
-                        e.stopImmediatePropagation();
-                    });
+//                    $('#tree').on("ojcollapse", function (e, ui) {
+//                        $("#tree").css({"height": 30});
+//                        e.stopImmediatePropagation();
+//                    });
+//                    $('#tree').on("ojexpand", function (e, ui) {
+//                        $("#tree").css({"height": 220});
+//                        e.stopImmediatePropagation();
+//                    });
+//                    $('#treeList').on("ojcollapse", function (e, ui) {
+//                        $("#treeList").css({"height": 30});
+//                        e.stopImmediatePropagation();
+//                    });
+//                    $('#treeList').on("ojexpand", function (e, ui) {
+//                        $("#treeList").css({"height": 220});
+//                        e.stopImmediatePropagation();
+//                    });
 
                     $("#tree").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
