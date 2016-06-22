@@ -3,6 +3,7 @@
  The Universal Permissive License (UPL), Version 1.0
 -->
 
+
 <div class="justifyCenter">
     <div class="oj-flex oj-flex-items-pad">
         <div class="oj-flex-items oj-sm-12" >
@@ -90,7 +91,7 @@
                 <div id="hits" class="oj-flex-items oj-sm-2" style="position: relative; right:100px; top:47px; font-family: Courier New;" 
                      data-bind="text: numberMatches">
                 </div>
-                
+
                 <form id="form1" style="  position: relative; width:77%; left:36%; bottom: 44px;">
                     <input id="combobox"  data-bind="ojComponent: {component: 'ojCombobox', 
                                                         multiple: true, 
@@ -138,6 +139,7 @@
 <!-- this is the template content for the cardLayout. It uses standard responsive CSS design and oj-panels for the layout. A Pagination control is used to provide the paging -->
 <script id="peopleCardLayout" type="text/html">
     <div>
+        
         <div id="searchedItemsContainer" class="oj-flex oj-flex-items-pad" style="overflow-y: auto; overflow-x: hidden; max-height:727px; height: 100%;">
             <!-- ko foreach: cardViewDataSource()  -->
             <div class="oj-flex-items oj-sm-12 oj-md-6 oj-lg-4 oj-xl-3" data-bind="event:{keypress:$parent.onEnter}">
@@ -205,7 +207,7 @@
             <!-- /ko -->
         </div>
         <div class="oj-flex oj-flex-items-pad oj-web-applayout-scrollable-wrapper" >
-            <div id="paging" data-bind="ojComponent: {component: 'ojPagingControl', mode: 'loadMore', data: cardViewPagingDataSource, pageSize: $root.large()? 12:6}">
+            <div id="paging" data-bind="ojComponent: {component: 'ojPagingControl', mode: 'loadMore', data: cardViewPagingDataSource, pageSize: 2000}">
             </div>
         </div>
     </script>
