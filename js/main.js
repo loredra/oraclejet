@@ -17,7 +17,10 @@ requirejs.config({
         'jquery': 'libs/jquery/jquery-2.1.3.min',
         'jqueryui-amd': 'libs/jquery/jqueryui-amd-1.11.4.min',
         'd3' : 'libs/d3/d3.min',
+        'arangodb' : 'libs/arango/arangojs.min',
+        'aql' : 'libs/arango/aql-query',
         'promise': 'libs/es6-promise/promise-1.0.0.min',
+        'jquery-ui': 'libs/jquery/jquery-ui.min',
         'ojs': 'libs/oj/v2.0.1/min',
         'ojL10n': 'libs/oj/v2.0.1/ojL10n',
         'ojtranslations': 'libs/oj/v2.0.1/resources',
@@ -85,7 +88,7 @@ require(['ojs/ojcore',
                         childRouter.dispose();
                     },
                     enter: function () {
-                        var childRouter = router.createChildRouter('sse_id');
+                        var childRouter = router.createChildRouter('ent_id');
                         //childRouter.defaultStateId = '100';
                         router.currentState().value = childRouter;
                     }
@@ -138,9 +141,9 @@ require(['ojs/ojcore',
                 self.smallOnly = oj.ResponsiveKnockoutUtils.createMediaQueryObservable(smOnlyQuery);
 
                 self.dynamicConfig = ko.pureComputed(function () {
-                    if (self.smallOnly()) {
-                        return {name: 'phone/' + router.moduleConfig.name(), lifecycleListner: router.moduleConfig.lifecycleListner, params: router.moduleConfig.params};
-                    }
+//                    if (self.smallOnly()) {
+//                        return {name: 'phone/' + router.moduleConfig.name(), lifecycleListner: router.moduleConfig.lifecycleListner, params: router.moduleConfig.params};
+//                    }
                     return router.moduleConfig;
                 });
             }
