@@ -60,12 +60,34 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
                 var container = svg.append("g");
                 
+//                self.buildArrayOfGraphNodes = function(relations){
+//                    var result;
+//                    var db = arangodb();
+//                    
+//                    relations.each(function(rel){
+//                        var relationid = rel;
+//                        var query = "FOR c IN Entity FILTER c._id=="+"\""+relationid+"\""+" RETURN c"
+//                        db.q
+//                    });
+//                };
+//                
+//                var db = arangodb();
+//                db.query("FOR c in Entity FILTER c.id=="+entid+"RETURN c").then(function (entity) {
+//                    console.log("entid is: " + entid);
+//                    var result = entity._result[0];
+//                    var relationid = result._id;
+//                    var secondQuery = "FOR c IN EntityRelation FILTER c._from=="+"\""+relationid+"\""+" RETURN c";
+//                    db.query(secondQuery).then(function (er) {
+//                        var relations =  er._result;
+//                        relations;
+//                        self.buildArrayOfGraphNodes(relations);
+//                    });
+//                });
                 
-                //For the data from arangodb
-                /*console.log("entid is: " + entid);
-                var doc = db.query("FOR c in Test FILTER c.data.id=="+entid+"RETURN c").then(function (res) {
-                    
-                });*/
+                /*
+                 * d3 json
+                 */
+                
                 d3.json("js/data/pst2.json", function (error, graph) {
                     if (error)
                         throw error;
@@ -94,12 +116,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .outerRadius(46)
                             .startAngle(myScale(0))
                             .endAngle(myScale(100));
-
-
+                    
                     container.attr("transform", "translate(0,0)scale(0.5)");
-
-
-
+                    
                     var link = container.append("g").selectAll(".link")
                             .data(graph.links)
                             .enter().append("line")
@@ -418,6 +437,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                    
                 });
 
+                /*
+                 * End d3 json
+                 */
+                
                 self.reCalculateLayoutWhenResize = function () {
                     if (IsExpanded === false) {
                         width = d3.select("#associate_info").node().getBoundingClientRect().width / 2;
@@ -831,85 +854,109 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("click", el.style("visibility", "hidden"));
 
                 }
-                function click(list) {
-
-                    /////////////////////Return everything in svg to normal///////////////////
-                    vis = d3.selectAll(".highlight_circle");
-
-                    vis.attr("transform", "scale(0.1,0.1)")
-                            .attr("opacity", 0);
-
-                    d3.selectAll(".node").select(".node_image").transition()
-                            .duration(750)
-                            .attr("x", -12)
-                            .attr("y", -12)
-                            .attr("width", "24px")
-                            .attr("height", "24px");
-///////////////////////////////////////////////////////////////////////////
-/////////////////////////Making the image bigger///////////////////////////
-                    var node = d3.selectAll(".node")
-                            .filter(function (d) {
-                                return d.id === list.id;
-                            });
-
-                    node.attr("isChosen", "yes")
-                            .select(".node_image")
-                            .transition()
-                            .duration(750)
-                            .attr("x", -20)
-                            .attr("y", -20)
-                            .attr("width", "40px")
-                            .attr("height", "40px");
-
-                    node.select(".highlight_circle")
-                            .transition()
-                            .duration(450)
-                            .attr("transform", "scale(1,1)")
-                            .attr("opacity", 0.7);
-
-                    translateBeforeChose(node.datum().x, node.datum().y);
-
-///////////////First load then color the first node/////////////////////////
-
-                    d3.selectAll("li")
-                            .style("background", "#cce5ff");
-
-                    if (firstLoad) {
-                        d3.select("#list").select("li")
-                                .style("background", "#ffa366");
-                        firstLoad = false;
-                    } else
-                    {
-                        d3.select(this)
-                                .style("background", "#ffa366");
-                    }
-///////////////////////////////////////////////////////////////////////////
-                    populateDetailPage(node.datum());
-
-
-                }
-
-                d3.json("js/data/pst2.json", function (error, graph) {
-                    if (error)
-                        throw error;
-
-                    var list = d3.select("#list").append("ul").selectAll("li")
-                            .data(graph.nodes)
-                            .enter()
-                            .append("li")
-                            .attr("id", function (d, i) {
-                                return "index" + i;
-                            })
-                            .style("font-size", 15 + "px")
-                            .text(function (d) {
-                                return d.name;
-                            })
-                            .style("text-anchor", "start")
-                            .on("click", click);
-
-
-                    click(d3.select("#list").select("li").datum());
-                });
+//                function click(list) {
+//
+//                    /////////////////////Return everything in svg to normal///////////////////
+//                    vis = d3.selectAll(".highlight_circle");
+//
+//                    vis.attr("transform", "scale(0.1,0.1)")
+//                            .attr("opacity", 0);
+//
+//                    d3.selectAll(".node").select(".node_image").transition()
+//                            .duration(750)
+//                            .attr("x", -12)
+//                            .attr("y", -12)
+//                            .attr("width", "24px")
+//                            .attr("height", "24px");
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////Making the image bigger///////////////////////////
+//                    var node = d3.selectAll(".node")
+//                            .filter(function (d) {
+//                                return d.id === list.id;
+//                            });
+//
+//                    node.attr("isChosen", "yes")
+//                            .select(".node_image")
+//                            .transition()
+//                            .duration(750)
+//                            .attr("x", -20)
+//                            .attr("y", -20)
+//                            .attr("width", "40px")
+//                            .attr("height", "40px");
+//
+//                    node.select(".highlight_circle")
+//                            .transition()
+//                            .duration(450)
+//                            .attr("transform", "scale(1,1)")
+//                            .attr("opacity", 0.7);
+//
+//                    translateBeforeChose(node.datum().x, node.datum().y);
+//
+/////////////////First load then color the first node/////////////////////////
+//
+//                    d3.selectAll("li")
+//                            .style("background", "#cce5ff");
+//
+//                    if (firstLoad) {
+//                        d3.select("#list").select("li")
+//                                .style("background", "#ffa366");
+//                        firstLoad = false;
+//                    } else
+//                    {
+//                        d3.select(this)
+//                                .style("background", "#ffa366");
+//                    }
+/////////////////////////////////////////////////////////////////////////////
+//                    populateDetailPage(node.datum());
+//
+//
+//                }
+//                
+//                //For the data from arangodb
+//                console.log("entid is: " + entid);
+//                var db = arangodb();
+//                db.query("FOR c in Entity FILTER c.id=="+entid+"RETURN c").then(function (entity) {
+//                    console.log("entid is: " + entid);
+//                    var result = entity._result[0];
+//                    var relationid = result._id;
+//                    var secondQuery = "FOR c IN EntityRelation FILTER c._from=="+"\""+relationid+"\""+" RETURN c";
+//                    db.query(secondQuery).then(function (er) {
+//                        var relation = er._result;
+////                        var list = d3.select("#list").append("ul").selectAll("li")
+////                            .data(relation)
+////                            .enter()
+////                            .append("li")
+//////                            .attr("id", function (d, i) {
+//////                                return "index" + i;
+//////                            })
+//////                            .style("font-size", 15 + "px")
+//////                            .text(function (d) {
+//////                                return d.name;
+//////                            })
+//////                            .style("text-anchor", "start")
+////                            .on("click", click);
+////                    click(d3.select("#list").select("li").datum());
+//                    });
+//                    
+//                });
+//                d3.json("js/data/pst2.json", function (error, graph) {
+//                    if (error)
+//                        throw error;
+//                    var list = d3.select("#list").append("ul").selectAll("li")
+//                            .data(graph.nodes)
+//                            .enter()
+//                            .append("li")
+//                            .attr("id", function (d, i) {
+//                                return "index" + i;
+//                            })
+//                            .style("font-size", 15 + "px")
+//                            .text(function (d) {
+//                                return d.name;
+//                            })
+//                            .style("text-anchor", "start")
+//                            .on("click", click);
+//                    click(d3.select("#list").select("li").datum());
+//                });
 
             }, 10);
 
@@ -990,13 +1037,13 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
         self.jsonUrl = ko.observable(self.url + "&q=" + "ent_id" + self.entid());
 
         //arango db
-        var db = arangodb();
-        var collection = db.collection('Test');
-        var doc  = db.query("FOR c in Test RETURN c").then(function(res){
-            console.log("ArangoDB");
-            doc = res;
-        });
-        console.log("after doc")
+//        var db = arangodb();
+////        var collection = db.collection('Entity');
+//        var doc  = db.query("FOR c in Entity RETURN c").then(function(res){
+//            console.log("ArangoDB");
+//            doc = res;
+//        });
+//        console.log("after doc")
 
     }
     return testD3ContentViewModel;
