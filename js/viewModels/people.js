@@ -271,6 +271,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                                 if (self.numberMatches() === "0 Hits") {
                                     self.noResults("No Results");
+                                    self.numberPage("");
                                 } else if (self.numberMatches() !== "0 Hits") {
                                     self.noResults("");
                                 }
