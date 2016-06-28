@@ -1,0 +1,109 @@
+2016-06-28T13:48:32.721Z - error: Error during processing request: http://localhost:5488/api/report details: Could not parse report template, aren't you missing content type? undefined
+2016-06-28T14:02:10.561Z - error: Error when processing render request Error during rendering report: Missing helper: "mostSelling" Error: Missing helper: "mostSelling"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:8:100)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17) requestId=19
+2016-06-28T14:02:10.562Z - error: Error during processing request: http://localhost:5488/api/report details: Error during rendering report: Missing helper: "mostSelling" Error: Missing helper: "mostSelling"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:8:100)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17)
+2016-06-28T14:02:18.624Z - error: Error when processing render request Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17) requestId=20
+2016-06-28T14:02:18.624Z - error: Error during processing request: http://localhost:5488/api/report details: Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17)
+2016-06-28T14:02:22.471Z - error: Error when processing render request Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17) requestId=21
+2016-06-28T14:02:22.471Z - error: Error during processing request: http://localhost:5488/api/report details: Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17)

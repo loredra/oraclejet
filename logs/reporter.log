@@ -1,0 +1,370 @@
+2016-06-28T13:05:13.578Z - info: Initializing jsreport in production mode using configuration file prod.config.json
+2016-06-28T13:05:13.582Z - info: Searching for available extensions in /home/chnn/oraclejetapplication2/
+2016-06-28T13:05:13.586Z - info: Extensions location cache not found, crawling directories
+2016-06-28T13:05:18.495Z - info: Found 25 extensions
+2016-06-28T13:05:18.661Z - info: Using extension jsrender
+2016-06-28T13:05:18.666Z - info: Using extension browser-client
+2016-06-28T13:05:18.817Z - info: Using extension templates
+2016-06-28T13:05:18.866Z - info: Using extension studio
+2016-06-28T13:05:19.388Z - info: Using extension debug
+2016-06-28T13:05:19.389Z - info: Using extension express
+2016-06-28T13:05:19.471Z - info: Using extension fop-pdf
+2016-06-28T13:05:19.509Z - info: Using extension handlebars
+2016-06-28T13:05:19.510Z - info: Using extension resources
+2016-06-28T13:05:19.544Z - info: Using extension fs-store
+2016-06-28T13:05:20.812Z - info: synchronization of changes in jsreport-fs-store are disabled
+2016-06-28T13:05:20.813Z - info: Using extension images
+2016-06-28T13:05:21.397Z - info: Using extension authorization
+2016-06-28T13:05:21.398Z - info: Using extension licensing
+2016-06-28T13:05:21.468Z - info: Using extension phantom-pdf
+2016-06-28T13:05:21.544Z - info: Using extension text
+2016-06-28T13:05:21.545Z - info: Using extension reports
+2016-06-28T13:05:21.548Z - info: Using extension html-to-xlsx
+2016-06-28T13:05:21.910Z - info: Using extension child-templates
+2016-06-28T13:05:21.936Z - info: Using extension data
+2016-06-28T13:05:21.938Z - info: Using extension scripts
+2016-06-28T13:05:21.939Z - info: Using extension scheduling
+2016-06-28T13:05:22.056Z - info: Using extension xlsx
+2016-06-28T13:05:22.993Z - info: Using extension sample-template
+2016-06-28T13:05:22.994Z - info: Using extension public-templates
+2016-06-28T13:05:22.999Z - info: Initializing fs storage at /home/chnn/oraclejetapplication2/data
+2016-06-28T13:05:23.138Z - info: Creating default express app.
+2016-06-28T13:05:23.318Z - info: jsreport server successfully started on http port: 5488
+2016-06-28T13:05:23.320Z - warn: License not found, using free
+2016-06-28T13:05:23.343Z - info: reporter initialized
+2016-06-28T13:06:09.668Z - info: Starting rendering request 1 (user: null) requestId=1
+2016-06-28T13:06:09.671Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=1
+2016-06-28T13:06:10.033Z - info: Starting rendering request 2 (user: null) requestId=2
+2016-06-28T13:06:10.036Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=2
+2016-06-28T13:06:10.288Z - info: Rendering request 2 finished in 255 ms requestId=2
+2016-06-28T13:06:10.290Z - info: Starting rendering request 3 (user: null) requestId=3
+2016-06-28T13:06:10.292Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=3
+2016-06-28T13:06:10.534Z - info: Rendering request 3 finished in 243 ms requestId=3
+2016-06-28T13:06:13.897Z - info: Rendering request 3 finished in 4230 ms requestId=1
+2016-06-28T13:44:37.954Z - info: Initializing jsreport in production mode using configuration file prod.config.json
+2016-06-28T13:44:37.959Z - info: Searching for available extensions in /home/chnn/oraclejetapplication2/
+2016-06-28T13:44:38.026Z - info: Extensions location cache contains up to date information, skipping crawling in /home/chnn/oraclejetapplication2/node_modules/
+2016-06-28T13:44:41.139Z - info: Found 25 extensions
+2016-06-28T13:44:41.440Z - info: Using extension jsrender
+2016-06-28T13:44:41.477Z - info: Using extension browser-client
+2016-06-28T13:44:41.938Z - info: Using extension templates
+2016-06-28T13:44:42.418Z - info: Using extension studio
+2016-06-28T13:44:44.255Z - info: Using extension debug
+2016-06-28T13:44:44.268Z - info: Using extension express
+2016-06-28T13:44:44.410Z - info: Using extension fop-pdf
+2016-06-28T13:44:44.812Z - info: Using extension handlebars
+2016-06-28T13:44:44.814Z - info: Using extension resources
+2016-06-28T13:44:44.854Z - info: Using extension fs-store
+2016-06-28T13:44:46.322Z - info: synchronization of changes in jsreport-fs-store are disabled
+2016-06-28T13:44:46.322Z - info: Using extension images
+2016-06-28T13:44:46.562Z - info: Using extension authorization
+2016-06-28T13:44:46.564Z - info: Using extension licensing
+2016-06-28T13:44:46.582Z - info: Using extension phantom-pdf
+2016-06-28T13:44:46.647Z - info: Using extension text
+2016-06-28T13:44:46.648Z - info: Using extension reports
+2016-06-28T13:44:46.650Z - info: Using extension html-to-xlsx
+2016-06-28T13:44:47.235Z - info: Using extension child-templates
+2016-06-28T13:44:47.306Z - info: Using extension data
+2016-06-28T13:44:47.307Z - info: Using extension scripts
+2016-06-28T13:44:47.309Z - info: Using extension scheduling
+2016-06-28T13:44:47.437Z - info: Using extension xlsx
+2016-06-28T13:44:49.351Z - info: Using extension sample-template
+2016-06-28T13:44:49.423Z - info: Using extension public-templates
+2016-06-28T13:44:49.428Z - info: Initializing fs storage at /home/chnn/oraclejetapplication2/data
+2016-06-28T13:44:49.857Z - info: Creating default express app.
+2016-06-28T13:44:50.100Z - info: jsreport server successfully started on http port: 5488
+2016-06-28T13:44:50.103Z - warn: License not found, using free
+2016-06-28T13:44:50.108Z - info: reporter initialized
+2016-06-28T13:48:32.721Z - error: Error during processing request: http://localhost:5488/api/report details: Could not parse report template, aren't you missing content type? undefined
+2016-06-28T13:52:08.665Z - info: Starting rendering request 1 (user: null) requestId=1
+2016-06-28T13:52:08.668Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=1
+2016-06-28T13:52:09.402Z - info: Starting rendering request 2 (user: null) requestId=2
+2016-06-28T13:52:09.407Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=2
+2016-06-28T13:52:09.639Z - info: Rendering request 2 finished in 237 ms requestId=2
+2016-06-28T13:52:09.641Z - info: Starting rendering request 3 (user: null) requestId=3
+2016-06-28T13:52:09.644Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=3
+2016-06-28T13:52:09.911Z - info: Rendering request 3 finished in 270 ms requestId=3
+2016-06-28T13:52:13.515Z - info: Rendering request 3 finished in 4850 ms requestId=1
+2016-06-28T13:54:12.185Z - info: Starting rendering request 4 (user: null) requestId=4
+2016-06-28T13:54:12.189Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=4
+2016-06-28T13:54:12.371Z - info: Starting rendering request 5 (user: null) requestId=5
+2016-06-28T13:54:12.374Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=5
+2016-06-28T13:54:12.599Z - info: Rendering request 5 finished in 228 ms requestId=5
+2016-06-28T13:54:12.600Z - info: Starting rendering request 6 (user: null) requestId=6
+2016-06-28T13:54:12.602Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=6
+2016-06-28T13:54:12.844Z - info: Rendering request 6 finished in 244 ms requestId=6
+2016-06-28T13:54:13.280Z - info: Rendering request 6 finished in 1095 ms requestId=4
+2016-06-28T14:00:12.439Z - info: Starting rendering request 7 (user: null) requestId=7
+2016-06-28T14:00:12.441Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=7
+2016-06-28T14:00:12.764Z - info: Starting rendering request 8 (user: null) requestId=8
+2016-06-28T14:00:12.766Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=8
+2016-06-28T14:00:13.026Z - info: Rendering request 8 finished in 262 ms requestId=8
+2016-06-28T14:00:13.028Z - info: Starting rendering request 9 (user: null) requestId=9
+2016-06-28T14:00:13.030Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=9
+2016-06-28T14:00:13.268Z - info: Rendering request 9 finished in 239 ms requestId=9
+2016-06-28T14:00:14.039Z - info: Rendering request 9 finished in 1600 ms requestId=7
+2016-06-28T14:00:25.193Z - info: Starting rendering request 10 (user: null) requestId=10
+2016-06-28T14:00:25.195Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=10
+2016-06-28T14:00:25.375Z - info: Starting rendering request 11 (user: null) requestId=11
+2016-06-28T14:00:25.377Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=11
+2016-06-28T14:00:25.610Z - info: Rendering request 11 finished in 234 ms requestId=11
+2016-06-28T14:00:25.611Z - info: Starting rendering request 12 (user: null) requestId=12
+2016-06-28T14:00:25.613Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=12
+2016-06-28T14:00:25.858Z - info: Rendering request 12 finished in 247 ms requestId=12
+2016-06-28T14:00:26.226Z - info: Rendering request 12 finished in 1033 ms requestId=10
+2016-06-28T14:00:42.471Z - info: Starting rendering request 13 (user: null) requestId=13
+2016-06-28T14:00:42.473Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=13
+2016-06-28T14:00:42.651Z - info: Starting rendering request 14 (user: null) requestId=14
+2016-06-28T14:00:42.653Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=14
+2016-06-28T14:00:42.893Z - info: Rendering request 14 finished in 242 ms requestId=14
+2016-06-28T14:00:42.895Z - info: Starting rendering request 15 (user: null) requestId=15
+2016-06-28T14:00:42.897Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=15
+2016-06-28T14:00:43.147Z - info: Rendering request 15 finished in 252 ms requestId=15
+2016-06-28T14:00:43.490Z - info: Rendering request 15 finished in 1019 ms requestId=13
+2016-06-28T14:01:40.657Z - info: Starting rendering request 16 (user: null) requestId=16
+2016-06-28T14:01:40.659Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=16
+2016-06-28T14:01:40.855Z - info: Starting rendering request 17 (user: null) requestId=17
+2016-06-28T14:01:40.857Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=17
+2016-06-28T14:01:41.103Z - info: Rendering request 17 finished in 248 ms requestId=17
+2016-06-28T14:01:41.104Z - info: Starting rendering request 18 (user: null) requestId=18
+2016-06-28T14:01:41.106Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=18
+2016-06-28T14:01:41.334Z - info: Rendering request 18 finished in 230 ms requestId=18
+2016-06-28T14:01:41.531Z - info: Rendering request 18 finished in 874 ms requestId=16
+2016-06-28T14:02:10.341Z - info: Starting rendering request 19 (user: null) requestId=19
+2016-06-28T14:02:10.343Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=19
+2016-06-28T14:02:10.561Z - error: Error when processing render request Error during rendering report: Missing helper: "mostSelling" Error: Missing helper: "mostSelling"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:8:100)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17) requestId=19
+2016-06-28T14:02:10.562Z - error: Error during processing request: http://localhost:5488/api/report details: Error during rendering report: Missing helper: "mostSelling" Error: Missing helper: "mostSelling"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:8:100)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17)
+2016-06-28T14:02:18.446Z - info: Starting rendering request 20 (user: null) requestId=20
+2016-06-28T14:02:18.447Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=20
+2016-06-28T14:02:18.623Z - error: Error when processing render request Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17) requestId=20
+2016-06-28T14:02:18.624Z - error: Error during processing request: http://localhost:5488/api/report details: Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17)
+2016-06-28T14:02:22.285Z - info: Starting rendering request 21 (user: null) requestId=21
+2016-06-28T14:02:22.286Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=21
+2016-06-28T14:02:22.470Z - error: Error when processing render request Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17) requestId=21
+2016-06-28T14:02:22.471Z - error: Error during processing request: http://localhost:5488/api/report details: Error during rendering report: Missing helper: "toJSON" Error: Missing helper: "toJSON"
+    at Object.<anonymous> (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.eval (eval at createFunctionContext (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js:254:23), <anonymous>:10:74)
+    at main (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:173:32)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/runtime.js:176:12)
+    at ret (/home/chnn/oraclejetapplication2/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:525:21)
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-handlebars/lib/handlebarsEngine.js:26:14
+    at evalmachine.<anonymous>:1:41
+    at ContextifyScript.Script.runInNewContext (vm.js:18:15)
+    at Object.exports.runInNewContext (vm.js:49:17)
+    at module.exports (/home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/engineScript.js:168:8)
+From previous event:
+    at /home/chnn/oraclejetapplication2/node_modules/jsreport-core/lib/render/render.js:143:54
+    at _fulfilled (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:794:54)
+    at self.promiseDispatch.done (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:823:30)
+    at Promise.promise.promiseDispatch (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:756:13)
+    at /home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:564:44
+    at flush (/home/chnn/oraclejetapplication2/node_modules/listener-collection/node_modules/q/q.js:110:17)
+2016-06-28T14:02:26.662Z - info: Starting rendering request 22 (user: null) requestId=22
+2016-06-28T14:02:26.664Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=22
+2016-06-28T14:02:26.841Z - info: Starting rendering request 23 (user: null) requestId=23
+2016-06-28T14:02:26.842Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=23
+2016-06-28T14:02:27.065Z - info: Rendering request 23 finished in 225 ms requestId=23
+2016-06-28T14:02:27.066Z - info: Starting rendering request 24 (user: null) requestId=24
+2016-06-28T14:02:27.069Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=24
+2016-06-28T14:02:27.304Z - info: Rendering request 24 finished in 237 ms requestId=24
+2016-06-28T14:02:27.626Z - info: Rendering request 24 finished in 964 ms requestId=22
+2016-06-28T14:02:59.828Z - info: Starting rendering request 25 (user: null) requestId=25
+2016-06-28T14:02:59.830Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=25
+2016-06-28T14:03:00.008Z - info: Starting rendering request 26 (user: null) requestId=26
+2016-06-28T14:03:00.011Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=26
+2016-06-28T14:03:00.261Z - info: Rendering request 26 finished in 252 ms requestId=26
+2016-06-28T14:03:00.262Z - info: Starting rendering request 27 (user: null) requestId=27
+2016-06-28T14:03:00.264Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=27
+2016-06-28T14:03:00.508Z - info: Rendering request 27 finished in 246 ms requestId=27
+2016-06-28T14:03:00.847Z - info: Rendering request 27 finished in 1019 ms requestId=25
+2016-06-28T14:03:28.619Z - info: Starting rendering request 28 (user: null) requestId=28
+2016-06-28T14:03:28.620Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=28
+2016-06-28T14:03:28.802Z - info: Starting rendering request 29 (user: null) requestId=29
+2016-06-28T14:03:28.804Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=29
+2016-06-28T14:03:29.050Z - info: Rendering request 29 finished in 247 ms requestId=29
+2016-06-28T14:03:29.051Z - info: Starting rendering request 30 (user: null) requestId=30
+2016-06-28T14:03:29.053Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=30
+2016-06-28T14:03:29.297Z - info: Rendering request 30 finished in 246 ms requestId=30
+2016-06-28T14:03:29.624Z - info: Rendering request 30 finished in 1004 ms requestId=28
+2016-06-28T14:03:49.215Z - info: Starting rendering request 31 (user: null) requestId=31
+2016-06-28T14:03:49.217Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=31
+2016-06-28T14:03:49.431Z - info: Starting rendering request 32 (user: null) requestId=32
+2016-06-28T14:03:49.434Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=32
+2016-06-28T14:03:49.711Z - info: Rendering request 32 finished in 279 ms requestId=32
+2016-06-28T14:03:49.713Z - info: Starting rendering request 33 (user: null) requestId=33
+2016-06-28T14:03:49.715Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=33
+2016-06-28T14:03:49.945Z - info: Rendering request 33 finished in 232 ms requestId=33
+2016-06-28T14:03:50.259Z - info: Rendering request 33 finished in 1044 ms requestId=31
+2016-06-28T14:04:08.501Z - info: Starting rendering request 34 (user: null) requestId=34
+2016-06-28T14:04:08.502Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=34
+2016-06-28T14:04:08.674Z - info: Starting rendering request 35 (user: null) requestId=35
+2016-06-28T14:04:08.676Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=35
+2016-06-28T14:04:08.921Z - info: Rendering request 35 finished in 247 ms requestId=35
+2016-06-28T14:04:08.923Z - info: Starting rendering request 36 (user: null) requestId=36
+2016-06-28T14:04:08.926Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=36
+2016-06-28T14:04:09.186Z - info: Rendering request 36 finished in 264 ms requestId=36
+2016-06-28T14:04:09.534Z - info: Rendering request 36 finished in 1032 ms requestId=34
+2016-06-28T14:06:36.831Z - info: Starting rendering request 37 (user: null) requestId=37
+2016-06-28T14:06:36.833Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=37
+2016-06-28T14:06:37.010Z - info: Starting rendering request 38 (user: null) requestId=38
+2016-06-28T14:06:37.012Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=38
+2016-06-28T14:06:37.254Z - info: Rendering request 38 finished in 244 ms requestId=38
+2016-06-28T14:06:37.257Z - info: Starting rendering request 39 (user: null) requestId=39
+2016-06-28T14:06:37.259Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=39
+2016-06-28T14:06:37.510Z - info: Rendering request 39 finished in 253 ms requestId=39
+2016-06-28T14:06:37.886Z - warn: TypeError: 'undefined' is not an object (evaluating 't.css("font-size").replace') timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.887Z - warn:    http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.1/jquery.flot.min.js : 28 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.888Z - warn:    http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.1/jquery.flot.min.js : 29 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.889Z - warn:    http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.1/jquery.flot.min.js : 29 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.890Z - warn:    file:///%2Fhome%2Fchnn%2Foraclejetapplication2%2Fjsreport-temp%2F87614d70-3d39-11e6-ae9f-61172abb7e15html.html : 50 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.890Z - warn:    http://code.jquery.com/jquery-1.11.0.min.js : 2 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.892Z - warn:    http://code.jquery.com/jquery-1.11.0.min.js : 2 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.892Z - warn:    http://code.jquery.com/jquery-1.11.0.min.js : 2 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.893Z - warn:    http://code.jquery.com/jquery-1.11.0.min.js : 2 timestamp=Tue Jun 28 2016 16:06:37 GMT+0200 (CEST), requestId=37
+2016-06-28T14:06:37.963Z - info: Rendering request 39 finished in 1132 ms requestId=37
+2016-06-28T14:08:06.410Z - info: Starting rendering request 40 (user: null) requestId=40
+2016-06-28T14:08:06.412Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=40
+2016-06-28T14:08:06.589Z - info: Starting rendering request 41 (user: null) requestId=41
+2016-06-28T14:08:06.591Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=41
+2016-06-28T14:08:06.837Z - info: Rendering request 41 finished in 248 ms requestId=41
+2016-06-28T14:08:06.839Z - info: Starting rendering request 42 (user: null) requestId=42
+2016-06-28T14:08:06.841Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=42
+2016-06-28T14:08:07.073Z - info: Rendering request 42 finished in 234 ms requestId=42
+2016-06-28T14:08:07.420Z - info: Rendering request 42 finished in 1010 ms requestId=40
+2016-06-28T14:08:46.132Z - info: Starting rendering request 43 (user: null) requestId=43
+2016-06-28T14:08:46.133Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=43
+2016-06-28T14:08:46.344Z - info: Starting rendering request 44 (user: null) requestId=44
+2016-06-28T14:08:46.346Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=44
+2016-06-28T14:08:46.601Z - info: Rendering request 44 finished in 256 ms requestId=44
+2016-06-28T14:08:46.603Z - info: Starting rendering request 45 (user: null) requestId=45
+2016-06-28T14:08:46.606Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=45
+2016-06-28T14:08:46.886Z - info: Rendering request 45 finished in 283 ms requestId=45
+2016-06-28T14:08:47.370Z - info: Rendering request 45 finished in 1239 ms requestId=43
+2016-06-28T14:09:59.710Z - info: Initializing jsreport in production mode using configuration file prod.config.json
+2016-06-28T14:09:59.715Z - info: Searching for available extensions in /home/chnn/oraclejetapplication2/
+2016-06-28T14:09:59.741Z - info: Extensions location cache contains up to date information, skipping crawling in /home/chnn/oraclejetapplication2/node_modules/
+2016-06-28T14:10:02.104Z - info: Found 25 extensions
+2016-06-28T14:10:02.222Z - info: Using extension jsrender
+2016-06-28T14:10:02.240Z - info: Using extension browser-client
+2016-06-28T14:10:02.418Z - info: Using extension templates
+2016-06-28T14:10:02.466Z - info: Using extension studio
+2016-06-28T14:10:03.264Z - info: Using extension debug
+2016-06-28T14:10:03.278Z - info: Using extension express
+2016-06-28T14:10:03.311Z - info: Using extension fop-pdf
+2016-06-28T14:10:03.373Z - info: Using extension handlebars
+2016-06-28T14:10:03.375Z - info: Using extension resources
+2016-06-28T14:10:03.389Z - info: Using extension fs-store
+2016-06-28T14:10:05.130Z - info: synchronization of changes in jsreport-fs-store are disabled
+2016-06-28T14:10:05.130Z - info: Using extension images
+2016-06-28T14:10:05.338Z - info: Using extension authorization
+2016-06-28T14:10:05.339Z - info: Using extension licensing
+2016-06-28T14:10:05.358Z - info: Using extension phantom-pdf
+2016-06-28T14:10:05.399Z - info: Using extension text
+2016-06-28T14:10:05.400Z - info: Using extension reports
+2016-06-28T14:10:05.403Z - info: Using extension html-to-xlsx
+2016-06-28T14:10:05.933Z - info: Using extension child-templates
+2016-06-28T14:10:05.983Z - info: Using extension data
+2016-06-28T14:10:05.993Z - info: Using extension scripts
+2016-06-28T14:10:06.005Z - info: Using extension scheduling
+2016-06-28T14:10:06.103Z - info: Using extension xlsx
+2016-06-28T14:10:07.366Z - info: Using extension sample-template
+2016-06-28T14:10:07.367Z - info: Using extension public-templates
+2016-06-28T14:10:07.372Z - info: Initializing fs storage at /home/chnn/oraclejetapplication2/data
+2016-06-28T14:10:07.640Z - info: Creating default express app.
+2016-06-28T14:10:07.829Z - info: jsreport server successfully started on http port: 5488
+2016-06-28T14:10:07.834Z - warn: License not found, using free
+2016-06-28T14:10:07.842Z - info: reporter initialized
+2016-06-28T14:11:22.405Z - info: Starting rendering request 1 (user: null) requestId=1
+2016-06-28T14:11:22.407Z - info: Rendering template {shortid:BJbsfLxl8, recipe:phantom-pdf,engine:handlebars} requestId=1
+2016-06-28T14:11:22.596Z - info: Starting rendering request 2 (user: null) requestId=2
+2016-06-28T14:11:22.599Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=2
+2016-06-28T14:11:22.847Z - info: Rendering request 2 finished in 251 ms requestId=2
+2016-06-28T14:11:22.849Z - info: Starting rendering request 3 (user: null) requestId=3
+2016-06-28T14:11:22.851Z - info: Rendering template {shortid:BJbsfLxl8, recipe:html,engine:handlebars} requestId=3
+2016-06-28T14:11:23.101Z - info: Rendering request 3 finished in 252 ms requestId=3
+2016-06-28T14:11:23.662Z - info: Rendering request 3 finished in 1258 ms requestId=1
