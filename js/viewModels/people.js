@@ -183,7 +183,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                             "left": utils.resetTreesPos()[3].left
                         });
                     }
-
                     //Reseting search input
                     if (self.nameSearch() === " " && !starting) {
                         self.nameSearch("");
@@ -199,10 +198,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         nameBeforeUpdate = "";
                         self.fqTotalPercentage("");
                         self.keepFilter = false;
-
-                        self.getSolrDataTree();
-                        self.oneTimeRetrieveSolrTree = false;
-
                     } else {
 
                         if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready" || stopScroll === true) {

@@ -111,13 +111,11 @@ require(['ojs/ojcore',
                 self.myPeople = ko.observableArray();
                 self.myPerson = ko.observableArray();
                 self.ready = ko.observable(false);
-                
 
                 self.optionChangeHandler = function (event, data) {
                     // Only go for user action events
                     if (('ojAppNav' === event.target.id || 'ojAppNav2' === event.target.id) && event.originalEvent) {
                         self.router.go(data.value);
-  
                     }
                 };
                 self.getHomeURL = function () {
@@ -141,23 +139,21 @@ require(['ojs/ojcore',
                 self.medium = oj.ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
                 self.small = oj.ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
                 self.smallOnly = oj.ResponsiveKnockoutUtils.createMediaQueryObservable(smOnlyQuery);
-                
-                self.dynamicConfig = ko.pureComputed(function () {
 
+                self.dynamicConfig = ko.pureComputed(function () {
 //                    if (self.smallOnly()) {
 //                        return {name: 'phone/' + router.moduleConfig.name(), lifecycleListner: router.moduleConfig.lifecycleListner, params: router.moduleConfig.params};
 //                    }
                     return router.moduleConfig;
                 });
             }
-            
-                // What doe this do?
-            //oj.Router.defaults['urlAdapter'] = new oj.Router.urlParamAdapter();
+
+            oj.Router.defaults['urlAdapter'] = new oj.Router.urlParamAdapter();
             oj.Router.sync().then(
                     function () {
                         ko.applyBindings(new MainViewModel(), document.getElementById('globalBody'));
-                        //$('#globalBody').show();
-                        //initTheme();
+                        $('#globalBody').show();
+                        initTheme();
                     },
                     function (error) {
                         oj.Logger.error('Error in root start: ' + error.message);
