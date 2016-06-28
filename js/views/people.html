@@ -139,22 +139,26 @@
 <!-- this is the template content for the cardLayout. It uses standard responsive CSS design and oj-panels for the layout. A Pagination control is used to provide the paging -->
 <script id="peopleCardLayout" type="text/html">
     <div>
-        
-        <div id="searchedItemsContainer" class="oj-flex oj-flex-items-pad" style="overflow-y: auto; overflow-x: hidden; max-height:727px; height: 100%;">
+       <div id="showRow" class="oj-flex oj-flex-items-pad" style="position: absolute; left:100px; top:500px; font-style:normal; font-family:-webkit-pictograph; font-size:90px; opacity:0.2;"
+            data-bind="text:numberPage"> 
+        </div>
+        <div id="searchedItemsContainer" class="oj-flex oj-flex-items-pad oj-web-applayout-scrollable-wrapper" style="overflow-y: auto; overflow-x: hidden; max-height:727px; height: 100%;">
             <!-- ko foreach: cardViewDataSource()  -->
-            <div class="oj-flex-items oj-sm-12 oj-md-6 oj-lg-4 oj-xl-3" data-bind="event:{keypress:$parent.onEnter}">
 
+            <div class="oj-flex-items oj-sm-12 oj-md-6 oj-lg-4 oj-xl-3" data-bind="event:{keypress:$parent.onEnter}"> 
+                
                 <div class="oj-panel oj-panel-alt1" style="height: 226px; margin: 5px 0px 10px 0px; min-width: 333px" >
-
+                    
                     <div class="oj-flex oj-flex-items-pad">
                         <div class="oj-flex-items oj-sm-4" data-bind="click: $parent.loadPersonPage">
                             <img alt="employee image" class="demo-circular demo-employee-photo" style="cursor:pointer" data-bind="attr: {src: $parent.getPhoto($data['empId'])}"/>
                         </div>
                         <div class="oj-flex-items oj-sm-8">
                             <h2 id="nameEntity" class="demo-employee-name" aria-label="employee name" data-bind="html: $parent.getName($data)" tabindex="0"></h2>
-                            <!-- -->
+                            
                             <div class="demo-employee-dept" data-bind="text: $parent.getList($data)"></div>
                             <!-- -->
+                            
                             <!-- --
                             <div class="demo-employee-title" data-bind="text: $data['title']"></div>
                             <div class="demo-employee-dept" data-bind="text: $data['deptName']"></div>
@@ -180,6 +184,7 @@
                         <div class="oj-flex-items oj-sm-4">
                             <div class="address" data-bind="text: $parent.getAddress($data) " style="margin-top:10px"></div>
                         </div>
+                        
                         <!-- -->
                         <!-- --
                         <div class="oj-flex-items oj-sm-4">
@@ -196,6 +201,10 @@
                         <!-- -->
 
                     </div>
+                    <!--                    
+                        <div id="numberEntity" data-bind="html: $parent.getNumberEntity($data)" tabindex="0" style="position:relative; left:95%; top:25px">
+                        </div>-->
+                    
                     <!-- --
                     <div class="oj-flex oj-flex-items-pad" style="float: right;">
                         <a tabindex="0" data-bind="attr:{href: function(data, event){$parent.getEmail(data)}" title="email employee" class="demo-employee-email-icon"></a>
@@ -206,7 +215,7 @@
             </div>
             <!-- /ko -->
         </div>
-        <div class="oj-flex oj-flex-items-pad oj-web-applayout-scrollable-wrapper" >
+        <div class="oj-flex oj-flex-items-pad " >
             <div id="paging" data-bind="ojComponent: {component: 'ojPagingControl', mode: 'loadMore', data: cardViewPagingDataSource, pageSize: 2000}">
             </div>
         </div>

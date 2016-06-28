@@ -6,7 +6,7 @@
  */
 define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
     'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
-    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber'],
+    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber', 'jquery-ui'],
         function (oj, ko, utils, $)
         {
             function PeopleViewModel() {
@@ -18,12 +18,11 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 self.ready = ko.observable(false);
                 /**/
 
-
                 /**/
                 self.nameSearch = ko.observable('');
                 self.url = ko.observable('/solr/CoreOne/select?indent=on&wt=json');
                 self.start = ko.observable(0);
-                self.rows = ko.observable(24);
+                self.rows = ko.observable(20);
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
                 self.facetField = ko.observable('&facet.field=add_country&facet.field=lis_name&facet=on');
@@ -118,7 +117,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 //For the words distance algorithm
                 self.wordsDistanceAlgorithm = ko.observable("DA_LV");
 
-
+                
 
                 //self.filterTreeObs.extend({rateLimit: {timeout: 300, method: "notifyWhenChangesStop"}});
 
@@ -131,7 +130,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 self.nameSearch(" ");
                 var starting = true;
 
-
+                //for counting the number of the page
+                self.numberPage = ko.observable();
+                
                 // Retrieve data from SOLR for the tree filter
                 self.nameQ = ko.observable("");
                 self.oneTimeRetrieveSolrTree = true;
@@ -155,7 +156,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 self.nameSearch.subscribe(function (newValue) {
                     $("#searchedItemsContainer").scrollTop(0);
                     self.start(0);
-                    self.rows(48);
+                    self.rows(40);
+                    if(self.nameSearch().search(/\w/) !== -1)
+                        self.numberPage(1);
+                    else self.numberPage("");
                 });
 
 
@@ -180,8 +184,11 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         });
                     }
 
-                       //Comment missing 
-                       //Most likely this is used for resetting result when there is no search text
+                    //Reseting search input
+                    if (self.nameSearch() === " " && !starting) {
+                        self.nameSearch("");
+                    }
+
                     if (self.nameSearch().search(/\w/) === -1) {
                         peopleFilter = [];
                         self.facetsCountries([""]);
@@ -197,8 +204,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         self.oneTimeRetrieveSolrTree = false;
 
                     } else {
-                        if (self.nameSearch() === " " && !starting)
-                            self.nameSearch("");
 
                         if (self.nameSearch() !== nameBeforeUpdate || self.filterTreeObs() === "ready" || stopScroll === true) {
 
@@ -231,11 +236,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                             /*** Add "~" for more than 3 chars ***/
                             if (name.length >= 3)
                                 name = name + "~";
-                            /*** Add "~" between words at spliting **/
+                            /*** Add "~" between words at spliting ***/
                             if (name.search(/\w\s/) !== -1)
                                 name = name.replace(/\s+/g, "~ ");
                             /*** Remove multiple "~" ***/
                             name = name.replace(/\~+/g, '~');
+                            /*** Remove from beginning of the string ***/
+                            name = name.replace(/^~+/, "");
                             console.log("name Query: " + name);
                             if (fqCountries.search("undefined") !== -1)
                                 fqCountries = "";
@@ -269,6 +276,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                                 if (self.numberMatches() === "0 Hits") {
                                     self.noResults("No Results");
+                                    self.numberPage("");
                                 } else if (self.numberMatches() !== "0 Hits") {
                                     self.noResults("");
                                 }
@@ -297,7 +305,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                     //if (self.allPeople().grouped !== undefined)
                     //self.numberMatches(self.allPeople().grouped.ent_id.ngroups);
-
+                    starting = false;
                     self.ready(true);
                     return peopleFilter;
                 });
@@ -333,7 +341,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                  /**/
 
                 /**/
-
+                
                 self.cardViewPagingDataSource = ko.pureComputed(function () {
                     var earlyFilteredPeoplee;
                     var lastScrollTop = 0;
@@ -341,53 +349,69 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     
                     //For the Live Scroll
                     $("#searchedItemsContainer").scroll(function (event) {
-
-                        if (self.allPeople().grouped.ent_id.ngroups > 48) {
-                            var minScrollTime = 500;
-                            var now = new Date().getTime();
-                            function processScroll() {
-                                if ($("#searchedItemsContainer").scrollTop() > lastScrollTop) {
-                                    //Scroll Downward
+                        
+                        var minScrollTime = 600;
+                        var now = new Date().getTime();
+                        function processScroll() {
+                            if ($("#searchedItemsContainer").scrollTop() > lastScrollTop) {
+                                //Scroll Downward
+                                if (self.allPeople().grouped.ent_id.ngroups > self.start() + 48) {
                                     if ($("#searchedItemsContainer").scrollTop() + $("#searchedItemsContainer").innerHeight() >= $("#searchedItemsContainer")[0].scrollHeight) {
                                         stopScroll = true;
-                                        self.start(self.start() + 12);
+                                        self.start(self.start() + 24);
                                         event.preventDefault();
                                         event.stopPropagation();
                                         self.filterTreeObs("scrolling");
-                                        $("#searchedItemsContainer").scrollTop(1800);
-                                    }
-                                } else {
-                                    //Scroll Upward
-                                    if ($("#searchedItemsContainer").scrollTop() <= 0 && self.start() >= 12) {
-                                        stopScroll = true;
-                                        if (self.start() > 12) {
-                                            self.start(self.start() - 12);
-                                            $("#searchedItemsContainer").scrollTop(300);
-                                        }
-                                        if (self.start() === 12){
-                                            self.start(0);
-                                            $("#searchedItemsContainer").scrollTop(300);
-                                        }
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                        self.filterTreeObs("scrolling downwards");
+                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6)-$("#searchedItemsContainer").innerHeight());
+                                        scrollPointDown = 0;
+                                        self.numberPage(self.numberPage()+1);    
                                     }
                                 }
-                                lastScrollTop = $("#searchedItemsContainer").scrollTop();
-                            }
-
-                            if (!scrollTimer) {
-                                if (now - lastScrollFireTime > (3 * minScrollTime)) {
-                                    processScroll();   // fire immediately on first scroll
-                                    lastScrollFireTime = now;
+//                                if($("#searchedItemsContainer").scrollTop()>scrollPointDown){
+//                                    if(scrollPointDown !== 0){
+//                                        scrollPointDown = scrollPointDown*2;
+//                                        self.numberPage(self.numberPage()+1);
+//                                    }
+//                                }
+                            } else {
+                                //Scroll Upward
+                                if ($("#searchedItemsContainer").scrollTop() <= 0 && self.start() >= 24) {
+                                    stopScroll = true;
+                                    if (self.start() > 24) {
+                                        self.start(self.start() - 24);
+                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6)-$("#searchedItemsContainer").innerHeight());
+                                        self.numberPage(self.numberPage()-1);
+                                    }
+                                    else if (self.start() === 24) {
+                                        self.start(0);
+                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6)-$("#searchedItemsContainer").innerHeight());
+                                        self.numberPage(1);
+                                    }
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    self.filterTreeObs("scrolling downwards");
+                                    
                                 }
-                                scrollTimer = setTimeout(function () {
-                                    scrollTimer = null;
-                                    lastScrollFireTime = new Date().getTime();
-                                    processScroll();
-                                }, minScrollTime);
+//                                if($("#searchedItemsContainer").scrollTop() < ($("#searchedItemsContainer")[0].scrollHeight - scrollPointUp)){
+//                                    scrollPointUp = scrollPointUp*2;
+//                                    self.numberPage(self.numberPage()-1);
+//                                }
                             }
+                            lastScrollTop = $("#searchedItemsContainer").scrollTop();
                         }
+
+                        if (!scrollTimer) {
+                            if (now - lastScrollFireTime > (3 * minScrollTime)) {
+                                processScroll();   // fire immediately on first scroll
+                                lastScrollFireTime = now;
+                            }
+                            scrollTimer = setTimeout(function () {
+                                scrollTimer = null;
+                                lastScrollFireTime = new Date().getTime();
+                                processScroll();
+                            }, minScrollTime);
+                        }
+
                     });
 
                     //start the Advanced Search Dialog
@@ -410,7 +434,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 });
 
                 //Used for the live scrolling, among other uses. It is needed some time to process the data in order to visualize it.
-                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
+                self.cardViewPagingDataSource.extend({rateLimit: {timeout: 10, method: "notifyWhenChangesStop"}});
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
                     if (self.keepFilter === false) {
@@ -478,79 +502,92 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                      * Filter Tree Panels interaction
                      */
 
-                    // target elements with the "draggable" class
-                    interact('.draggable')
-                            .draggable({
-                                // ***changed line 65 from interact.js so the cursor on hovering will not change
-                                // enable inertial throwing
-                                inertia: true,
-                                // keep the element within the area of it's parent
-                                restrict: {
-                                    restriction: "#topDiv",
-                                    endOnly: true,
-                                    elementRect: {top: 0, left: 0, bottom: 1, right: 1}
-                                },
-                                // call this function on every dragmove event
-                                onmove: dragMoveListener
-                            }).resizable({
-                        margin: 37,
-                        edges: {left: false, right: true, bottom: true, top: false}
-                    }).on('resizemove', function (event) {
-                        var target = event.target,
-                                x = (parseFloat(target.getAttribute('data-x')) || 0),
-                                y = (parseFloat(target.getAttribute('data-y')) || 0);
-
-
-                        if (event.rect.width > 77 && event.rect.height > 30) {
-                            // update the element's style
-                            target.style.width = event.rect.width + 'px';
-                            target.style.height = event.rect.height + 'px';
-
-                            // translate when resizing from top or left edges
-                            x += event.deltaRect.left;
-                            y += event.deltaRect.top;
-
-                            target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-
-                            target.setAttribute('data-x', x);
-                            target.setAttribute('data-y', y);
-                        }
+                    $(function () {
+                        $("#tree").draggable().resizable({
+                            minHeight: 40,
+                            minWidth: 200,
+                            animate: true
+                        });
+                        $("#treeList").draggable().resizable({
+                            minHeight: 40,
+                            minWidth: 200,
+                            animate: true
+                        });
                     });
 
-                    function dragMoveListener(event) {
-                        var target = event.target,
-                                // keep the dragged position in the data-x/data-y attributes
-                                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-                        // translate the element
-                        target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-
-                        // update the posiion attributes
-                        target.setAttribute('data-x', x);
-                        target.setAttribute('data-y', y);
-                    }
+                    // target elements with the "draggable" class
+//                    interact('#tree')
+//                            .draggable({
+//                                // ***changed line 65 from interact.js so the cursor on hovering will not change
+//                                // enable inertial throwing
+//                                inertia: true,
+//                                // keep the element within the area of it's parent
+//                                restrict: {
+//                                    restriction: "#topDiv",
+//                                    endOnly: true,
+//                                    elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+//                                },
+//                                // call this function on every dragmove event
+//                                onmove: dragMoveListener
+//                            }).resizable({
+//                        margin: 37,
+//                        edges: {left: false, right: true, bottom: true, top: false}
+//                    }).on('resizemove', function (event) {
+//                        var target = event.target,
+//                                x = (parseFloat(target.getAttribute('data-x')) || 0),
+//                                y = (parseFloat(target.getAttribute('data-y')) || 0);
+//
+//
+//                        if (event.rect.width > 77 && event.rect.height > 30) {
+//                            // update the element's style
+//                            target.style.width = event.rect.width + 'px';
+//                            target.style.height = event.rect.height + 'px';
+//
+//                            // translate when resizing from top or left edges
+//                            x += event.deltaRect.left;
+//                            y += event.deltaRect.top;
+//
+//                            target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+//
+//                            target.setAttribute('data-x', x);
+//                            target.setAttribute('data-y', y);
+//                        }
+//                    });
+//                    
+//                    function dragMoveListener(event) {
+//                        var target = event.target,
+//                                // keep the dragged position in the data-x/data-y attributes
+//                                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+//                                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+//
+//                        // translate the element
+//                        target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+//
+//                        // update the posiion attributes
+//                        target.setAttribute('data-x', x);
+//                        target.setAttribute('data-y', y);
+//                    }
 
                     /*
                      * End of interaction
                      */
 
-//                    $('#tree').on("ojcollapse", function (e, ui) {
-//                        $("#tree").css({"height": 30});
-//                        e.stopImmediatePropagation();
-//                    });
-//                    $('#tree').on("ojexpand", function (e, ui) {
-//                        $("#tree").css({"height": 220});
-//                        e.stopImmediatePropagation();
-//                    });
-//                    $('#treeList').on("ojcollapse", function (e, ui) {
-//                        $("#treeList").css({"height": 30});
-//                        e.stopImmediatePropagation();
-//                    });
-//                    $('#treeList').on("ojexpand", function (e, ui) {
-//                        $("#treeList").css({"height": 220});
-//                        e.stopImmediatePropagation();
-//                    });
+                    $('#tree').on("ojcollapse", function (e, ui) {
+                        $("#tree").css({"height": 40});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#tree').on("ojexpand", function (e, ui) {
+                        $("#tree").css({"height": 220});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeList').on("ojcollapse", function (e, ui) {
+                        $("#treeList").css({"height": 40});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeList').on("ojexpand", function (e, ui) {
+                        $("#treeList").css({"height": 220});
+                        e.stopImmediatePropagation();
+                    });
 
                     $("#tree").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
@@ -592,7 +629,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     });
 
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
-
+                    
                 });
                 /**/
 
@@ -642,9 +679,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     return self.cardViewPagingDataSource().getWindowObservable();
                 });
                 /**/
-                
+
                 //Mainly used for the Live Scroll. It is needed to wait time before visualizing the information
-                self.cardViewDataSource.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
+                self.cardViewDataSource.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
 
                 self.getPhoto = function (empId) {
                     var src;
@@ -673,6 +710,14 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     } else
                         var name = "";
                     return name;
+                };
+                /**/
+                /*/
+                
+                self.getNumberEntity = function (company) {
+                    var number = self.allPeople().grouped.ent_id.groups.indexOf(company)+1;
+                    
+                    return number;
                 };
                 /**/
                 /**/
@@ -746,13 +791,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 };
                 /**/
 
-                
+
                 //To load the details page when click on an entity
                 self.loadPersonPage = function (comp) {
-                    if (comp.doclist.docs[0].sse_id) {
-                        id = comp.doclist.docs[0].sse_id;
+                    if (comp.doclist.docs[0].ent_id) {
+                        id = comp.doclist.docs[0].ent_id;
                         // Temporary code until go('person/' + emp.empId); is checked in 1.1.2
-                        history.pushState(null, '', 'index.html?root=details&sse_id=' + id);
+                        history.pushState(null, '', 'index.html?root=details&ent_id=' + id);
                         oj.Router.sync();
                         utils.rememberState(self.nameSearch(), self.filterTree(), self.filterTreeList());
                         //Store the position of the Filter Tree Panels
@@ -764,7 +809,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     }
 
                 };
-                
+
                 //To establish the previous state after returning from details page
                 if (oj.Router.rootInstance.tx === "back") {
                     self.filterTree(utils.resetState()[1]);

@@ -13,7 +13,7 @@
     <div class="tooltip">Tipsy!</div>
 
 
-    <div id="main_layout" class=layout data-bind="svg:jsonUrl">
+    <div id="main_layout" class=layout data-bind="svg:entid">
 
         <div id=profile_container>
             <div id="profile_of_node" class=profile>
@@ -37,15 +37,15 @@
 
                     <div id="name_and_address_container" class=name_and_address_container>
                         <div id="name" class=nameandAddress>
-                            <label class="name_label">Name </label>
+                            <label class="description_label">Name </label>
                         </div>
                         <div id="address" class=nameandAddress>
-                            <label class="address_label">Primary Address </label>
+                            <label class="description_label">Primary Address </label>
                         </div>
                     </div>
                     <div id=measure_detail class=measure_detail>
                         <div id="measure_label" class=measure_label>
-                            <label class="label-style" >Measures against this entity * </label>
+                            <label class="description_label" >Measures against this entity * </label>
                             <div class=measure>
                             </div>
                         </div>
@@ -54,15 +54,15 @@
 
                     <div id="name_and_address_container" class=name_and_address_container>
                         <div id="identification_container" class=nameandAddress>
-                            <label id="identification_label" class="name_label">Identification  </label>
+                            <label id="identification_label" class="description_label">Identification  </label>
                         </div>
                         <div id="country_container" class=nameandAddress>
-                            <label class="address_label">Country </label>
+                            <label class="description_label">Country </label>
                         </div>
                     </div>
                     <div id=measure_detail class=measure_detail>
                         <div id="measure_label" class=measure_label>
-                            <label class="label-style">Actions </label>
+                            <label class="description_label">Actions </label>
                             <div class=measure>
                                 <img class=measure_icon src="resources/notify.svg"> </img>
                                 <img class=measure_icon src="resources/whitelist.svg"> </img>
@@ -73,7 +73,7 @@
 
                     <div id="list_and_program_container" class=list_and_program_container>
                         <div id="numList" class=numListandaka>
-                            <label>Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists
+                            <label class="name_label">Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists
                             </label>
                         </div>
                         <div id="listList" class=line_by_line_small>
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="list" class="line_by_line ul-style li-style"> 
+                <div id="list" class="line_by_line"> 
 
                 </div>
             </div>	
