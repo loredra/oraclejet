@@ -12,14 +12,14 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
             //Just to test the unwrap function
             var entid = ko.unwrap(valueAccessor());
-            
+
 
             //window.timeout to launch the code after the dom loaded
             window.setTimeout(function () {
                 //alert("ready visual");
                 var width = d3.select("#associate_info").node().getBoundingClientRect().width / 2;
                 var height = d3.select("#associate_info").node().getBoundingClientRect().height;
-                
+
                 d3.select("#visualization")
                         .style("width", "50%")
                         .style("max-width", "50%");
@@ -59,355 +59,92 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                         .on("dblclick.zoom", null);
 
                 var container = svg.append("g");
-                
-//                self.buildArrayOfGraphNodes = function(relations){
-//                    var result;
-//                    var db = arangodb();
-//                    
-//                    relations.each(function(rel){
-//                        var relationid = rel;
-//                        var query = "FOR c IN Entity FILTER c._id=="+"\""+relationid+"\""+" RETURN c"
-//                        db.q
-//                    });
-//                };
-//                
-//                var db = arangodb();
-//                db.query("FOR c in Entity FILTER c.id=="+entid+"RETURN c").then(function (entity) {
-//                    console.log("entid is: " + entid);
-//                    var result = entity._result[0];
-//                    var relationid = result._id;
-//                    var secondQuery = "FOR c IN EntityRelation FILTER c._from=="+"\""+relationid+"\""+" RETURN c";
-//                    db.query(secondQuery).then(function (er) {
-//                        var relations =  er._result;
-//                        relations;
-//                        self.buildArrayOfGraphNodes(relations);
-//                    });
-//                });
-                
-                /*
-                 * d3 json
-                 */
-                
-                d3.json("js/data/pst2.json", function (error, graph) {
-                    if (error)
-                        throw error;
-
-                    root = graph.nodes[0];
-                    root.x = width / 2;
-                    root.y = height / 2;
-                    root.fixed = true;
-
-                    graph.links.forEach(function (d, i) {
-                        d.source = isNaN(d.source) ? d.source : graph.nodes[d.source];
-                        d.target = isNaN(d.target) ? d.target : graph.nodes[d.target];
-                    });
-                    tooltip = d3.select(".tooltip");
-                    var linkedByIndex = {};
-                    graph.links.forEach(function (d) {
-                        linkedByIndex[d.source + "," + d.target] = true;
-                    });
-
-                    /*container.call(tip);*/
-
-                    var myScale = d3.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
-
-                    var arc = d3.svg.arc()
-                            .innerRadius(43)
-                            .outerRadius(46)
-                            .startAngle(myScale(0))
-                            .endAngle(myScale(100));
-                    
-                    container.attr("transform", "translate(0,0)scale(0.5)");
-                    
-                    var link = container.append("g").selectAll(".link")
-                            .data(graph.links)
-                            .enter().append("line")
-                            .attr("class", "link")
-                            .attr("x1", function (d) {
-                                return d.source.x;
-                            })
-                            .attr("y1", function (d) {
-                                return d.source.y;
-                            })
-                            .attr("x2", function (d) {
-                                return d.target.x;
-                            })
-                            .attr("y2", function (d) {
-                                return d.target.y;
-                            })
-                            .attr("type", function (d) {
-                                return d.linktype;
-                            })
-                            .on("mouseover", function (d) {
-                                linkToolTip(d3.select(this));
-                            })
-                            .on("mouseout", function (d) {
-                                tooltip
-                                        .style("visibility", "hidden");
-                            })
-                            .on("mousemove", mousemove)
-                            .style("stroke-width", function (d) {
-                                return 6;
-                            })
-                            .style("marker-end", "url(#resolved)");
 
 
+                self.searchedEntity = ko.observableArray([]);
+                self.relatedEntities = ko.observableArray([]);
+                self.relatedEntitiesUnstructured = ko.observableArray([]);
+                self.linksBetweenEntities = ko.observableArray([]);
+                var db = arangodb();
+                var queryForTheSearchedEntity = "FOR c IN Entity FILTER c.id == " + entid + " RETURN c";
+                var queryForTheLinksBetweenEntities;
+                var queryForTheRelatedEntities = "RETURN UNIQUE( UNION( FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "FROM" + entid + "%" + "\"" + " RETURN (FOR d IN Entity FILTER d._id == c._to RETURN d),FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "%TO" + entid + "%" + "\"" + "RETURN  (FOR d IN Entity FILTER d._id == c._from RETURN d)))";
+                db.query(queryForTheSearchedEntity).then(function (ent) {
+                    var entity = ent._result[0];
+                    queryForTheLinksBetweenEntities = "FOR c IN EntityRelation FILTER c._from==" + "\"" + entity._id + "\"" + " OR c._to==" + "\"" + entity._id + "\"" + " RETURN c";
+                    self.searchedEntity(entity);
+                    self.searchedEntity();
+                }).then(function () {
+                    db.query(queryForTheLinksBetweenEntities).then(function (lin) {
+                        var links = lin._result;
+                        self.linksBetweenEntities(links);
+                    }).then(function () {
+                        db.query(queryForTheRelatedEntities).then(function (rel) {
+                            var relations = rel._result;
+                            self.relatedEntitiesUnstructured(relations);
+                            self.relatedEntities().push(self.searchedEntity());
+                            self.relatedEntitiesUnstructured()[0].forEach(function (entity) {
+                                self.relatedEntities().push(entity[0]);
+                            });
+                        }).then(function () {
+
+                            self.searchedEntity();
+                            self.relatedEntities();
+
+                            root = self.searchedEntity();
+                            root.x = width / 2;
+                            root.y = height / 2;
+                            root.fixed = true;
 
 
-                    var marker = container.append("g").selectAll("marker")
-                            .data(["suit", "licensing", "resolved"])
-                            .enter().append("marker")
-                            .attr("id", function (d) {
-                                return d;
-                            })
-                            .attr("viewBox", "0 -5 10 10")
-                            .attr("refX", 25)
-                            .attr("refY", 0)
-                            .attr("markerWidth", 2)
-                            .attr("markerHeight", 2)
-                            .attr("orient", "auto")
-                            .append("path")
-                            .attr("d", "M0,-5L10,0L0,5")
-                            .style("stroke", "#4679BD")
-                            .style("opacity", "0.6");
-
-                    var node = container.append("g").selectAll(".node")
-                            .data(graph.nodes)
-                            .enter()
-                            .append("g")
-                            .attr("id", function (d) {
-                                return d.id;
-                            })
-                            .attr("class", "node")
-                            .attr("name", function (d) {
-                                return d.name;
-                            })
-                            .attr("address", function (d) {
-                                return d.address;
-                            })
-                            .attr("isListedIn", function (d) {
-                                if (d.isListedIn !== null)
-                                    return d.isListedIn;
+                            self.linksBetweenEntities().forEach(function (relation) {
+                                var source;
+                                var target
+                                var resultSource = $.grep(self.relatedEntities(), function (e) {
+                                    return e._id === relation._from;
+                                });
+                                resultTarget = $.grep(self.relatedEntities(), function (e) {
+                                    return e._id === relation._to;
+                                });
+                                if (resultSource[0] === undefined)
+                                    source = self.searchedEntity();
                                 else
-                                    return "";
-                            })
-                            .attr("x", function (d) {
-                                return d.x;
-                            })
-                            .attr("y", function (d) {
-                                return d.y;
-                            })
-                            .attr("width", function (d) {
-                                return "24px";
-                            })
-                            .attr("height", function (d) {
-                                return "24px";
-                            })
-                            .attr("isChosen", "no")
-                            .attr("name", function (d) {
-                                return d.name;
-                            })
-                            .call(force.drag)
-                            .on("mouseover", mouseover)
-                            .on("mousemove", mousemove)
-                            .on("mouseout", mouseout)
-                            .on("click", clickImage)
-                            .on("dblclick.zoom", null)
-                            .on("dblclick", dblclick);
+                                    source = resultSource[0][0];
 
+                                if (resultTarget[0] === undefined)
+                                    target = self.searchedEntity();
+                                else
+                                    target = resultTarget[0][0];
 
+                                relation["source"] = resultSource[0];
+                                relation["target"] = resultTarget[0];
 
-                    var trust_cirlce = node
-                            .append("circle")
-                            .attr("r", 26)
-                            .style("fill", function (d) {
-                                return trust_to_color(d.trust, d.status);
+                            });
+                            tooltip = d3.select(".tooltip");
+                            var linkedByIndex = {};
+                            self.linksBetweenEntities().forEach(function (relation) {
+                                linkedByIndex[relation.source + "," + relation.target] = true;
                             });
 
-                    var image_node = node
-                            .append("image")
-                            .attr("class", "node_image")
-                            .attr("xlink:href", function (d) {
-                                return "js/views/resources/" + d.type + ".svg";
-                            })
-                            .attr("x", -12)
-                            .attr("y", -12)
-                            .attr("width", function (d) {
-                                return "24px";
-                            })
-                            .attr("height", function (d) {
-                                return "24px";
-                            });
+                            /**/
 
-                    var vis = node
-                            .append("path")
-                            .attr("transform", function (d) {
-                                return "scale(0.1,0.1)";
-                            })
-                            .attr("class", "highlight_circle")
-                            .attr("d", arc)
-                            .attr("opacity", 0);
+                            var myScale = d3.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
 
-                    var text = container.append("g").selectAll(".text")
-                            .data(graph.nodes)
-                            .enter().append("text")
-                            .attr("class", "text_svg")
-                            .attr("dy", ".35em")
-                            .style("font-size", 13 + "px");
+                            var arc = d3.svg.arc()
+                                    .innerRadius(43)
+                                    .outerRadius(46)
+                                    .startAngle(myScale(0))
+                                    .endAngle(myScale(100));
 
-                    text.text(function (d) {
-                        return d.name;
-                    })
-                            .style("text-anchor", "middle");
+                            container.attr("transform", "translate(0,0)scale(0.5)");
 
-
-                    force
-                            .nodes(graph.nodes)
-                            .links(graph.links)
-                            .start();
-
-
-                    var text_link = container.append("g").selectAll(".text_link_svg")
-                            .data(force.links())
-                            .enter().append("text")
-                            .text(function (d) {
-                                return d.linktype;
-                            })
-                            .attr("class", "text_link_svg")
-                            .attr("dy", ".35em")
-                            .style("text-anchor", "middle")
-                            .style("font-size", 10 + "px");
-
-                    change();
-
-                    //     node.append("title")
-// 	.text(function(d) { return d.name; });
-
-//     info_color_container=d3.select(".svg").append("g")
-//       .attr("class",".info_color_container");
-//       
-//       info_color_container.selectAll("g")
-//       .data(trustData)
-//       .enter()
-//       .append("g")
-//       .attr("class",".info_color_list")
-//       .attr("data-legend",function(d) { return d.name})
-
-                    var trust = d3.select(".svg").append("g")
-                            .attr("id", "trustScore")
-                            .attr("transform", "translate(570,-14)");
-
-                    trust.append("rect")
-                            .attr("width", 60 * graph.level_trust.length)
-                            .attr("height", 27 * graph.level_trust.length)
-                            .style("fill", "#eaf0fa");
-
-                    var trust_draw = trust.selectAll()
-                            .data(graph.level_trust)
-                            .enter();
-
-                    trust_draw.append("text")
-                            .attr("transform", function (d, i) {
-                                return "translate(22," + 25 * (i + 1) + ")";
-                            })
-                            .text(function (d) {
-                                return d.Message;
-                            })
-                            .style("fill", "black")
-                            .style("dominant-baseline", "central");
-
-                    trust_draw.append("circle")
-                            .attr("r", 10)
-                            .attr("transform", function (d, i) {
-                                return "translate(10," + 25 * (i + 1) + ")";
-                            })
-                            .style("fill", function (d) {
-                                return d.color;
-                            });
-
-                    function mouseout(node) {
-                        text.style("font-weight", "normal");
-                        link.style("stroke", "#999");
-                        tooltip
-                                .style("visibility", "hidden");
-                    }
-
-                    function mousemove(node) {
-                        tooltip.style("top", (d3.event.pageY + 16) + "px")
-                                .style("left", (d3.event.pageX + 16) + "px");
-                    }
-
-                    function mouseover(node) {
-                        text.style("font-weight", function (o) {
-                            return isConnected(node, o) ? "bold" : "normal";
-                        });
-
-                        link.style("stroke", function (o) {
-                            return o.source.index === node.index || o.target.index === node.index ? "red" : "#999";
-                        });
-
-                        try {
-                            statusColor = "red";
-                            tooltip.style("visibility", "visible");
-                            tooltip.html(node.name +
-                                    "<br>Type: " + node.type +
-                                    "<br>Status: <span style='color: " + statusColor + "'>" + node.status + "</span>" +
-                                    "<br>Listed in " + node.isListedIn.length + " Sanction Lists");
-                        } catch (err) {
-                            tooltip.style("visibility", "visible");
-                            tooltip.html(node.name);
-
-                        }
-                    }
-
-
-
-                    /////Checkbox///////////////////////////////////////////////////////////
-
-
-                    d3.select("#node_check_box").on("change", change);
-                    d3.select("#link_check_box").on("change", change);
-                    function change() {
-                        if (d3.select('#node_check_box').property('checked') === false)
-                            isDisplay = "initial";
-                        else
-                            isDisplay = "none";
-                        d3.selectAll(".text_svg")
-                                .style("display", isDisplay);
-
-                        if (d3.select('#link_check_box').property('checked') === false)
-                            isDisplay = "initial";
-                        else
-                            isDisplay = "none";
-                        d3.selectAll(".text_link_svg")
-                                .style("display", isDisplay);
-                    }
-                    ///////////////////////////////////////////////////////////////////////
-
-                    function isConnected(a, b) {
-                        return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index === b.index;
-                    }
-
-                    function dblclick(node) {
-
-                        root.fixed = false;
-                    }
-                    
-                    render();
-                    function render() {
-                        force.on("tick", function () {
-
-                            text_link.attr("x", function (d) {
-                                return (d.source.x + d.target.x) / 2 + 3;
-                            })
-                                    .attr("y", function (d) {
-                                        return (d.source.y + d.target.y) / 2;
-                                    });
-
-
-                            link.attr("x1", function (d) {
-                                return d.source.x;
-                            })
+                            var link = container.append("g").selectAll(".link")
+                                    .data(self.linksBetweenEntities())
+                                    .enter().append("line")
+                                    .attr("class", "link")
+                                    .attr("x1", function (d) {
+                                        return d.source.x;
+                                    })
                                     .attr("y1", function (d) {
                                         return d.source.y;
                                     })
@@ -417,30 +154,671 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                                     .attr("y2", function (d) {
                                         return d.target.y;
                                     })
-                                    /* .style("stroke",function(d){if(d.linktype=="Subsidiary") return "red";})*/;
+                                    .attr("type", function (d) {
+                                        return d.relationType;
+                                    })
+                                    .on("mouseover", function (d) {
+                                        linkToolTip(d3.select(this));
+                                    })
+                                    .on("mouseout", function (d) {
+                                        tooltip
+                                                .style("visibility", "hidden");
+                                    })
+                                    .on("mousemove", mousemove)
+                                    .style("stroke-width", function (d) {
+                                        return 6;
+                                    })
+                                    .style("marker-end", "url(#resolved)");
 
-                            node.attr("transform", function (d) {
-                                return "translate(" + d.x + "," + d.y + ")";
-                            });
 
-                            text.attr("x", function (d) {
-                                return d.x;
-                            })
+
+
+                            var marker = container.append("g").selectAll("marker")
+                                    .data(["suit", "licensing", "resolved"])
+                                    .enter().append("marker")
+                                    .attr("id", function (d) {
+                                        return d;
+                                    })
+                                    .attr("viewBox", "0 -5 10 10")
+                                    .attr("refX", 25)
+                                    .attr("refY", 0)
+                                    .attr("markerWidth", 2)
+                                    .attr("markerHeight", 2)
+                                    .attr("orient", "auto")
+                                    .append("path")
+                                    .attr("d", "M0,-5L10,0L0,5")
+                                    .style("stroke", "#4679BD")
+                                    .style("opacity", "0.6");
+
+                            var node = container.append("g").selectAll(".node")
+                                    .data(self.relatedEntities())
+                                    .enter()
+                                    .append("g")
+                                    .attr("id", function (d) {
+                                        return d._id;
+                                    })
+                                    .attr("class", "node")
+                                    .attr("name", function (d) {
+                                        return d.names[0].name;
+                                    })
+                                    .attr("address", function (d) {
+                                        return d.addresses[0].country;
+                                    })
+                                    .attr("isListedIn", function (d) {
+                                        if (d.infos !== null)
+                                            if (d.infos.length !== 0)
+                                                return d.infos[0].info;
+                                        else
+                                            return "";
+                                    })
+                                    .attr("x", function (d) {
+                                        return d.x;
+                                    })
                                     .attr("y", function (d) {
-                                        return d.y + 38;
+                                        return d.y;
+                                    })
+                                    .attr("width", function (d) {
+                                        return "24px";
+                                    })
+                                    .attr("height", function (d) {
+                                        return "24px";
+                                    })
+                                    .attr("isChosen", "no")
+                                    .attr("name", function (d) {
+                                        return d.names[0].name;
+                                    })
+                                    .call(force.drag)
+                                    .on("mouseover", mouseover)
+                                    .on("mousemove", mousemove)
+                                    .on("mouseout", mouseout)
+                                    .on("click", clickImage)
+                                    .on("dblclick.zoom", null)
+                                    .on("dblclick", dblclick);
+
+
+
+                            var trust_cirlce = node
+                                    .append("circle")
+                                    .attr("r", 26)
+                                    .style("fill", function (d) {
+                                        return trust_to_color(10, "Active");
                                     });
 
+                            //                            var image_node = node
+                            //                                    .append("image")
+                            //                                    .attr("class", "node_image")
+                            //                                    .attr("xlink:href", function (d) {
+                            //                                        return "js/views/resources/" + d.type + ".svg";
+                            //                                    })
+                            //                                    .attr("x", -12)
+                            //                                    .attr("y", -12)
+                            //                                    .attr("width", function (d) {
+                            //                                        return "24px";
+                            //                                    })
+                            //                                    .attr("height", function (d) {
+                            //                                        return "24px";
+                            //                                    });
 
+                            var vis = node
+                                    .append("path")
+                                    .attr("transform", function (d) {
+                                        return "scale(0.1,0.1)";
+                                    })
+                                    .attr("class", "highlight_circle")
+                                    .attr("d", arc)
+                                    .attr("opacity", 0);
+
+                            var text = container.append("g").selectAll(".text")
+                                    .data(self.relatedEntities())
+                                    .enter().append("text")
+                                    .attr("class", "text_svg")
+                                    .attr("dy", ".35em")
+                                    .style("font-size", 13 + "px");
+
+                            text.text(function (d) {
+                                return d.names[0].name;
+                            })
+                                    .style("text-anchor", "middle");
+
+
+                            force
+                                    .nodes(self.relatedEntities())
+                                    .links(self.linksBetweenEntities())
+                                    .start();
+
+
+                            var text_link = container.append("g").selectAll(".text_link_svg")
+                                    .data(force.links())
+                                    .enter().append("text")
+                                    .text(function (d) {
+                                        return d.relationType;
+                                    })
+                                    .attr("class", "text_link_svg")
+                                    .attr("dy", ".35em")
+                                    .style("text-anchor", "middle")
+                                    .style("font-size", 10 + "px");
+
+                            //                            change();
+
+                            //                            var trust = d3.select(".svg").append("g")
+                            //                                    .attr("id", "trustScore")
+                            //                                    .attr("transform", "translate(570,-14)");
+                            //
+                            //                            trust.append("rect")
+                            //                                    .attr("width", 60 * graph.level_trust.length)
+                            //                                    .attr("height", 27 * graph.level_trust.length)
+                            //                                    .style("fill", "#eaf0fa");
+                            //
+                            //                            var trust_draw = trust.selectAll()
+                            //                                    .data(graph.level_trust)
+                            //                                    .enter();
+                            //
+                            //                            trust_draw.append("text")
+                            //                                    .attr("transform", function (d, i) {
+                            //                                        return "translate(22," + 25 * (i + 1) + ")";
+                            //                                    })
+                            //                                    .text(function (d) {
+                            //                                        return d.Message;
+                            //                                    })
+                            //                                    .style("fill", "black")
+                            //                                    .style("dominant-baseline", "central");
+                            //
+                            //                            trust_draw.append("circle")
+                            //                                    .attr("r", 10)
+                            //                                    .attr("transform", function (d, i) {
+                            //                                        return "translate(10," + 25 * (i + 1) + ")";
+                            //                                    })
+                            //                                    .style("fill", function (d) {
+                            //                                        return d.color;
+                            //                                    });
+
+                            function mouseout(node) {
+                                text.style("font-weight", "normal");
+                                link.style("stroke", "#999");
+                                tooltip
+                                        .style("visibility", "hidden");
+                            }
+
+                            function mousemove(node) {
+                                tooltip.style("top", (d3.event.pageY + 16) + "px")
+                                        .style("left", (d3.event.pageX + 16) + "px");
+                            }
+
+                            function mouseover(node) {
+                                text.style("font-weight", function (o) {
+                                    return isConnected(node, o) ? "bold" : "normal";
+                                });
+
+                                link.style("stroke", function (o) {
+                                    return o.source.index === node.index || o.target.index === node.index ? "red" : "#999";
+                                });
+
+                                try {
+                                    statusColor = "red";
+                                    tooltip.style("visibility", "visible");
+                                    tooltip.html(node.name +
+                                            "<br>Type: " + node.type +
+                                            "<br>Status: <span style='color: " + statusColor + "'>" + node.status + "</span>" +
+                                            "<br>Listed in " + node.isListedIn.length + " Sanction Lists");
+                                } catch (err) {
+                                    tooltip.style("visibility", "visible");
+                                    tooltip.html(node.name);
+
+                                }
+                            }
+
+
+
+                            /////Checkbox///////////////////////////////////////////////////////////
+
+
+                            d3.select("#node_check_box").on("change", change);
+                            d3.select("#link_check_box").on("change", change);
+                            function change() {
+                                if (d3.select('#node_check_box').property('checked') === false)
+                                    isDisplay = "initial";
+                                else
+                                    isDisplay = "none";
+                                d3.selectAll(".text_svg")
+                                        .style("display", isDisplay);
+
+                                if (d3.select('#link_check_box').property('checked') === false)
+                                    isDisplay = "initial";
+                                else
+                                    isDisplay = "none";
+                                d3.selectAll(".text_link_svg")
+                                        .style("display", isDisplay);
+                            }
+                            ///////////////////////////////////////////////////////////////////////
+
+                            function isConnected(a, b) {
+                                return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index === b.index;
+                            }
+
+                            function dblclick(node) {
+
+                                root.fixed = false;
+                            }
+
+                            render();
+                            function render() {
+                                force.on("tick", function () {
+
+                                    text_link.attr("x", function (d) {
+                                        return (d.source.x + d.target.x) / 2 + 3;
+                                    })
+                                            .attr("y", function (d) {
+                                                return (d.source.y + d.target.y) / 2;
+                                            });
+
+
+                                    link.attr("x1", function (d) {
+                                        return d.source.x;
+                                    })
+                                            .attr("y1", function (d) {
+                                                return d.source.y;
+                                            })
+                                            .attr("x2", function (d) {
+                                                return d.target.x;
+                                            })
+                                            .attr("y2", function (d) {
+                                                return d.target.y;
+                                            })
+                                    //.style("stroke",function(d){if(d.linktype=="Subsidiary") return "red";});
+
+                                    node.attr("transform", function (d) {
+                                        return "translate(" + d.x + "," + d.y + ")";
+                                    });
+
+                                    text.attr("x", function (d) {
+                                        return d.x;
+                                    })
+                                            .attr("y", function (d) {
+                                                return d.y + 38;
+                                            });
+
+
+
+                                });
+                            }
+                            /**/
 
                         });
-                    }
-                   
+                    });
                 });
+
+
+
+
+
+
+
+
+                /*
+                 * d3 json
+                 */
+
+                /*/
+                 d3.json("js/data/pst2.json", function (error, graph) {
+                 if (error)
+                 throw error;
+                 
+                 root = graph.nodes[0];
+                 root.x = width / 2;
+                 root.y = height / 2;
+                 root.fixed = true;
+                 
+                 graph.links.forEach(function (d, i) {
+                 d.source = isNaN(d.source) ? d.source : graph.nodes[d.source];
+                 d.target = isNaN(d.target) ? d.target : graph.nodes[d.target];
+                 });
+                 //                    tooltip = d3.select(".tooltip");
+                 var linkedByIndex = {};
+                 graph.links.forEach(function (d) {
+                 linkedByIndex[d.source + "," + d.target] = true;
+                 });
+                 
+                 //container.call(tip);
+                 
+                 var myScale = d3.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
+                 
+                 var arc = d3.svg.arc()
+                 .innerRadius(43)
+                 .outerRadius(46)
+                 .startAngle(myScale(0))
+                 .endAngle(myScale(100));
+                 
+                 container.attr("transform", "translate(0,0)scale(0.5)");
+                 
+                 var link = container.append("g").selectAll(".link")
+                 .data(graph.links)
+                 .enter().append("line")
+                 .attr("class", "link")
+                 .attr("x1", function (d) {
+                 return d.source.x;
+                 })
+                 .attr("y1", function (d) {
+                 return d.source.y;
+                 })
+                 .attr("x2", function (d) {
+                 return d.target.x;
+                 })
+                 .attr("y2", function (d) {
+                 return d.target.y;
+                 })
+                 .attr("type", function (d) {
+                 return d.linktype;
+                 })
+                 .on("mouseover", function (d) {
+                 linkToolTip(d3.select(this));
+                 })
+                 .on("mouseout", function (d) {
+                 tooltip
+                 .style("visibility", "hidden");
+                 })
+                 .on("mousemove", mousemove)
+                 .style("stroke-width", function (d) {
+                 return 6;
+                 })
+                 .style("marker-end", "url(#resolved)");
+                 
+                 
+                 
+                 
+                 //                    var marker = container.append("g").selectAll("marker")
+                 //                            .data(["suit", "licensing", "resolved"])
+                 //                            .enter().append("marker")
+                 //                            .attr("id", function (d) {
+                 //                                return d;
+                 //                            })
+                 //                            .attr("viewBox", "0 -5 10 10")
+                 //                            .attr("refX", 25)
+                 //                            .attr("refY", 0)
+                 //                            .attr("markerWidth", 2)
+                 //                            .attr("markerHeight", 2)
+                 //                            .attr("orient", "auto")
+                 //                            .append("path")
+                 //                            .attr("d", "M0,-5L10,0L0,5")
+                 //                            .style("stroke", "#4679BD")
+                 //                            .style("opacity", "0.6");
+                 
+                 var node = container.append("g").selectAll(".node")
+                 .data(graph.nodes)
+                 .enter()
+                 .append("g")
+                 .attr("id", function (d) {
+                 return d.id;
+                 })
+                 .attr("class", "node")
+                 .attr("name", function (d) {
+                 return d.name;
+                 })
+                 .attr("address", function (d) {
+                 return d.address;
+                 })
+                 .attr("isListedIn", function (d) {
+                 if (d.isListedIn !== null)
+                 return d.isListedIn;
+                 else
+                 return "";
+                 })
+                 .attr("x", function (d) {
+                 return d.x;
+                 })
+                 .attr("y", function (d) {
+                 return d.y;
+                 })
+                 .attr("width", function (d) {
+                 return "24px";
+                 })
+                 .attr("height", function (d) {
+                 return "24px";
+                 })
+                 .attr("isChosen", "no")
+                 .attr("name", function (d) {
+                 return d.name;
+                 })
+                 .call(force.drag)
+                 .on("mouseover", mouseover)
+                 .on("mousemove", mousemove)
+                 .on("mouseout", mouseout)
+                 .on("click", clickImage)
+                 .on("dblclick.zoom", null)
+                 .on("dblclick", dblclick);
+                 
+                 
+                 
+                 var trust_cirlce = node
+                 .append("circle")
+                 .attr("r", 26)
+                 .style("fill", function (d) {
+                 return trust_to_color(d.trust, d.status);
+                 });
+                 
+                 //                    var image_node = node
+                 //                            .append("image")
+                 //                            .attr("class", "node_image")
+                 //                            .attr("xlink:href", function (d) {
+                 //                                return "js/views/resources/" + d.type + ".svg";
+                 //                            })
+                 //                            .attr("x", -12)
+                 //                            .attr("y", -12)
+                 //                            .attr("width", function (d) {
+                 //                                return "24px";
+                 //                            })
+                 //                            .attr("height", function (d) {
+                 //                                return "24px";
+                 //                            });
+                 
+                 var vis = node
+                 .append("path")
+                 .attr("transform", function (d) {
+                 return "scale(0.1,0.1)";
+                 })
+                 .attr("class", "highlight_circle")
+                 .attr("d", arc)
+                 .attr("opacity", 0);
+                 
+                 var text = container.append("g").selectAll(".text")
+                 .data(graph.nodes)
+                 .enter().append("text")
+                 .attr("class", "text_svg")
+                 .attr("dy", ".35em")
+                 .style("font-size", 13 + "px");
+                 
+                 text.text(function (d) {
+                 return d.name;
+                 })
+                 .style("text-anchor", "middle");
+                 
+                 
+                 force
+                 .nodes(graph.nodes)
+                 .links(graph.links)
+                 .start();
+                 
+                 
+                 var text_link = container.append("g").selectAll(".text_link_svg")
+                 .data(force.links())
+                 .enter().append("text")
+                 .text(function (d) {
+                 return d.linktype;
+                 })
+                 .attr("class", "text_link_svg")
+                 .attr("dy", ".35em")
+                 .style("text-anchor", "middle")
+                 .style("font-size", 10 + "px");
+                 
+                 //                    change();
+                 
+                 //                    node.append("title")
+                 //                            .text(function (d) {
+                 //                                return d.name;
+                 //                            });
+                 //
+                 //                    info_color_container = d3.select(".svg").append("g")
+                 //                            .attr("class", ".info_color_container");
+                 //
+                 //                    info_color_container.selectAll("g")
+                 //                            .data(trustData)
+                 //                            .enter()
+                 //                            .append("g")
+                 //                            .attr("class", ".info_color_list")
+                 //                            .attr("data-legend", function (d) {
+                 //                                return d.name
+                 //                            })
+                 
+                 
+                 //                    var trust = d3.select(".svg").append("g")
+                 //                            .attr("id", "trustScore")
+                 //                            .attr("transform", "translate(570,-14)");
+                 //
+                 //                    trust.append("rect")
+                 //                            .attr("width", 60 * graph.level_trust.length)
+                 //                            .attr("height", 27 * graph.level_trust.length)
+                 //                            .style("fill", "#eaf0fa");
+                 //
+                 //                    var trust_draw = trust.selectAll()
+                 //                            .data(graph.level_trust)
+                 //                            .enter();
+                 //
+                 //                    trust_draw.append("text")
+                 //                            .attr("transform", function (d, i) {
+                 //                                return "translate(22," + 25 * (i + 1) + ")";
+                 //                            })
+                 //                            .text(function (d) {
+                 //                                return d.Message;
+                 //                            })
+                 //                            .style("fill", "black")
+                 //                            .style("dominant-baseline", "central");
+                 //
+                 //                    trust_draw.append("circle")
+                 //                            .attr("r", 10)
+                 //                            .attr("transform", function (d, i) {
+                 //                                return "translate(10," + 25 * (i + 1) + ")";
+                 //                            })
+                 //                            .style("fill", function (d) {
+                 //                                return d.color;
+                 //                            });
+                 
+                 function mouseout(node) {
+                 text.style("font-weight", "normal");
+                 link.style("stroke", "#999");
+                 tooltip
+                 .style("visibility", "hidden");
+                 }
+                 
+                 function mousemove(node) {
+                 tooltip.style("top", (d3.event.pageY + 16) + "px")
+                 .style("left", (d3.event.pageX + 16) + "px");
+                 }
+                 
+                 function mouseover(node) {
+                 text.style("font-weight", function (o) {
+                 return isConnected(node, o) ? "bold" : "normal";
+                 });
+                 
+                 link.style("stroke", function (o) {
+                 return o.source.index === node.index || o.target.index === node.index ? "red" : "#999";
+                 });
+                 
+                 try {
+                 statusColor = "red";
+                 tooltip.style("visibility", "visible");
+                 tooltip.html(node.name +
+                 "<br>Type: " + node.type +
+                 "<br>Status: <span style='color: " + statusColor + "'>" + node.status + "</span>" +
+                 "<br>Listed in " + node.isListedIn.length + " Sanction Lists");
+                 } catch (err) {
+                 tooltip.style("visibility", "visible");
+                 tooltip.html(node.name);
+                 
+                 }
+                 }
+                 
+                 
+                 
+                 /////Checkbox///////////////////////////////////////////////////////////
+                 
+                 
+                 d3.select("#node_check_box").on("change", change);
+                 d3.select("#link_check_box").on("change", change);
+                 function change() {
+                 if (d3.select('#node_check_box').property('checked') === false)
+                 isDisplay = "initial";
+                 else
+                 isDisplay = "none";
+                 d3.selectAll(".text_svg")
+                 .style("display", isDisplay);
+                 
+                 if (d3.select('#link_check_box').property('checked') === false)
+                 isDisplay = "initial";
+                 else
+                 isDisplay = "none";
+                 d3.selectAll(".text_link_svg")
+                 .style("display", isDisplay);
+                 }
+                 ///////////////////////////////////////////////////////////////////////
+                 
+                 function isConnected(a, b) {
+                 return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index === b.index;
+                 }
+                 
+                 function dblclick(node) {
+                 
+                 root.fixed = false;
+                 }
+                 
+                 render();
+                 function render() {
+                 force.on("tick", function () {
+                 
+                 text_link.attr("x", function (d) {
+                 return (d.source.x + d.target.x) / 2 + 3;
+                 })
+                 .attr("y", function (d) {
+                 return (d.source.y + d.target.y) / 2;
+                 });
+                 
+                 
+                 link.attr("x1", function (d) {
+                 return d.source.x;
+                 })
+                 .attr("y1", function (d) {
+                 return d.source.y;
+                 })
+                 .attr("x2", function (d) {
+                 return d.target.x;
+                 })
+                 .attr("y2", function (d) {
+                 return d.target.y;
+                 })
+                 // .style("stroke",function(d){if(d.linktype=="Subsidiary") return "red";});
+                 
+                 node.attr("transform", function (d) {
+                 return "translate(" + d.x + "," + d.y + ")";
+                 });
+                 
+                 text.attr("x", function (d) {
+                 return d.x;
+                 })
+                 .attr("y", function (d) {
+                 return d.y + 38;
+                 });
+                 
+                 
+                 
+                 });
+                 }
+                 
+                 });
+                 
+                 /**/
 
                 /*
                  * End d3 json
                  */
-                
+
                 self.reCalculateLayoutWhenResize = function () {
                     if (IsExpanded === false) {
                         width = d3.select("#associate_info").node().getBoundingClientRect().width / 2;
