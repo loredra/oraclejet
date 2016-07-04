@@ -600,6 +600,9 @@ margin-top:5px;
     cursor: pointer;
     background: #cce5ff;
 }
+#list.line_by_line >ul>li:hover {
+    background: #ffa366 !important;
+}
 
 .line_by_line {
     overflow-y: auto;
@@ -662,7 +665,7 @@ height:100%;
     cursor: pointer;
     background: #cce5ff !important;
 }
-.line_by_line_small.li:hover {
+.line_by_line_small >ul >li:hover {
    background: #ffa366 !important;
 }
 

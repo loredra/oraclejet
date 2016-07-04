@@ -95,6 +95,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                 //a ko observable to display when there are no results
                 self.noResults = ko.observable("");
+                self.noResults.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
 
                 //for the advanced Menu
                 //for the word percentage
@@ -152,14 +153,21 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                 //Live scroll variables
                 var stopScroll = false;
-
+                var firstPage = true;
+                
                 self.nameSearch.subscribe(function (newValue) {
                     $("#searchedItemsContainer").scrollTop(0);
                     self.start(0);
                     self.rows(40);
-                    if(self.nameSearch().search(/\w/) !== -1)
-                        self.numberPage(1);
-                    else self.numberPage("");
+                    if(self.nameSearch().search(/\w/) !== -1){
+                        firstPage = true;
+                        self.numberPage("");
+                    }
+                        
+                    
+//                    if(self.nameSearch().search(/\w/) !== -1  &&  self.filteredAllPeople().length > 12)
+//                        self.numberPage(1);
+//                    else self.numberPage("");
                 });
 
 
@@ -305,7 +313,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     return peopleFilter;
                 });
 
-                //self.filteredAllPeople();
+                
 
                 //self.filteredAllPeople.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
 
@@ -347,10 +355,15 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         
                         var minScrollTime = 600;
                         var now = new Date().getTime();
+                        
                         function processScroll() {
                             if ($("#searchedItemsContainer").scrollTop() > lastScrollTop) {
                                 //Scroll Downward
-                                if (self.allPeople().grouped.ent_id.ngroups > self.start() + 48) {
+                                if (self.allPeople().grouped.ent_id.ngroups > self.start() + 40) {
+                                    if(firstPage){
+                                        self.numberPage(1);
+                                        firstPage = false;
+                                    }
                                     if ($("#searchedItemsContainer").scrollTop() + $("#searchedItemsContainer").innerHeight() >= $("#searchedItemsContainer")[0].scrollHeight) {
                                         stopScroll = true;
                                         self.start(self.start() + 24);
