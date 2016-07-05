@@ -1419,7 +1419,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     }
                 };
 
-
                 self.expandForceLayout = function () {
                     if (IsExpanded === false) {
                         d3.select("#associate_info_node").
@@ -1446,7 +1445,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     }
                 };
 
-
                 function collapseForceLayout() {
 
                     d3.select("#associate_info_node").
@@ -1470,15 +1468,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     IsExpanded = false;
                 }
 
-
-
                 function linkToolTip(link) {
 
                     var text = link.attr("type");
                     tooltip.text(text);
                     tooltip.style("visibility", "visible");
                 }
-
 
                 function zoomed() {
 //     container.attr("transform", "translate(0,0 )scale(1)");
@@ -1529,8 +1524,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
                     }
                 }
-
-
 
                 function clickImage(node) {
                     //root.fixed = false;
@@ -1631,10 +1624,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
                 }
 
-
-
-
-
                 /*
                  * details.js
                  */
@@ -1651,7 +1640,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     {"name": "CSFDSFSS"}];
 
 
-
                 function mouseOverList(date) {
                     try {
                         tooltip = d3.select(".tooltip");
@@ -1665,6 +1653,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     }
 
                 }
+                
                 function mouseout(node) {
                     tooltip
                             .style("visibility", "hidden");
@@ -1813,12 +1802,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     d3.select("#numOfAddress").text(numOfAddress);
 
 ////////////////////////////////////////////////////////////////////
-                    var listOfList = d3.select("#listList").append("ul")
+                    var listOfList = d3.select("#listList").append("td")
                             .attr("class", "ul_list_List")
-                            .selectAll("li")
+                            .selectAll("tr")
                             .data(node.infos)
                             .enter()
-                            .append("li")
+                            .append("tr")
                             .attr("class", "listList")
                             .style("font-size", 15 + "px")
                             .text(function (d) {
@@ -1835,12 +1824,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("mouseout", mouseout);
 
 
-                    var listOfAKA = d3.select("#listAKA").append("ul")
+                    var listOfAKA = d3.select("#listAKA").append("td")
                             .attr("class", "ul_list_List")
-                            .selectAll("li")
+                            .selectAll("tr")
                             .data(listAKA)
                             .enter()
-                            .append("li")
+                            .append("tr")
                             .attr("class", "listAKA")
                             .style("font-size", 15 + "px")
                             .text(function (d) {
@@ -1848,12 +1837,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             })
                             .style("text-anchor", "start");
 
-                    var listOfKA = d3.select("#listKA").append("ul")
+                    var listOfKA = d3.select("#listKA").append("td")
                             .attr("class", "ul_list_List")
-                            .selectAll("li")
+                            .selectAll("tr")
                             .data(listKA)
                             .enter()
-                            .append("li")
+                            .append("tr")
                             .attr("class", "listKA")
                             .style("font-size", 15 + "px")
                             .text(function (d) {
@@ -1861,6 +1850,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             })
                             .style("text-anchor", "start");
                 }
+                
                 function overlay() {
                     el = d3.select("#overlay");
                     el
@@ -1873,6 +1863,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("click", closeOverlay);
 
                 }
+                
                 function closeOverlay() {
 
                     el = d3.select("#overlay");
@@ -1880,6 +1871,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("click", el.style("visibility", "hidden"));
 
                 }
+                
                 //function click(list)
                 /**/
                 function click(list) {

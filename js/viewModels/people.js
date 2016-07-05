@@ -581,18 +581,22 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                      */
 
                     $('#tree').on("ojcollapse", function (e, ui) {
+                        if (oj.Router.rootInstance.tx !== "back")
                         $("#tree").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
                     $('#tree').on("ojexpand", function (e, ui) {
+                        if (oj.Router.rootInstance.tx !== "back")
                         $("#tree").css({"height": 220});
                         e.stopImmediatePropagation();
                     });
                     $('#treeList').on("ojcollapse", function (e, ui) {
+                        if (oj.Router.rootInstance.tx !== "back")
                         $("#treeList").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
                     $('#treeList').on("ojexpand", function (e, ui) {
+                        if (oj.Router.rootInstance.tx !== "back")
                         $("#treeList").css({"height": 220});
                         e.stopImmediatePropagation();
                     });

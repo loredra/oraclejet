@@ -28,6 +28,9 @@ flex-wrap:wrap;
 table-layout:auto;
  text-align:left;
  resize:auto;
+ margin-bottom:5%;
+ width: 100%;
+ visibility: visible !important;
 }
  
 .table-style th {
