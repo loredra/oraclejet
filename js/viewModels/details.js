@@ -540,7 +540,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             //newRelation["name"] = newRelation.names[0].name;
                         });
 
-                       // entities = relatedEntities;
+                        // entities = relatedEntities;
 
                         relatedEntities.forEach(function (newEntity) {
                             newEntity["name"] = newEntity.names[0].name;
@@ -550,19 +550,18 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             if (entityExist.length === 0) {
                                 entities.push(newEntity);
                             }
-                            
+
                         });
-                        
+
                         relations = linksBetweenEntities;
                         entities = relatedEntities;
-                        
+
                         firstLoad = true;
                         updating = false;
-                    } 
-                    else {
+                    } else {
                         console.log("not updating");
-                        
-                        
+
+
                         root = searchedEntity;
                         root.x = width / 2;
                         root.y = height / 2;
@@ -578,7 +577,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             relation["source"] = resultSource[0];
                             relation["target"] = resultTarget[0];
                         });
-                        
+
                         var relations = linksBetweenEntities;
                         var entities = relatedEntities;
                     }
@@ -1653,7 +1652,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     }
 
                 }
-                
+
                 function mouseout(node) {
                     tooltip
                             .style("visibility", "hidden");
@@ -1707,16 +1706,21 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     }
 
                     ///////////////////////////////////////////////////////////////////////////
-                    var nodename;
-                    if (node.names === undefined)
-                        nodename = "";
-                    else if (node.names.length === 0)
-                        nodename = "";
-                    else
-                        nodename = node.names[0].name;
+                    var nodename = "";
+                    if (node.names) {
+                        if (node.names.length !== 0) {
+                            node.names.forEach(function (n) {
+                                if (isASCII(n.name)) {
+                                    nodename = n.name;
+                                }
+                            });
+                        }
+                    }
+
                     detail.select("#name").append("div").text(nodename)
                             .attr("class", "detail_name")
                             .attr("position", "relative");
+
                     var nodeAddress;
                     var detailAddress = "";
                     if (node.addresses === undefined)
@@ -1725,14 +1729,70 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                         nodeAddress = "";
                     else {
                         nodeAddress = node.addresses[0];
-                        if (nodeAddress.streetaddress)
-                            detailAddress = nodeAddress.streetaddress;
+                        if (nodeAddress.whole)
+                            detailAddress = nodeAddress.whole;
                         else {
-                            if (nodeAddress.city)
-                                detailAddress = nodeAddress.city;
+                            if (nodeAddress.streetaddress)
+                                detailAddress = nodeAddress.streetaddress;
+                            else {
+                                if (nodeAddress.room)
+                                    detailAddress = nodeAddress.room;
+                                if (nodeAddress.appartment)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.appartment;
+                                    else
+                                        detailAddress = nodeAddress.appartment;
+                                if (nodeAddress.floor)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.floor;
+                                    else
+                                        detailAddress = nodeAddress.floor;
+                                if (nodeAddress.building)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.building;
+                                    else
+                                        detailAddress = nodeAddress.building;
+                                if (nodeAddress.house)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.house;
+                                    else
+                                        detailAddress = nodeAddress.house;
+                                if (nodeAddress.street)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.street;
+                                    else
+                                        detailAddress = nodeAddress.street;
+                                if (nodeAddress.city)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.city;
+                                    else
+                                        detailAddress = nodeAddress.city;
+                            }
+
+                            if (nodeAddress.zipcode)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + " ," + nodeAddress.zipcode;
+                                else
+                                    detailAddress = nodeAddress.zipcode;
+                            if (nodeAddress.district)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + " ," + nodeAddress.district;
+                                else
+                                    detailAddress = nodeAddress.district;
+                            if (nodeAddress.state)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + " ," + nodeAddress.state;
+                                else
+                                    detailAddress = nodeAddress.state;
                             if (nodeAddress.country)
-                                detailAddress = detailAddress + ", " + nodeAddress.country;
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + " ," + nodeAddress.country;
+                                else
+                                    detailAddress = nodeAddress.country;
                         }
+
+
+
                     }
                     detail.select("#address").append("div").text(detailAddress)
                             .attr("class", "detail_address")
@@ -1850,7 +1910,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             })
                             .style("text-anchor", "start");
                 }
-                
+
                 function overlay() {
                     el = d3.select("#overlay");
                     el
@@ -1863,7 +1923,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("click", closeOverlay);
 
                 }
-                
+
                 function closeOverlay() {
 
                     el = d3.select("#overlay");
@@ -1871,8 +1931,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("click", el.style("visibility", "hidden"));
 
                 }
-                
-                //function click(list)
+
+
                 /**/
                 function click(list) {
 
@@ -1951,8 +2011,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
     function testD3ContentViewModel() {
         var self = this;
-
-        //testing svg
 
         self.entid = ko.observable("");
         self.person = ko.observableArray([]);
