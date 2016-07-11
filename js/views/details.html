@@ -13,7 +13,7 @@
     <div class="tooltip">Tipsy!</div>
 
 
-    <div id="main_layout" class=layout data-bind="svg:entid">
+    <div id="main_layout" class=layout data-bind="svg:handle">
 
         <div id=profile_container>
             <div id="profile_of_node" class=profile>
@@ -37,44 +37,43 @@
 
                     <div id="name_and_address_container" class=name_and_address_container>
                         <div id="name" class=nameandAddress>
-                            <label class="description_label">Name </label>
+                            <label id="name_label" class="description_label">Name </label>
                         </div>
                         <div id="address" class=nameandAddress>
-                            <label class="description_label">Primary Address </label>
+                            <label id="address_label" class="description_label">Primary Address </label>
                         </div>
                     </div>
-                    <div id=measure_detail class=measure_detail>
+<!--                    <div id=measure_detail class=measure_detail>
                         <div id="measure_label" class=measure_label>
-                            <label class="description_label" >Measures against this entity * </label>
+                            <label id="measure_detail_label" class="description_label" >Measures against this entity * </label>
                             <div class=measure>
                             </div>
                         </div>
-
-                    </div>
+                    </div>-->
 
                     <div id="name_and_address_container" class=name_and_address_container>
                         <div id="identification_container" class=nameandAddress>
                             <label id="identification_label" class="description_label">Identification  </label>
                         </div>
                         <div id="country_container" class=nameandAddress>
-                            <label class="description_label">Country </label>
+                            <label id="country_label" class="description_label">Country </label>
                         </div>
                     </div>
-                    <div id=measure_detail class=measure_detail>
+<!--                    <div id=measure_detail class=measure_detail>
                         <div id="measure_label" class=measure_label>
-                            <label class="description_label">Actions </label>
+                            <label id="actions_label" class="description_label">Actions </label>
                             <div class=measure>
                                 <img class=measure_icon src="resources/notify.svg"> </img>
                                 <img class=measure_icon src="resources/whitelist.svg"> </img>
                                 <img class=measure_icon src="resources/pdf.svg"> </img>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
 
                     <table id="list_and_program_container" class="table-style">
                         <tr id="numList" >
                             <td class="numListandaka">
-                                <label class=name_label> Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists</label> 
+                                <label id="sanction_lists_label" class=name_label> Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists</label> 
                             </td>
                         </tr>
                         
@@ -85,7 +84,7 @@
                     <table id="also_known_as_name_and" class="table-style">
                         <tr id="aka" >
                             <td class="numListandaka">
-                                <label class=name_label>Have <label id="numOfName" class=numOfList></label> known names</label>
+                                <label id="also_known_as_label" class=name_label>Have <label id="numOfName" class=numOfList></label> known names</label>
                             </td>
                         </tr>
                         <tr id="listAKA" >
@@ -93,9 +92,9 @@
                     </table>
                     
                     <table id="known_address" class="table-style">
-                        <tr id="known_address" >
+                        <tr id="known_address">
                             <td class="numListandaka">
-                                <label class=name_label>Have <label id="numOfAddress" class=numOfList></label> known addresses</label>
+                                <label id="known_address_label" class=name_label>Have <label id="numOfAddress" class=numOfList></label> known addresses</label>
                             </td>
                         </tr>
                         <tr id="listKA" >
@@ -134,14 +133,29 @@
             <div id="visualization" class=associate_info_node>
                 <div class=toolbox>
                     <span id="expand_forcelayout" onclick="expandForceLayout()"  class=close style="font-size:18px;"> <<< </span>
-                    <label class=checkboxname><input id="node_check_box" type="checkbox"> Hide node's name</label>
-                    <label class=checkboxlink><input id="link_check_box" type="checkbox" checked=''> Hide link's type</label>
-                    <label class=buttonroot><input id="root_button" type="checkbox" > Return to primary search</label>
+                    <label id="visualization_hide_node_label" class=checkboxname>
+                        <input id="node_check_box" type="checkbox"> 
+                        <span>
+                            Hide node's name
+                        </span>
+                    </label>
+                    <label id="visualization_hide_link_label" class=checkboxlink>
+                        <input id="link_check_box" type="checkbox" checked=''> 
+                        <span>
+                            Hide link's type
+                        </span>
+                    </label>
+                    <!--<label class=buttonroot><input id="root_button" type="checkbox" > Return to primary search</label>-->
                 </div>
                 <!--<script type="text/javascript" src="concep3_forcelayout.js"></script>-->
                 <!--<script type="text/javascript" src="js/viewModels/detail.js"></script>-->
             </div>
         </div>
+    </div>
+    
+    
+    <div id="overlayTableContainer">
+        
     </div>
 
 <!--    <div id="overlay">

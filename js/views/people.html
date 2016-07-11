@@ -4,6 +4,7 @@
 -->
 
 
+
 <div class="justifyCenter">
     <div class="oj-flex oj-flex-items-pad">
         <div class="oj-flex-items oj-sm-12" >
@@ -15,52 +16,49 @@
                 </div>
 
                 <div id="dialogWrapper" style="position:relative; max-height:30%; max-width:30%;  ">
-                    <div style="display:none" id="modalDialog1" title="Advanced Search" 
-                         data-bind="ojComponent:{component: 'ojDialog', initialVisibility: 'hide' }">
+                    <div style="display:none" id="modalDialog1"
+                         data-bind="ojComponent:{component: 'ojDialog', initialVisibility: 'hide' , title:advancedSearchTitle}">
 
                         <form id="formWordPercentage">
-                            <label for="inputWordPercentage">Word Percentage</label> 
+                            <label for="inputWordPercentage" data-bind="text: wordPercentageText"></label> 
                             <input id="inputWordPercentage"
                                    data-bind="ojComponent: {
                                                             component: 'ojInputNumber',
-                                                            min:0,
-                                                            max:100,
-                                                            step:step,
-                                                            help: {'definition': 'The minimum percentage value of an word to accept a match' },
-                                                            value:wordPercentage}"/>
+                                                            min: 0,
+                                                            max: 100,
+                                                            step: step,
+                                                            value: wordPercentage}"/>
                             <br/> 
                             <div id="default-button-word-per-container">
                                 <button id="defaultButtonWordPer" data-bind="ojComponent: {
                                                                                 component: 'ojButton',
-                                                                                label: 'Default Value'},
+                                                                                label: defaultButton},
                                                                                 click: setInputWordPerNumberValueTo80">
                                 </button>
                             </div>
                         </form>
                         <form id="formPhrasePercentage">
-                            <label for="inputPhrasePercentage">Total Percentage</label> 
+                            <label for="inputPhrasePercentage" data-bind="text:phrasePercentageText"></label> 
                             <input id="inputPhrasePercentage"
                                    data-bind="ojComponent: {
                                                             component: 'ojInputNumber',
                                                             min:0,
                                                             max:100,
                                                             step:step,
-                                                            help: {'definition':'The minimum total percentage to accept a string (multiple words) as a match. Score must be higher than this value.'},
                                                             value:phrasePercentage}"/>
                             <br/> 
                             <div id="default-button-phrase-per-container">
                                 <button id="defaultButtonPhrasePer" data-bind="ojComponent: {
                                                                                 component: 'ojButton',
-                                                                                label: 'Default Value'},
+                                                                                label: defaultButton},
                                                                                 click: setInputPhrasePerNumberValueTo80">
                                 </button>
                             </div>
                         </form>
                         <form id="scoreAlgorithm">
-                            <label for="selectScoreAlgorithm">Score Algorithm </label>
+                            <label for="selectScoreAlgorithm" data-bind="text:scoreAlgorithmText"></label>
                             <select id="selectScoreAlgorithm" data-bind="ojComponent: { component: 'ojSelect',
                                                                                         value: scoreAlgorithm,
-                                                                                        help: {'definition':'Algorithms for the score.'},
                                                                                         rootAttributes: {style:'max-width:20em'}}">
                                 <option value="QUERY_SIDE">QUERY WORDS</option>
                                 <option value="INDEX_SIDE">INDEX WORDS</option>
@@ -69,10 +67,9 @@
                             </select>
                         </form>
                         <form id="wordsDistanceAlgorithm">
-                            <label for="selectWordsDistanceAlgorithm">Words Distance Algorithm </label>
+                            <label for="selectWordsDistanceAlgorithm" data-bind="text:wordsDistanceAlgorithmText"></label>
                             <select id="selectWordsDistanceAlgorithm" data-bind="ojComponent: { component: 'ojSelect',
                                                                                         value: wordsDistanceAlgorithm,
-                                                                                        help: {'definition':'Defines which algorithm must be used to calculate the distance between words.'},
                                                                                         rootAttributes: {style:'max-width:20em'}}">
                                 <option value="DA_LV">Damerau-Levenshtein</option>
                                 <option value="JA_WR">Jaro-Winkler</option>
@@ -139,26 +136,26 @@
 <!-- this is the template content for the cardLayout. It uses standard responsive CSS design and oj-panels for the layout. A Pagination control is used to provide the paging -->
 <script id="peopleCardLayout" type="text/html">
     <div>
-       <div id="showRow" class="oj-flex oj-flex-items-pad" style="position: absolute; left:100px; top:500px; font-style:normal; font-family:-webkit-pictograph; font-size:90px; opacity:0.2;"
-            data-bind="text:numberPage"> 
+        <div id="showRow" class="oj-flex oj-flex-items-pad" style="position: absolute; left:100px; top:500px; font-style:normal; font-family:-webkit-pictograph; font-size:90px; opacity:0.2;"
+             data-bind="text:numberPage"> 
         </div>
         <div id="searchedItemsContainer" class="oj-flex oj-flex-items-pad oj-web-applayout-scrollable-wrapper" style="overflow-y: auto; overflow-x: hidden; max-height:727px; height: 100%;">
             <!-- ko foreach: cardViewDataSource()  -->
 
             <div class="oj-flex-items oj-sm-12 oj-md-6 oj-lg-4 oj-xl-3" data-bind="event:{keypress:$parent.onEnter}"> 
-                
+
                 <div class="oj-panel oj-panel-alt1" style="height: 226px; margin: 5px 0px 10px 0px; min-width: 333px" >
-                    
+
                     <div class="oj-flex oj-flex-items-pad">
                         <div class="oj-flex-items oj-sm-4" data-bind="click: $parent.loadPersonPage">
                             <img alt="employee image" class="demo-circular demo-employee-photo" style="cursor:pointer" data-bind="attr: {src: $parent.getPhoto($data['empId'])}"/>
                         </div>
                         <div class="oj-flex-items oj-sm-8">
                             <h2 id="nameEntity" class="demo-employee-name" aria-label="employee name" data-bind="html: $parent.getName($data)" tabindex="0"></h2>
-                            
+
                             <div class="demo-employee-dept" data-bind="text: $parent.getList($data)"></div>
                             <!-- -->
-                            
+
                             <!-- --
                             <div class="demo-employee-title" data-bind="text: $data['title']"></div>
                             <div class="demo-employee-dept" data-bind="text: $data['deptName']"></div>
@@ -174,17 +171,17 @@
                         <!-- -->
                         <div class="oj-flex-items oj-sm-4">
                             <div class="demo-employee-tenure" data-bind="text: $parent.getPercentage($data) ,style: {color: $parent.getPercentageColor($data) < 80? '#e95b54' : '#3f9a2b'}"></div>
-                            <div class="demo-employee-tenure-label">Percentage</div>
+                            <div id="percentageText" class="demo-employee-tenure-label" data-bind="text: $parent.percentageText"></div>
                         </div>
                         <div class="oj-flex-items oj-sm-4">
                             <div class="demo-employee-tenure" data-bind="text: $parent.getCountry($data) "></div>
-                            <div class="demo-employee-tenure-label">Country</div>
+                            <div id="countryText" class="demo-employee-tenure-label" data-bind="text: $parent.countryText"></div>
                         </div>
 
                         <div class="oj-flex-items oj-sm-4">
                             <div class="address" data-bind="text: $parent.getAddress($data) " style="margin-top:10px"></div>
                         </div>
-                        
+
                         <!-- -->
                         <!-- --
                         <div class="oj-flex-items oj-sm-4">
@@ -204,7 +201,7 @@
                     <!--                    
                         <div id="numberEntity" data-bind="html: $parent.getNumberEntity($data)" tabindex="0" style="position:relative; left:95%; top:25px">
                         </div>-->
-                    
+
                     <!-- --
                     <div class="oj-flex oj-flex-items-pad" style="float: right;">
                         <a tabindex="0" data-bind="attr:{href: function(data, event){$parent.getEmail(data)}" title="email employee" class="demo-employee-email-icon"></a>

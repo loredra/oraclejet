@@ -1,12 +1,12 @@
-/* global interact */
+/* global interact, german, english */
 
 /**
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
+define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.en', 'lang/lang.fr', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
     'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
-    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber', 'jquery-ui'],
+    'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber', 'jquery-ui', 'knockout-postbox'],
         function (oj, ko, utils, $)
         {
             function PeopleViewModel() {
@@ -91,21 +91,35 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
 
                 //a ko observable to display the number of hits
+                self.hitsText = ko.observable("results")
+                self.hitsValue = ko.observable();
                 self.numberMatches = ko.observable("");
 
                 //a ko observable to display when there are no results
                 self.noResults = ko.observable("");
                 self.noResults.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
 
-                //for the advanced Menu
-                //for the word percentage
+                //
+                //For the Advanced Menu
+                //
+
+                //Default definition for Advanced Search Observables 
+                self.advancedSearchTitle = ko.observable("Advanced Search");
+                self.defaultButton = ko.observable("Default");
+                //For the Word Percentage Text
+                self.wordPercentageText = ko.observable("Word Percentage");
+                //self.wordPercentageDefinition = ko.observable('The minimum percentage value of an word to accept a match');//this is for the help def
+                //For the Word Percentage Value
                 self.wordPercentage = ko.observable(80);
                 self.step = ko.observable(10);
                 self.setInputWordPerNumberValueTo80 = function ()
                 {
                     self.wordPercentage(80);
                 };
-                //For the phrase percentage
+                //For the Phrase Percentage Text
+                self.phrasePercentageText = ko.observable("Phrase Percentage");
+                //self.phrasePercentageDefinition = ko.observable('The minimum total percentage to accept a string (multiple words) as a match. Score must be higher than this value.');//this is for the help def
+                //For the Phrase Percentage Value
                 self.phrasePercentage = ko.observable(80);
                 self.step = ko.observable(10);
                 self.setInputPhrasePerNumberValueTo80 = function ()
@@ -113,12 +127,119 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     self.phrasePercentage(80);
                 };
                 self.fqTotalPercentage = ko.observable("");
-                //For the score algorithm
+                //For the Score Algorithm Text
+                self.scoreAlgorithmText = ko.observable("Score Algorithm");
+                //self.scoreAlgorithmDefinition = ko.observable('Algorithms for the score.');//this is for the help def
+                //For the Score Algorithm Value
                 self.scoreAlgorithm = ko.observable("QUERY_SIDE");
-                //For the words distance algorithm
+                //For the Words Distance Algorithm Text
+                self.wordsDistanceAlgorithmText = ko.observable("Words Distance Algorithm");
+                //self.wordsDistanceAlgorithmDefinition = ko.observable("Defines which algorithm must be used to calculate the distance between words");//this is for the help def
+                //For the Words Distance Algorithm Value
                 self.wordsDistanceAlgorithm = ko.observable("DA_LV");
 
+                //
+                //Bindings for the Languages
+                //
                 
+                var countryFilterPanelTitle = "Country";
+                var listFilterPanelTitle = "List";
+                self.percentageText = ko.observable("Percentage");
+                self.countryText = ko.observable("Country");
+                self.addressStatus = ko.observable("without address");
+                self.countryStatus = ko.observable("worldwide");
+                
+                //Variable in order to specify to not translate the search page when the user is inside details page
+                var translate = true;
+                
+                self.languageSel = ko.observable("");
+                self.languageSel.subscribeTo('languagesSearchPage');
+
+                self.languageSel.subscribe(function (selectedLanguage) {
+                    if (translate) {
+                        if (selectedLanguage === "german") {
+                            //Translate search input placeholder
+                            $('#searchText').attr("placeholder", german.searchPage.basic.search);
+                            //Translate tree panels
+                            $("#tree").children().children().children().children(".oj-tree-title").text(german.searchPage.basic.country);
+                            $("#treeList").children().children().children().children(".oj-tree-title").text(german.searchPage.basic.list);
+                            self.workerResult()[0].title = german.searchPage.basic.country;
+                            self.workerListResult()[0].title = german.searchPage.basic.list;
+                            countryFilterPanelTitle = german.searchPage.basic.country;
+                            listFilterPanelTitle = german.searchPage.basic.list;
+                            //Translate Advanced Search
+                            self.advancedSearchTitle(german.searchPage.advancedSearch.title);
+                            self.defaultButton(german.searchPage.advancedSearch.defaultButton);
+                            self.wordPercentageText(german.searchPage.advancedSearch.wordPercentage.text);
+                            self.phrasePercentageText(german.searchPage.advancedSearch.phrasePercentage.text);
+                            self.scoreAlgorithmText(german.searchPage.advancedSearch.scoreAlgorithm.text);
+                            self.wordsDistanceAlgorithmText(german.searchPage.advancedSearch.wordsDistanceAlgorithm.text);
+                            //Translate Number Of Hits
+                            self.hitsText(german.searchPage.hits);
+                            self.numberMatches(self.hitsValue() + " " + self.hitsText());
+                            //Translate Searched Entities Properties 
+                            self.percentageText(german.searchPage.searchedEntityProperty.percentage);
+                            self.countryText(german.searchPage.searchedEntityProperty.country);
+                            self.addressStatus(german.searchPage.searchedEntityProperty.addressStatus);
+                            self.countryStatus(german.searchPage.searchedEntityProperty.countryStatus);
+
+                        }
+                        else if (selectedLanguage === "english") {
+                            //Translate search input placeholder
+                            $('#searchText').attr("placeholder", english.searchPage.basic.search);
+                            //Translate tree panels
+                            $("#tree").children().children().children().children(".oj-tree-title").text(english.searchPage.basic.country);
+                            $("#treeList").children().children().children().children(".oj-tree-title").text(english.searchPage.basic.list);
+                            self.workerResult()[0].title = english.searchPage.basic.country;
+                            self.workerListResult()[0].title = english.searchPage.basic.list;
+                            countryFilterPanelTitle = english.searchPage.basic.country;
+                            listFilterPanelTitle = english.searchPage.basic.list;
+                            //Translate Advanced Search
+                            self.advancedSearchTitle(english.searchPage.advancedSearch.title);
+                            self.defaultButton(english.searchPage.advancedSearch.defaultButton);
+                            self.wordPercentageText(english.searchPage.advancedSearch.wordPercentage.text);
+                            self.phrasePercentageText(english.searchPage.advancedSearch.phrasePercentage.text);
+                            self.scoreAlgorithmText(english.searchPage.advancedSearch.scoreAlgorithm.text);
+                            self.wordsDistanceAlgorithmText(english.searchPage.advancedSearch.wordsDistanceAlgorithm.text);
+                            //Translate Number Of Hits
+                            self.hitsText(english.searchPage.hits);
+                            self.numberMatches(self.hitsValue() + " " + self.hitsText());
+                            //Translate Searched Entities Properties
+                            self.percentageText(english.searchPage.searchedEntityProperty.percentage);
+                            self.countryText(english.searchPage.searchedEntityProperty.country);
+                            self.addressStatus(english.searchPage.searchedEntityProperty.addressStatus);
+                            self.countryStatus(english.searchPage.searchedEntityProperty.countryStatus);
+                        }
+                        else if (selectedLanguage === "french") {
+                            //Translate search input placeholder
+                            $('#searchText').attr("placeholder", french.searchPage.basic.search);
+                            //Translate tree panels
+                            $("#tree").children().children().children().children(".oj-tree-title").text(french.searchPage.basic.country);
+                            $("#treeList").children().children().children().children(".oj-tree-title").text(french.searchPage.basic.list);
+                            self.workerResult()[0].title = french.searchPage.basic.country;
+                            self.workerListResult()[0].title = french.searchPage.basic.list;
+                            countryFilterPanelTitle = french.searchPage.basic.country;
+                            listFilterPanelTitle = french.searchPage.basic.list;
+                            //Translate Advanced Search
+                            self.advancedSearchTitle(french.searchPage.advancedSearch.title);
+                            self.defaultButton(french.searchPage.advancedSearch.defaultButton);
+                            self.wordPercentageText(french.searchPage.advancedSearch.wordPercentage.text);
+                            self.phrasePercentageText(french.searchPage.advancedSearch.phrasePercentage.text);
+                            self.scoreAlgorithmText(french.searchPage.advancedSearch.scoreAlgorithm.text);
+                            self.wordsDistanceAlgorithmText(french.searchPage.advancedSearch.wordsDistanceAlgorithm.text);
+                            //Translate Number Of Hits
+                            self.hitsText(french.searchPage.hits);
+                            self.numberMatches(self.hitsValue() + " " + self.hitsText());
+                            //Translate Searched Entities Properties
+                            self.percentageText(french.searchPage.searchedEntityProperty.percentage);
+                            self.countryText(french.searchPage.searchedEntityProperty.country);
+                            self.addressStatus(french.searchPage.searchedEntityProperty.addressStatus);
+                            self.countryStatus(french.searchPage.searchedEntityProperty.countryStatus);
+                        }
+                    }
+                });
+
+
 
                 //self.filterTreeObs.extend({rateLimit: {timeout: 300, method: "notifyWhenChangesStop"}});
 
@@ -133,7 +254,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                 //for counting the number of the page
                 self.numberPage = ko.observable();
-                
+
                 // Retrieve data from SOLR for the tree filter
                 self.nameQ = ko.observable("");
                 self.oneTimeRetrieveSolrTree = true;
@@ -154,26 +275,24 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 //Live scroll variables
                 var stopScroll = false;
                 var firstPage = true;
-                
+
                 self.nameSearch.subscribe(function (newValue) {
                     $("#searchedItemsContainer").scrollTop(0);
                     self.start(0);
                     self.rows(40);
-                    if(self.nameSearch().search(/\w/) !== -1){
+                    if (self.nameSearch().search(/\w/) !== -1) {
                         firstPage = true;
                         self.numberPage("");
                     }
-                        
-                    
+
+
 //                    if(self.nameSearch().search(/\w/) !== -1  &&  self.filteredAllPeople().length > 12)
 //                        self.numberPage(1);
 //                    else self.numberPage("");
                 });
 
-
                 self.filteredAllPeople = ko.pureComputed(function () {
                     var peopleFilter = new Array();
-
                     //set the position of the filter tree panels after returning from the details page
                     if (oj.Router.rootInstance.tx === "back") {
                         //$("#tree").css({'top': utils.resetTreesPos()[0].top, 'left' :utils.resetTreesPos()[0].left });
@@ -274,13 +393,14 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                                 self.allHighlighting(people.highlighting);
                                 //self.facetsCountries(people.facet_counts.facet_fields.add_country);
                                 //self.facetsLists(people.facet_counts.facet_fields.lis_name);
-                                self.numberMatches(people.grouped.ent_id.ngroups + " Hits");
+                                self.hitsValue(people.grouped.ent_id.ngroups);
+                                self.numberMatches(self.hitsValue() + " " + self.hitsText());
                                 //self.oneTimeRetrieveSolrTree = true;
 
-                                if (self.numberMatches() === "0 Hits") {
+                                if (self.hitsValue() === 0) {
                                     self.noResults("No Results");
                                     self.numberPage("");
-                                } else if (self.numberMatches() !== "0 Hits") {
+                                } else if (self.hitsValue() !== 0) {
                                     self.noResults("");
                                 }
 
@@ -313,10 +433,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     return peopleFilter;
                 });
 
-                
-
                 //self.filteredAllPeople.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
-
 
                 self.getNodeDataCountry = function (node, fn) {
                     fn(self.workerResult());
@@ -335,8 +452,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 };
 
 
-
-
                 /*/
                  self.listViewDataSource = ko.computed(function () {
                  return new oj.ArrayTableDataSource(self.filteredAllPeople(), {idAttribute: 'empId'});
@@ -344,23 +459,23 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                  /**/
 
                 /**/
-                
+
                 self.cardViewPagingDataSource = ko.pureComputed(function () {
                     var earlyFilteredPeoplee;
                     var lastScrollTop = 0;
                     var scrollTimer, lastScrollFireTime = 0;
-                    
+
                     //For the Live Scroll
                     $("#searchedItemsContainer").scroll(function (event) {
-                        
+
                         var minScrollTime = 600;
                         var now = new Date().getTime();
-                        
+
                         function processScroll() {
                             if ($("#searchedItemsContainer").scrollTop() > lastScrollTop) {
                                 //Scroll Downward
                                 if (self.allPeople().grouped.ent_id.ngroups > self.start() + 40) {
-                                    if(firstPage){
+                                    if (firstPage) {
                                         self.numberPage(1);
                                         firstPage = false;
                                     }
@@ -370,9 +485,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                                         event.preventDefault();
                                         event.stopPropagation();
                                         self.filterTreeObs("scrolling");
-                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6)-$("#searchedItemsContainer").innerHeight());
+                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6) - $("#searchedItemsContainer").innerHeight());
                                         scrollPointDown = 0;
-                                        self.numberPage(self.numberPage()+1);    
+                                        self.numberPage(self.numberPage() + 1);
                                     }
                                 }
 //                                if($("#searchedItemsContainer").scrollTop()>scrollPointDown){
@@ -387,18 +502,17 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                                     stopScroll = true;
                                     if (self.start() > 24) {
                                         self.start(self.start() - 24);
-                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6)-$("#searchedItemsContainer").innerHeight());
-                                        self.numberPage(self.numberPage()-1);
-                                    }
-                                    else if (self.start() === 24) {
+                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6) - $("#searchedItemsContainer").innerHeight());
+                                        self.numberPage(self.numberPage() - 1);
+                                    } else if (self.start() === 24) {
                                         self.start(0);
-                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6)-$("#searchedItemsContainer").innerHeight());
+                                        $("#searchedItemsContainer").scrollTop(($("#searchedItemsContainer")[0].scrollHeight / 1.6) - $("#searchedItemsContainer").innerHeight());
                                         self.numberPage(1);
                                     }
                                     event.preventDefault();
                                     event.stopPropagation();
                                     self.filterTreeObs("scrolling downwards");
-                                    
+
                                 }
 //                                if($("#searchedItemsContainer").scrollTop() < ($("#searchedItemsContainer")[0].scrollHeight - scrollPointUp)){
 //                                    scrollPointUp = scrollPointUp*2;
@@ -445,15 +559,19 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 self.cardViewPagingDataSource.extend({rateLimit: {timeout: 10, method: "notifyWhenChangesStop"}});
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
+
+
                     if (self.keepFilter === false) {
                         self.worker.postMessage(self.facetsCountries());
                         self.worker.onmessage = function (m) {
+                            m.data[0].title = countryFilterPanelTitle;
                             self.workerResult(m.data);
                             $('#tree').ojTree("refresh");
                             $('#tree').ojTree("expandAll");
                         };
                         self.workerList.postMessage(self.facetsLists());
                         self.workerList.onmessage = function (m) {
+                            m.data[0].title = listFilterPanelTitle;
                             self.workerListResult(m.data);
                             $('#treeList').ojTree("refresh");
                             $('#treeList').ojTree("expandAll");
@@ -506,9 +624,9 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         event.stopImmediatePropagation();
                     });
 
-                    /*
-                     * Filter Tree Panels interaction
-                     */
+                    //
+                    // Filter Tree Panels interaction
+                    //
 
                     $(function () {
                         $("#tree").draggable().resizable({
@@ -523,83 +641,31 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         });
                     });
 
-                    // target elements with the "draggable" class
-//                    interact('#tree')
-//                            .draggable({
-//                                // ***changed line 65 from interact.js so the cursor on hovering will not change
-//                                // enable inertial throwing
-//                                inertia: true,
-//                                // keep the element within the area of it's parent
-//                                restrict: {
-//                                    restriction: "#topDiv",
-//                                    endOnly: true,
-//                                    elementRect: {top: 0, left: 0, bottom: 1, right: 1}
-//                                },
-//                                // call this function on every dragmove event
-//                                onmove: dragMoveListener
-//                            }).resizable({
-//                        margin: 37,
-//                        edges: {left: false, right: true, bottom: true, top: false}
-//                    }).on('resizemove', function (event) {
-//                        var target = event.target,
-//                                x = (parseFloat(target.getAttribute('data-x')) || 0),
-//                                y = (parseFloat(target.getAttribute('data-y')) || 0);
-//
-//
-//                        if (event.rect.width > 77 && event.rect.height > 30) {
-//                            // update the element's style
-//                            target.style.width = event.rect.width + 'px';
-//                            target.style.height = event.rect.height + 'px';
-//
-//                            // translate when resizing from top or left edges
-//                            x += event.deltaRect.left;
-//                            y += event.deltaRect.top;
-//
-//                            target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-//
-//                            target.setAttribute('data-x', x);
-//                            target.setAttribute('data-y', y);
-//                        }
-//                    });
-//                    
-//                    function dragMoveListener(event) {
-//                        var target = event.target,
-//                                // keep the dragged position in the data-x/data-y attributes
-//                                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-//                                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-//
-//                        // translate the element
-//                        target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-//
-//                        // update the posiion attributes
-//                        target.setAttribute('data-x', x);
-//                        target.setAttribute('data-y', y);
-//                    }
-
-                    /*
-                     * End of interaction
-                     */
-
                     $('#tree').on("ojcollapse", function (e, ui) {
                         if (oj.Router.rootInstance.tx !== "back")
-                        $("#tree").css({"height": 40});
+                            $("#tree").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
                     $('#tree').on("ojexpand", function (e, ui) {
                         if (oj.Router.rootInstance.tx !== "back")
-                        $("#tree").css({"height": 220});
+                            $("#tree").css({"height": 220});
                         e.stopImmediatePropagation();
                     });
                     $('#treeList').on("ojcollapse", function (e, ui) {
                         if (oj.Router.rootInstance.tx !== "back")
-                        $("#treeList").css({"height": 40});
+                            $("#treeList").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
                     $('#treeList').on("ojexpand", function (e, ui) {
                         if (oj.Router.rootInstance.tx !== "back")
-                        $("#treeList").css({"height": 220});
+                            $("#treeList").css({"height": 220});
                         e.stopImmediatePropagation();
                     });
+
+                    //
+                    // End of interaction
+                    //
+
 
                     $("#tree").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
@@ -641,7 +707,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     });
 
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
-                    
+
                 });
                 /**/
 
@@ -695,6 +761,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 //Mainly used for the Live Scroll. It is needed to wait time before visualizing the information
                 self.cardViewDataSource.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
 
+                self.cardViewDataSource.subscribe(function (newValue) {
+                    if (oj.Router.rootInstance.tx === "back") {
+                        var language = utils.getLanguage().toString();
+                        self.languageSel(language);
+                    }
+                });
+
                 self.getPhoto = function (empId) {
                     var src;
                     if (empId < 188) {
@@ -725,13 +798,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 };
                 /**/
                 /*/
-                
-                self.getNumberEntity = function (company) {
-                    var number = self.allPeople().grouped.ent_id.groups.indexOf(company)+1;
-                    
-                    return number;
-                };
-                /**/
+                 
+                 self.getNumberEntity = function (company) {
+                 var number = self.allPeople().grouped.ent_id.groups.indexOf(company)+1;
+                 
+                 return number;
+                 };
+                 /**/
                 /**/
                 self.getPercentage = function (company) {
                     var value = company.doclist.docs[0].score * 100 + "";
@@ -761,7 +834,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     if (company.doclist.docs[0].add_country)
                         country = "'" + company.doclist.docs[0].add_country + "'";
                     else
-                        country = "worldwide";
+                        country = this.countryStatus();
                     return country;
                 };
                 /**/
@@ -788,7 +861,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     var address;
                     address = city + street + zipcode;
                     if (!address)
-                        address = "without address";
+                        address = this.addressStatus();
                     return address;
                 };
                 /**/
@@ -808,8 +881,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                 self.loadPersonPage = function (comp) {
                     if (comp.doclist.docs[0].ent_id) {
                         id = comp.doclist.docs[0].ent_id;
-                        // Temporary code until go('person/' + emp.empId); is checked in 1.1.2
-                        history.pushState(null, '', 'index.html?root=details&ent_id=' + id);
+                        var lang;
+                        if (self.languageSel() !== undefined)
+                            lang = self.languageSel().toString().substring(0, 2);
+                        else
+                            lang = "en";
+                        translate = false;
+                        history.pushState(null, '', 'index.html?root=details&ent_id=' + id + '&lang=' + lang);
                         oj.Router.sync();
                         utils.rememberState(self.nameSearch(), self.filterTree(), self.filterTreeList());
                         //Store the position of the Filter Tree Panels
@@ -824,6 +902,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
 
                 //To establish the previous state after returning from details page
                 if (oj.Router.rootInstance.tx === "back") {
+//                    var language = utils.getLanguage().toString()
+//                    self.languageSel("german");
                     self.filterTree(utils.resetState()[1]);
                     self.filterTreeList(utils.resetState()[2]);
                     self.processFilterCountries();

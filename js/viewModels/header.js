@@ -5,18 +5,24 @@
 /**
  * Header module
  */
-define(['knockout', 'ojs/ojcore', 'ojs/ojknockout', 'ojs/ojnavigationlist', 'ojs/ojoffcanvas', 'ojs/ojdatacollection-common', 'ojs/ojdialog'
-], function (ko, oj) {
+define(['knockout', 'ojs/ojcore', 'utils', 'jquery', 'ojs/ojknockout', 'ojs/ojnavigationlist', 'ojs/ojoffcanvas', 'ojs/ojdatacollection-common', 'ojs/ojdialog', 'knockout-postbox'
+], function (ko, oj, utils, $) {
     /**
      * The view model for the header module
      */
 
     function HeaderViewModel() {
         var self = this;
-
+        
+        //Using ko postBox in order to comunicate with the people VM 
+        self.language = ko.observable();
+        self.language.publishOn('languagesSearchPage');
+        self.language.publishOn('languagesDetailsPage');
+        
         //
         // Button used for toggling off screen data.
         //
+        
         var offScreenDataButton = {
             "label": "offscreen-toggle",
             "iconClass": "oj-web-applayout-offcanvas-icon",

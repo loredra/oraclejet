@@ -1,22 +1,34 @@
 
-/* global d3, tooltip */
+/* global d3, tooltip, german */
 
-define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
-], function (oj, ko, $, d3, arangodb) {
+define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lang.ge', 'lang/lang.en', 'lang/lang.fr', 'knockout-postbox'
+], function (oj, ko, $, d3, arangodb, utils) {
 
     ko.bindingHandlers.svg = {
         init: function (element, valueAccessor) {
 
             //In order to use events, functions should be referenced with "self"
             var self = this;
-
             //Just to test the unwrap function
-            var entid = ko.unwrap(valueAccessor());
+            var infoMainViewModel = ko.unwrap(valueAccessor());
+            self.lang = infoMainViewModel[0];
+            var entid = infoMainViewModel[1];
 
+
+            //Observables useful for translations
+            self.tooltipType = ko.observable("Type");
+            self.tooltipStatus = ko.observable("Status");
+            self.tooltipListDetails1 = ko.observable("Listed in");
+            self.tooltipListDetails2 = ko.observable("Sanction Lists");
+            
+            
+            //Observables to store nodes
+            self.nodeData = ko.observableArray([]);
 
             //window.timeout to launch the code after the dom loaded
             window.setTimeout(function () {
                 //alert("ready visual");
+
                 var width = d3.select("#associate_info").node().getBoundingClientRect().width / 2;
                 var height = d3.select("#associate_info").node().getBoundingClientRect().height;
 
@@ -31,7 +43,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                 var margin = {top: -1, right: -1, bottom: -1, left: -1};
 
                 var isChosen = 0;
-
 
                 var force = d3.layout.force()
                         .charge(-7700)
@@ -60,8 +71,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
                 var container = svg.append("g");
 
-
-
                 function isASCII(str) {
                     return /^[\x00-\x7F]*$/.test(str);
                 }
@@ -71,440 +80,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
                 var updating = false;
 
-                //Update the graphic and add info into the tabs by pressing the SHIFT key and the left click
-                self.updateGraphAndAddInfo = function (clickedEntity, newLinks, newEntities) {
-                    var nodes = force.nodes();
-                    var links = force.links();
-
-                    var filteredLinks = new Array();
-                    var filteredEntities = new Array();
-                    var firstLinks = links;
-                    var firstNodes = nodes;
-
-                    newLinks.forEach(function (relation) {
-                        var resultSource = $.grep(newEntities, function (e) {
-                            return e._id === relation._from;
-                        });
-                        resultTarget = $.grep(newEntities, function (e) {
-                            return e._id === relation._to;
-                        });
-                        relation["source"] = resultSource[0];
-                        relation["target"] = resultTarget[0];
-                    });
-
-                    filteredLinks = firstLinks;
-
-                    newLinks.forEach(function (newRelation) {
-                        var linkExist = $.grep(firstLinks, function (relation) {
-                            return relation._id === newRelation._id;
-                        });
-                        if (linkExist.length === 0) {
-                            filteredLinks.push(newRelation);
-                        }
-                        //newRelation["name"] = newRelation.names[0].name;
-                    });
-
-                    filteredEntities = firstNodes;
-
-                    newEntities.forEach(function (newEntity) {
-                        newEntity["name"] = newEntity.names[0].name;
-                        var entityExist = $.grep(firstNodes, function (relatedEntity) {
-                            return newEntity._id === relatedEntity._id;
-                        });
-                        if (entityExist.length === 0) {
-                            filteredEntities.push(newEntity);
-                        }
-
-                    });
-
-
-                    //Updating the graph
-
-                    tooltip = d3.select(".tooltip");
-                    var linkedByIndex = {};
-
-                    filteredLinks.forEach(function (relation) {
-                        linkedByIndex[relation.source + "," + relation.target] = true;
-                    });
-
-                    /**/
-                    var myScale = d3.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
-
-                    var arc = d3.svg.arc()
-                            .innerRadius(43)
-                            .outerRadius(46)
-                            .startAngle(myScale(0))
-                            .endAngle(myScale(100));
-
-                    container.attr("transform", "translate(0,0)scale(0.5)");
-
-                    var link = container.append("g").selectAll(".link")
-                            .data(filteredLinks)
-                            .enter().append("line")
-                            .attr("class", "link")
-                            .attr("x1", function (d) {
-                                return d.source.x;
-                            })
-                            .attr("y1", function (d) {
-                                return d.source.y;
-                            })
-                            .attr("x2", function (d) {
-                                return d.target.x;
-                            })
-                            .attr("y2", function (d) {
-                                return d.target.y;
-                            })
-                            .attr("type", function (d) {
-                                return d.relationType;
-                            })
-                            .on("mouseover", function (d) {
-                                linkToolTip(d3.select(this));
-                            })
-                            .on("mouseout", function (d) {
-                                tooltip
-                                        .style("visibility", "hidden");
-                            })
-                            .on("mousemove", mousemove)
-                            .style("stroke-width", function (d) {
-                                return 6;
-                            })
-                            .style("marker-end", "url(#resolved)");
-
-
-
-                    var marker = container.append("g").selectAll("marker")
-                            .data(["suit", "licensing", "resolved"])
-                            .enter().append("marker")
-                            .attr("id", function (d) {
-                                return d;
-                            })
-                            .attr("viewBox", "0 -5 10 10")
-                            .attr("refX", 25)
-                            .attr("refY", 0)
-//                                        .attr("markerWidth", 2)
-//                                        .attr("markerHeight", 2)
-                            .attr("orient", "auto")
-                            .append("path")
-                            .attr("d", "M0,-5L10,0L0,5")
-//                                        .style("stroke", "#4679BD")
-                            .style("opacity", "0.6");
-
-
-
-                    var node = container.append("g").selectAll(".node")
-                            .data(filteredEntities)
-                            .enter()
-                            .append("g")
-                            .attr("id", function (d) {
-                                return d._id;
-                            })
-                            .attr("class", "node")
-                            .attr("name", function (d) {
-                                var name = "";
-                                if (d.names)
-                                    if (d.names.length !== 0)
-                                        d.names.forEach(function (n) {
-                                            if (isASCII(n.name)) {
-                                                name = n.name;
-                                            }
-                                        });
-                                //name = d.names[0].name;
-                                return name;
-                            })
-                            .attr("address", function (d) {
-                                return d.addresses[0].country;
-                            })
-                            .attr("isListedIn", function (d) {
-                                if (d.infos !== null)
-                                    if (d.infos.length !== 0)
-                                        return d.infos[0].info;
-                                    else
-                                        return "";
-                            })
-                            .attr("x", function (d) {
-                                return d.x;
-                            })
-                            .attr("y", function (d) {
-                                return d.y;
-                            })
-                            .attr("width", function (d) {
-                                return "24px";
-                            })
-                            .attr("height", function (d) {
-                                return "24px";
-                            })
-                            .attr("isChosen", "no")
-//                                        .attr("name", function (d) {
-//                                            return d.names[0].name;
-//                                        })
-                            .call(force.drag)
-                            .on("mouseover", mouseover)
-                            .on("mousemove", mousemove)
-                            .on("mouseout", mouseout)
-                            .on("click", clickImage)
-                            .on("dblclick.zoom", null)
-                            .on("dblclick", dblclick);
-
-
-
-                    var trust_cirlce = node
-                            .append("circle")
-                            .attr("r", 26)
-                            .style("fill", function (d) {
-                                return trust_to_color(10, "Active");
-                            });
-
-
-
-                    var vis = node
-                            .append("path")
-                            .attr("transform", function (d) {
-                                return "scale(0.1,0.1)";
-                            })
-                            .attr("class", "highlight_circle")
-                            .attr("d", arc)
-                            .attr("opacity", 0);
-
-                    var text = container.append("g").selectAll(".text")
-                            .data(filteredEntities)
-                    var textg = text.enter().append("text")
-                            .attr("class", "text_svg")
-                            .attr("dy", ".35em")
-                            .style("font-size", 13 + "px");
-
-                    textg.text(function (d) {
-                        var name = "";
-                        if (d.names)
-                            if (d.names.length !== 0)
-                                d.names.forEach(function (n) {
-                                    if (isASCII(n.name)) {
-                                        name = n.name;
-                                    }
-                                });
-                        return name;
-                    })
-                            .style("text-anchor", "middle");
-
-
-                    force
-                            .nodes(filteredEntities)
-                            .links(filteredLinks)
-                            .start();
-
-
-                    var text_link = container.append("g").selectAll(".text_link_svg")
-                            .data(force.links());
-                    var text_linkg = text_link
-                            .enter().append("text")
-                            .text(function (d) {
-                                return d.relationType;
-                            })
-                            .attr("class", "text_link_svg")
-                            .attr("dy", ".35em")
-                            .style("text-anchor", "middle")
-                            .style("font-size", 10 + "px");
-
-                    change();
-
-
-
-                    function mouseout(node) {
-                        text.style("font-weight", "normal");
-                        link.style("stroke", "#999");
-                        tooltip
-                                .style("visibility", "hidden");
-                    }
-                    function mousemove(node) {
-                        tooltip.style("top", (d3.event.pageY + 16) + "px")
-                                .style("left", (d3.event.pageX + 16) + "px");
-                    }
-                    function mouseover(node) {
-                        text.style("font-weight", function (o) {
-                            return isConnected(node, o) ? "bold" : "normal";
-                        });
-
-                        link.style("stroke", function (o) {
-                            return o.source.index === node.index || o.target.index === node.index ? "red" : "#999";
-                        });
-
-                        try {
-                            statusColor = "red";
-                            tooltip.style("visibility", "visible");
-                            var name;
-                            if (node.names === undefined)
-                                name = " ";
-                            else
-                                name = node.names[0].name;
-                            var numberLists;
-                            if (node.infos === undefined)
-                                numberLists = 0;
-                            else
-                                numberLists = node.infos.length;
-                            tooltip.html(node.names[0].name +
-                                    "<br>Type: " + node.type +
-                                    "<br>Status: <span style='color: " + statusColor + "'>" + node.status + "</span>" +
-                                    "<br>Listed in " + numberLists + " Sanction Lists");
-                        } catch (err) {
-                            tooltip.style("visibility", "visible");
-                            tooltip.html(node.name);
-
-                        }
-                    }
-
-                    /////Checkbox///////////////////////////////////////////////////////////
-                    d3.select("#node_check_box").on("change", change);
-                    d3.select("#link_check_box").on("change", change);
-                    function change() {
-                        if (d3.select('#node_check_box').property('checked') === false)
-                            isDisplay = "initial";
-                        else
-                            isDisplay = "none";
-                        d3.selectAll(".text_svg")
-                                .style("display", isDisplay);
-
-                        if (d3.select('#link_check_box').property('checked') === false)
-                            isDisplay = "initial";
-                        else
-                            isDisplay = "none";
-                        d3.selectAll(".text_link_svg")
-                                .style("display", isDisplay);
-                    }
-                    ///////////////////////////////////////////////////////////////////////
-
-                    function isConnected(a, b) {
-                        return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index === b.index;
-                    }
-
-                    function dblclick(node) {
-                        root.fixed = false;
-                    }
-
-                    render();
-                    function render() {
-                        force.on("tick", function () {
-
-                            text_linkg.attr("x", function (d) {
-                                return (d.source.x + d.target.x) / 2 + 3;
-                            })
-                                    .attr("y", function (d) {
-                                        return (d.source.y + d.target.y) / 2;
-                                    });
-
-
-                            link.attr("x1", function (d) {
-                                return d.source.x;
-                            })
-                                    .attr("y1", function (d) {
-                                        return d.source.y;
-                                    })
-                                    .attr("x2", function (d) {
-                                        return d.target.x;
-                                    })
-                                    .attr("y2", function (d) {
-                                        return d.target.y;
-                                    });
-                            //.style("stroke",function(d){if(d.linktype=="Subsidiary") return "red";});
-
-
-                            node.attr("transform", function (d) {
-                                return "translate(" + d.x + "," + d.y + ")";
-                            });
-
-                            text.attr("x", function (d) {
-                                return d.x;
-                            })
-                                    .attr("y", function (d) {
-                                        return d.y + 38;
-                                    });
-                        });
-                    }
-
-                    //Add Information to the first half of the screen
-                    firstLoad = true;
-                    function click(list) {
-                        /////////////////////Return everything in svg to normal///////////////////
-                        vis = d3.selectAll(".highlight_circle");
-
-                        vis.attr("transform", "scale(0.1,0.1)")
-                                .attr("opacity", 0);
-
-                        d3.selectAll(".node").select(".node_image").transition()
-                                .duration(750)
-                                .attr("x", -12)
-                                .attr("y", -12)
-                                .attr("width", "24px")
-                                .attr("height", "24px");
-
-                        //Making the image bigger///////////////////////////
-                        var node = d3.selectAll(".node")
-                                .filter(function (d) {
-                                    return d.id === list.id;
-                                });
-
-                        node.attr("isChosen", "yes")
-                                .select(".node_image")
-                                .transition()
-                                .duration(750)
-                                .attr("x", -20)
-                                .attr("y", -20)
-                                .attr("width", "40px")
-                                .attr("height", "40px");
-
-                        node.select(".highlight_circle")
-                                .transition()
-                                .duration(450)
-                                .attr("transform", "scale(1,1)")
-                                .attr("opacity", 0.7);
-
-                        translateBeforeChose(node.datum().x, node.datum().y);
-
-                        //First load then color the first node/////////////////////////
-                        d3.selectAll("li")
-                                .style("background", "#cce5ff");
-
-                        if (firstLoad) {
-                            d3.select("#list").select("li")
-                                    .style("background", "#ffa366");
-                            firstLoad = false;
-                        } else
-                        {
-                            d3.select(this)
-                                    .style("background", "#ffa366");
-                        }
-///////////////////////////////////////////////////////////////////////////
-                        populateDetailPage(node.datum());
-
-                    }
-
-                    //Temove the first lists of elements to not have duplicates
-                    d3.select("#list").selectAll("li").remove();
-
-                    var list = d3.select("#list").append("ul").selectAll("li")
-                            .data(filteredEntities)
-                            .enter()
-                            .append("li")
-                            .attr("id", function (d, i) {
-                                return "index" + i;
-                            })
-                            .style("font-size", 15 + "px")
-                            .text(function (d) {
-                                var name = "";
-                                if (d.names)
-                                    if (d.names.length !== 0)
-                                        d.names.forEach(function (n) {
-                                            if (isASCII(n.name)) {
-                                                name = n.name;
-                                            }
-                                        });
-                                return name;
-                            })
-                            .style("text-anchor", "start")
-                            .on("click", click);
-                    click(d3.select("#list").select("li").datum());
-
-
-
-                };
                 //Create the graphic and add info into the tabs
                 self.createGraphAndAddInfo = function (searchedEntity, linksBetweenEntities, relatedEntities) {
 
@@ -678,11 +253,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                                 return d.addresses[0].country;
                             })
                             .attr("isListedIn", function (d) {
-                                if (d.infos !== null)
-                                    if (d.infos.length !== 0)
-                                        return d.infos[0].info;
-                                    else
-                                        return "";
+                                if (d.sanctionName !== null)
+                                    return d.sanctionName;
+                                else
+                                    return "";
                             })
                             .attr("x", function (d) {
                                 return d.x;
@@ -844,9 +418,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             else
                                 numberLists = node.infos.length;
                             tooltip.html(node.names[0].name +
-                                    "<br>Type: " + node.type +
-                                    "<br>Status: <span style='color: " + statusColor + "'>" + node.status + "</span>" +
-                                    "<br>Listed in " + numberLists + " Sanction Lists");
+                                    "<br>" + self.tooltipType() + ": " + node.type +
+                                    "<br>" + self.tooltipStatus() + ": <span style='color: " + statusColor + "'>" + node.status + "</span>" +
+                                    "<br>" + self.tooltipListDetails1() + " " + numberLists + " " + self.tooltipListDetails2());
                         } catch (err) {
                             tooltip.style("visibility", "visible");
                             tooltip.html(node.name);
@@ -1008,7 +582,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                  * 
                  */
 
-
                 self.searchedEntity = ko.observableArray([]);
                 self.relatedEntities = ko.observableArray([]);
                 self.relatedEntitiesUnstructured = ko.observableArray([]);
@@ -1043,371 +616,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                         });
                 });
 
-
-                /*
-                 * ORIGINAL d3 json
-                 */
-
-                /*/
-                 d3.json("js/data/pst2.json", function (error, graph) {
-                 if (error)
-                 throw error;
-                 
-                 root = graph.nodes[0];
-                 root.x = width / 2;
-                 root.y = height / 2;
-                 root.fixed = true;
-                 
-                 graph.links.forEach(function (d, i) {
-                 d.source = isNaN(d.source) ? d.source : graph.nodes[d.source];
-                 d.target = isNaN(d.target) ? d.target : graph.nodes[d.target];
-                 });
-                 //                    tooltip = d3.select(".tooltip");
-                 var linkedByIndex = {};
-                 graph.links.forEach(function (d) {
-                 linkedByIndex[d.source + "," + d.target] = true;
-                 });
-                 
-                 //container.call(tip);
-                 
-                 var myScale = d3.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
-                 
-                 var arc = d3.svg.arc()
-                 .innerRadius(43)
-                 .outerRadius(46)
-                 .startAngle(myScale(0))
-                 .endAngle(myScale(100));
-                 
-                 container.attr("transform", "translate(0,0)scale(0.5)");
-                 
-                 var link = container.append("g").selectAll(".link")
-                 .data(graph.links)
-                 .enter().append("line")
-                 .attr("class", "link")
-                 .attr("x1", function (d) {
-                 return d.source.x;
-                 })
-                 .attr("y1", function (d) {
-                 return d.source.y;
-                 })
-                 .attr("x2", function (d) {
-                 return d.target.x;
-                 })
-                 .attr("y2", function (d) {
-                 return d.target.y;
-                 })
-                 .attr("type", function (d) {
-                 return d.linktype;
-                 })
-                 .on("mouseover", function (d) {
-                 linkToolTip(d3.select(this));
-                 })
-                 .on("mouseout", function (d) {
-                 tooltip
-                 .style("visibility", "hidden");
-                 })
-                 .on("mousemove", mousemove)
-                 .style("stroke-width", function (d) {
-                 return 6;
-                 })
-                 .style("marker-end", "url(#resolved)");
-                 
-                 
-                 
-                 
-                 //                    var marker = container.append("g").selectAll("marker")
-                 //                            .data(["suit", "licensing", "resolved"])
-                 //                            .enter().append("marker")
-                 //                            .attr("id", function (d) {
-                 //                                return d;
-                 //                            })
-                 //                            .attr("viewBox", "0 -5 10 10")
-                 //                            .attr("refX", 25)
-                 //                            .attr("refY", 0)
-                 //                            .attr("markerWidth", 2)
-                 //                            .attr("markerHeight", 2)
-                 //                            .attr("orient", "auto")
-                 //                            .append("path")
-                 //                            .attr("d", "M0,-5L10,0L0,5")
-                 //                            .style("stroke", "#4679BD")
-                 //                            .style("opacity", "0.6");
-                 
-                 var node = container.append("g").selectAll(".node")
-                 .data(graph.nodes)
-                 .enter()
-                 .append("g")
-                 .attr("id", function (d) {
-                 return d.id;
-                 })
-                 .attr("class", "node")
-                 .attr("name", function (d) {
-                 return d.name;
-                 })
-                 .attr("address", function (d) {
-                 return d.address;
-                 })
-                 .attr("isListedIn", function (d) {
-                 if (d.isListedIn !== null)
-                 return d.isListedIn;
-                 else
-                 return "";
-                 })
-                 .attr("x", function (d) {
-                 return d.x;
-                 })
-                 .attr("y", function (d) {
-                 return d.y;
-                 })
-                 .attr("width", function (d) {
-                 return "24px";
-                 })
-                 .attr("height", function (d) {
-                 return "24px";
-                 })
-                 .attr("isChosen", "no")
-                 .attr("name", function (d) {
-                 return d.name;
-                 })
-                 .call(force.drag)
-                 .on("mouseover", mouseover)
-                 .on("mousemove", mousemove)
-                 .on("mouseout", mouseout)
-                 .on("click", clickImage)
-                 .on("dblclick.zoom", null)
-                 .on("dblclick", dblclick);
-                 
-                 
-                 
-                 var trust_cirlce = node
-                 .append("circle")
-                 .attr("r", 26)
-                 .style("fill", function (d) {
-                 return trust_to_color(d.trust, d.status);
-                 });
-                 
-                 //                    var image_node = node
-                 //                            .append("image")
-                 //                            .attr("class", "node_image")
-                 //                            .attr("xlink:href", function (d) {
-                 //                                return "js/views/resources/" + d.type + ".svg";
-                 //                            })
-                 //                            .attr("x", -12)
-                 //                            .attr("y", -12)
-                 //                            .attr("width", function (d) {
-                 //                                return "24px";
-                 //                            })
-                 //                            .attr("height", function (d) {
-                 //                                return "24px";
-                 //                            });
-                 
-                 var vis = node
-                 .append("path")
-                 .attr("transform", function (d) {
-                 return "scale(0.1,0.1)";
-                 })
-                 .attr("class", "highlight_circle")
-                 .attr("d", arc)
-                 .attr("opacity", 0);
-                 
-                 var text = container.append("g").selectAll(".text")
-                 .data(graph.nodes)
-                 .enter().append("text")
-                 .attr("class", "text_svg")
-                 .attr("dy", ".35em")
-                 .style("font-size", 13 + "px");
-                 
-                 text.text(function (d) {
-                 return d.name;
-                 })
-                 .style("text-anchor", "middle");
-                 
-                 
-                 force
-                 .nodes(graph.nodes)
-                 .links(graph.links)
-                 .start();
-                 
-                 
-                 var text_link = container.append("g").selectAll(".text_link_svg")
-                 .data(force.links())
-                 .enter().append("text")
-                 .text(function (d) {
-                 return d.linktype;
-                 })
-                 .attr("class", "text_link_svg")
-                 .attr("dy", ".35em")
-                 .style("text-anchor", "middle")
-                 .style("font-size", 10 + "px");
-                 
-                 //                    change();
-                 
-                 //                    node.append("title")
-                 //                            .text(function (d) {
-                 //                                return d.name;
-                 //                            });
-                 //
-                 //                    info_color_container = d3.select(".svg").append("g")
-                 //                            .attr("class", ".info_color_container");
-                 //
-                 //                    info_color_container.selectAll("g")
-                 //                            .data(trustData)
-                 //                            .enter()
-                 //                            .append("g")
-                 //                            .attr("class", ".info_color_list")
-                 //                            .attr("data-legend", function (d) {
-                 //                                return d.name
-                 //                            })
-                 
-                 
-                 //                    var trust = d3.select(".svg").append("g")
-                 //                            .attr("id", "trustScore")
-                 //                            .attr("transform", "translate(570,-14)");
-                 //
-                 //                    trust.append("rect")
-                 //                            .attr("width", 60 * graph.level_trust.length)
-                 //                            .attr("height", 27 * graph.level_trust.length)
-                 //                            .style("fill", "#eaf0fa");
-                 //
-                 //                    var trust_draw = trust.selectAll()
-                 //                            .data(graph.level_trust)
-                 //                            .enter();
-                 //
-                 //                    trust_draw.append("text")
-                 //                            .attr("transform", function (d, i) {
-                 //                                return "translate(22," + 25 * (i + 1) + ")";
-                 //                            })
-                 //                            .text(function (d) {
-                 //                                return d.Message;
-                 //                            })
-                 //                            .style("fill", "black")
-                 //                            .style("dominant-baseline", "central");
-                 //
-                 //                    trust_draw.append("circle")
-                 //                            .attr("r", 10)
-                 //                            .attr("transform", function (d, i) {
-                 //                                return "translate(10," + 25 * (i + 1) + ")";
-                 //                            })
-                 //                            .style("fill", function (d) {
-                 //                                return d.color;
-                 //                            });
-                 
-                 function mouseout(node) {
-                 text.style("font-weight", "normal");
-                 link.style("stroke", "#999");
-                 tooltip
-                 .style("visibility", "hidden");
-                 }
-                 
-                 function mousemove(node) {
-                 tooltip.style("top", (d3.event.pageY + 16) + "px")
-                 .style("left", (d3.event.pageX + 16) + "px");
-                 }
-                 
-                 function mouseover(node) {
-                 text.style("font-weight", function (o) {
-                 return isConnected(node, o) ? "bold" : "normal";
-                 });
-                 
-                 link.style("stroke", function (o) {
-                 return o.source.index === node.index || o.target.index === node.index ? "red" : "#999";
-                 });
-                 
-                 try {
-                 statusColor = "red";
-                 tooltip.style("visibility", "visible");
-                 tooltip.html(node.name +
-                 "<br>Type: " + node.type +
-                 "<br>Status: <span style='color: " + statusColor + "'>" + node.status + "</span>" +
-                 "<br>Listed in " + node.isListedIn.length + " Sanction Lists");
-                 } catch (err) {
-                 tooltip.style("visibility", "visible");
-                 tooltip.html(node.name);
-                 
-                 }
-                 }
-                 
-                 
-                 
-                 /////Checkbox///////////////////////////////////////////////////////////
-                 
-                 
-                 d3.select("#node_check_box").on("change", change);
-                 d3.select("#link_check_box").on("change", change);
-                 function change() {
-                 if (d3.select('#node_check_box').property('checked') === false)
-                 isDisplay = "initial";
-                 else
-                 isDisplay = "none";
-                 d3.selectAll(".text_svg")
-                 .style("display", isDisplay);
-                 
-                 if (d3.select('#link_check_box').property('checked') === false)
-                 isDisplay = "initial";
-                 else
-                 isDisplay = "none";
-                 d3.selectAll(".text_link_svg")
-                 .style("display", isDisplay);
-                 }
-                 ///////////////////////////////////////////////////////////////////////
-                 
-                 function isConnected(a, b) {
-                 return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index === b.index;
-                 }
-                 
-                 function dblclick(node) {
-                 
-                 root.fixed = false;
-                 }
-                 
-                 render();
-                 function render() {
-                 force.on("tick", function () {
-                 
-                 text_link.attr("x", function (d) {
-                 return (d.source.x + d.target.x) / 2 + 3;
-                 })
-                 .attr("y", function (d) {
-                 return (d.source.y + d.target.y) / 2;
-                 });
-                 
-                 
-                 link.attr("x1", function (d) {
-                 return d.source.x;
-                 })
-                 .attr("y1", function (d) {
-                 return d.source.y;
-                 })
-                 .attr("x2", function (d) {
-                 return d.target.x;
-                 })
-                 .attr("y2", function (d) {
-                 return d.target.y;
-                 })
-                 // .style("stroke",function(d){if(d.linktype=="Subsidiary") return "red";});
-                 
-                 node.attr("transform", function (d) {
-                 return "translate(" + d.x + "," + d.y + ")";
-                 });
-                 
-                 text.attr("x", function (d) {
-                 return d.x;
-                 })
-                 .attr("y", function (d) {
-                 return d.y + 38;
-                 });
-                 
-                 
-                 
-                 });
-                 }
-                 
-                 });
-                 
-                 /**/
-
-                /*
-                 * End ORIGINAL d3 json
-                 */
 
                 self.reCalculateLayoutWhenResize = function () {
                     if (IsExpanded === false) {
@@ -1638,7 +846,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     {"name": "Short"},
                     {"name": "CSFDSFSS"}];
 
-
                 function mouseOverList(date) {
                     try {
                         tooltip = d3.select(".tooltip");
@@ -1665,7 +872,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
                 function populateDetailPage(node) {
                     ///Special case for changing Identification
-
+                    self.nodeData(node);
+                    
                     switch (node.type) {
                         case "company":
                             d3.select("#identification_label")
@@ -1762,6 +970,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                                         detailAddress = detailAddress + " ," + nodeAddress.street;
                                     else
                                         detailAddress = nodeAddress.street;
+                                if (nodeAddress.district)
+                                    if (detailAddress !== "")
+                                        detailAddress = detailAddress + " ," + nodeAddress.district;
+                                    else
+                                        detailAddress = nodeAddress.district;
                                 if (nodeAddress.city)
                                     if (detailAddress !== "")
                                         detailAddress = detailAddress + " ," + nodeAddress.city;
@@ -1774,11 +987,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                                     detailAddress = detailAddress + " ," + nodeAddress.zipcode;
                                 else
                                     detailAddress = nodeAddress.zipcode;
-                            if (nodeAddress.district)
-                                if (detailAddress !== "")
-                                    detailAddress = detailAddress + " ," + nodeAddress.district;
-                                else
-                                    detailAddress = nodeAddress.district;
+
                             if (nodeAddress.state)
                                 if (detailAddress !== "")
                                     detailAddress = detailAddress + " ," + nodeAddress.state;
@@ -1818,23 +1027,32 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                                 });
                     } catch (err) {
                     }
-/////////////////////////Preparing data to populate the list////////////////////////
+                    //Preparing data to populate the list////////////////////////
+
+                    //Commented for future use, when will be more than one list for an entity
+//                    try
+//                    {
+//                        listList1 = node.sanctionName;
+//                        for (var i in listList1) {
+//                            listList = listList.concat(listList1[i].info, ",");
+//                        }
+//                        listList = listList1;
+//// 	listList=node.datum().isListedIn
+//// 	.each().Name.toString().split(",");
+//                        listList = listList.slice(0, -1);
+//                        listList = listList.split(",");
+//                        if (listList[0] === "")
+//                            numOfList = 0;
+//                        else
+//                            numOfList = listList.length;
+//                    } catch (err) {
+//                        numOfList = 0;
+//                    }
 
                     try
                     {
-                        listList1 = node.infos;
-                        for (var i in listList1) {
-                            listList = listList.concat(listList1[i].info, ",");
-
-                        }
-// 	listList=node.datum().isListedIn
-// 	.each().Name.toString().split(",");
-                        listList = listList.slice(0, -1);
-                        listList = listList.split(",");
-                        if (listList[0] === "")
-                            numOfList = 0;
-                        else
-                            numOfList = listList.length;
+                        node.sanctionName;
+                        numOfList = 1;
                     } catch (err) {
                         numOfList = 0;
                     }
@@ -1862,29 +1080,25 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     d3.select("#numOfAddress").text(numOfAddress);
 
 ////////////////////////////////////////////////////////////////////
-                    var listOfList = d3.select("#listList").append("td")
+                    var listOfList = d3.select("#listList").append("tr")
                             .attr("class", "ul_list_List")
                             .selectAll("tr")
-                            .data(node.infos)
+                            .data([node])
                             .enter()
                             .append("tr")
                             .attr("class", "listList")
                             .style("font-size", 15 + "px")
-                            .text(function (d) {
-                                return d.info;
-                            })
+                            .text(node.sanctionName)
                             .style("text-anchor", "start")
-                            .on("click", overlay)
-                            .on("mouseover", function (d) {
-
-                                if (d.Expiration !== undefined)
-                                    mouseOverList(d.Expiration);
+                            .on("click", overlayTable)
+                            .on("mouseover", function () {
+                                if (node.validto !== undefined)
+                                    mouseOverList(node.validto);
                             })
                             .on("mousemove", mousemove)
                             .on("mouseout", mouseout);
 
-
-                    var listOfAKA = d3.select("#listAKA").append("td")
+                    var listOfAKA = d3.select("#listAKA").append("tr")
                             .attr("class", "ul_list_List")
                             .selectAll("tr")
                             .data(listAKA)
@@ -1897,7 +1111,20 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             })
                             .style("text-anchor", "start");
 
-                    var listOfKA = d3.select("#listKA").append("td")
+//                    var listOfAKA = d3.select("#listAKA").append("td")
+//                            .attr("class", "ul_list_List")
+//                            .selectAll("tr")
+//                            .data(listAKA)
+//                            .enter()
+//                            .append("tr")
+//                            .attr("class", "listAKA")
+//                            .style("font-size", 15 + "px")
+//                            .text(function (d) {
+//                                return d.name;
+//                            })
+//                            .style("text-anchor", "start");
+
+                    var listOfKA = d3.select("#listKA").append("tr")
                             .attr("class", "ul_list_List")
                             .selectAll("tr")
                             .data(listKA)
@@ -1910,6 +1137,20 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             })
                             .style("text-anchor", "start");
                 }
+
+                function overlayTable() {
+                    var table = d3.select('#overlayTableContainer').append('table');
+                    
+                    var tr = table.selectAll('tr')
+                            .data(self.nodeData())
+                            .enter()
+                            .append('tr');
+                    
+                    tr.append('td').html(function(node) {
+                        return node; 
+                    });
+                }
+
 
                 function overlay() {
                     el = d3.select("#overlay");
@@ -1931,7 +1172,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                             .on("click", el.style("visibility", "hidden"));
 
                 }
-
 
                 /**/
                 function click(list) {
@@ -1993,6 +1233,129 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                 }
                 /**/
 
+                //Translation
+                self.language = ko.observable().subscribeTo("languagesDetailsPage");
+                self.language.subscribe(function (selectedLanguage) {
+                    utils.setLanguage(selectedLanguage);
+                    if (selectedLanguage === "german") {
+                        //First part
+                        $('#name_label').text(german.detailsPage.name);
+                        $('#address_label').text(german.detailsPage.primaryAddress);
+                        $('#identification_label').text(german.detailsPage.identification);
+                        $('#country_label').text(german.detailsPage.country);
+                        //Second Part
+                        //Sanction Lists Description
+                        var extractedListsNumber = parseInt($('#numOfList').text());
+                        var firstPartListDesc = german.detailsPage.sanctionListsDescription1;
+                        var secondPartListDesc = german.detailsPage.sanctionListsDescription2;
+                        $('#sanction_lists_label').text("");
+                        $('#sanction_lists_label').append(firstPartListDesc + ' ' + '<label id="numOfList" class="numOfList">' + extractedListsNumber + '</label>' + ' ' + secondPartListDesc);
+                        //Known Names Description
+                        var extractedNamesNumber = parseInt($('#numOfName').text());
+                        var firstPartNamesDesc = german.detailsPage.knownNamesDescription1;
+                        var secondPartNamesDesc = german.detailsPage.knownNamesDescription2;
+                        $('#also_known_as_label').text("");
+                        $('#also_known_as_label').append(firstPartNamesDesc + ' ' + '<label id="numOfName" class="numOfList">' + extractedNamesNumber + '</label>' + ' ' + secondPartNamesDesc);
+                        //
+                        //Known Addresses Description
+                        var extractedAddressesNumber = parseInt($('#numOfAddress').text());
+                        var firstPartAddressDesc = german.detailsPage.knownAddressDescription1;
+                        var secondPartAddressDesc = german.detailsPage.knownAddressDescription2;
+                        $('#known_address_label').text("");
+                        $('#known_address_label').append(firstPartAddressDesc + ' ' + '<label id="numOfAddress" class="numOfList">' + extractedAddressesNumber + '</label>' + ' ' + secondPartAddressDesc);
+                        //Hide node's label
+                        $('#visualization_hide_node_label span').text(german.detailsPage.hideNodeName);
+                        //Hide link's label
+                        $('#visualization_hide_link_label span').text(german.detailsPage.hideLinkName);
+                        //Tooltip
+                        self.tooltipType(german.detailsPage.tooltipType);
+                        self.tooltipStatus(german.detailsPage.tooltipStatus);
+                        self.tooltipListDetails1(german.detailsPage.tooltipListDetails1);
+                        self.tooltipListDetails2(german.detailsPage.tooltipListDetails2);
+                    } else if (selectedLanguage === "english") {
+                        //First part
+                        $('#name_label').text(english.detailsPage.name);
+                        $('#address_label').text(english.detailsPage.primaryAddress);
+                        $('#identification_label').text(english.detailsPage.identification);
+                        $('#country_label').text(english.detailsPage.country);
+                        //Second Part
+                        //Sanction Lists Description
+                        var extractedListsNumber = parseInt($('#numOfList').text());
+                        var firstPart = english.detailsPage.sanctionListsDescription1;
+                        var secondPart = english.detailsPage.sanctionListsDescription2;
+                        $('#sanction_lists_label').text("");
+                        $('#sanction_lists_label').append(firstPart + ' ' + '<label id="numOfList" class="numOfList">' + extractedListsNumber + '</label>' + ' ' + secondPart);
+                        //Known Names Description
+                        var extractedNamesNumber = parseInt($('#numOfName').text());
+                        var firstPartNamesDesc = english.detailsPage.knownNamesDescription1;
+                        var secondPartNamesDesc = english.detailsPage.knownNamesDescription2;
+                        $('#also_known_as_label').text("");
+                        $('#also_known_as_label').append(firstPartNamesDesc + ' ' + '<label id="numOfName" class="numOfList">' + extractedNamesNumber + '</label>' + ' ' + secondPartNamesDesc);
+                        //Known Addresses Description
+                        var extractedAddressesNumber = parseInt($('#numOfAddress').text());
+                        var firstPartAddressDesc = english.detailsPage.knownAddressDescription1;
+                        var secondPartAddressDesc = english.detailsPage.knownAddressDescription2;
+                        $('#known_address_label').text("");
+                        $('#known_address_label').append(firstPartAddressDesc + ' ' + '<label id="numOfAddress" class="numOfList">' + extractedAddressesNumber + '</label>' + ' ' + secondPartAddressDesc);
+                        //Hide node's label
+                        $('#visualization_hide_node_label span').text(english.detailsPage.hideNodeName);
+                        //Hide link's label
+                        $('#visualization_hide_link_label span').text(english.detailsPage.hideLinkName);
+                        //Tooltip
+                        self.tooltipType(german.detailsPage.tooltipType);
+                        self.tooltipStatus(german.detailsPage.tooltipStatus);
+                        self.tooltipListDetails1(german.detailsPage.tooltipListDetails1);
+                        self.tooltipListDetails2(german.detailsPage.tooltipListDetails2);
+                    } else if (selectedLanguage === "french") {
+                        //First part
+                        $('#name_label').text(french.detailsPage.name);
+                        $('#address_label').text(french.detailsPage.primaryAddress);
+                        $('#identification_label').text(french.detailsPage.identification);
+                        $('#country_label').text(french.detailsPage.country);
+                        //Second Part
+                        //Sanction Lists Description
+                        var extractedListsNumber = parseInt($('#numOfList').text());
+                        var firstPart = french.detailsPage.sanctionListsDescription1;
+                        var secondPart = french.detailsPage.sanctionListsDescription2;
+                        $('#sanction_lists_label').text("");
+                        $('#sanction_lists_label').append(firstPart + ' ' + '<label id="numOfList" class="numOfList">' + extractedListsNumber + '</label>' + ' ' + secondPart);
+                        //Known Names Description
+                        var extractedNamesNumber = parseInt($('#numOfName').text());
+                        var firstPartNamesDesc = french.detailsPage.knownNamesDescription1;
+                        var secondPartNamesDesc = french.detailsPage.knownNamesDescription2;
+                        $('#also_known_as_label').text("");
+                        $('#also_known_as_label').append(firstPartNamesDesc + ' ' + '<label id="numOfName" class="numOfList">' + extractedNamesNumber + '</label>' + ' ' + secondPartNamesDesc);
+                        //Known Addresses Description
+                        var extractedAddressesNumber = parseInt($('#numOfAddress').text());
+                        var firstPartAddressDesc = french.detailsPage.knownAddressDescription1;
+                        var secondPartAddressDesc = french.detailsPage.knownAddressDescription2;
+                        $('#known_address_label').text("");
+                        $('#known_address_label').append(firstPartAddressDesc + ' ' + '<label id="numOfAddress" class="numOfList">' + extractedAddressesNumber + '</label>' + ' ' + secondPartAddressDesc);
+                        //Hide node's label
+                        $('#visualization_hide_node_label span').text(french.detailsPage.hideNodeName);
+                        //Hide link's label
+                        $('#visualization_hide_link_label span').text(french.detailsPage.hideLinkName);
+                        //Tooltip
+                        self.tooltipType(french.detailsPage.tooltipType);
+                        self.tooltipStatus(french.detailsPage.tooltipStatus);
+                        self.tooltipListDetails1(french.detailsPage.tooltipListDetails1);
+                        self.tooltipListDetails2(french.detailsPage.tooltipListDetails2);
+                    }
+                });
+
+                switch (self.lang) {
+                    case "en" :
+                        self.language("english");
+                        break;
+                    case "ge" :
+                        self.language("german");
+                        break;
+                    case "fr" :
+                        self.language("french");
+                        break;
+                }
+
+
             }, 10);
 
 
@@ -2014,11 +1377,17 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
 
         self.entid = ko.observable("");
         self.person = ko.observableArray([]);
+        self.urlRouter = ko.observableArray([]);
+        self.handle = ko.observableArray([]);
 
         self.handleActivated = function (info) {
             var parentRouter = info.valueAccessor().params.ojRouter.parentRouter;
 
             self.empRouter = parentRouter.currentState().value;
+            var startSubstring = info.element.baseURI.indexOf("lang=") + 5;
+            var endSubstring = info.element.baseURI.indexOf("lang=") + 7;
+            self.urlRouter(info.element.baseURI.substring(startSubstring, endSubstring));
+            self.handle().push(self.urlRouter());
 
             self.empRouter.configure(function (stateId) {
                 var state;
@@ -2054,15 +1423,18 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb'
                     self.person(person);
                     self.entid(id);
                     resolve(true);
-                    console.log("loadData");
+                    self.urlRouter();
+                    self.handle().push(self.entid());
+                    console.log("loadedDataSolr");
                 }).fail(function (error) {
                     console.log('Error: ' + error.message);
                     resolve(false);
                 });
             });
         };
-
-
+//        var language = "s"
+        //self.empRouter.substring(indexOf("lang="),indexOf("lang=")+2);
+//        self.handle = ko.observableArray([language],[self.entid()]);
     }
     return testD3ContentViewModel;
 
