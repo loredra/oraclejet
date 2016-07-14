@@ -12,7 +12,7 @@ define(['knockout'],
             self.previousFilterList = ko.observableArray([]);
             var oldSizeTreeCountry, oldPosTreeCountry, oldPosTreeList, oldSizeTreeList;
             
-            var langSel;
+            var langSel ;
             
             function setLanguage(language){
                 langSel = language;

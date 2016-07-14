@@ -20,10 +20,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
             self.tooltipStatus = ko.observable("Status");
             self.tooltipListDetails1 = ko.observable("Listed in");
             self.tooltipListDetails2 = ko.observable("Sanction Lists");
-            
-            
+            //self.validFrom = ko.observable("The Expiration Date is");
+
+
             //Observables to store nodes
-            self.nodeData = ko.observableArray([]);
+            self.nodeData = ko.observableArray([""]);
 
             //window.timeout to launch the code after the dom loaded
             window.setTimeout(function () {
@@ -74,9 +75,18 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                 function isASCII(str) {
                     return /^[\x00-\x7F]*$/.test(str);
                 }
-                /*
-                 * 
-                 */
+
+                function getEnglishName(names) {
+                    var name = "";
+                    if (names)
+                        if (names.length !== 0)
+                            names.forEach(function (n) {
+                                if (isASCII(n.name)) {
+                                    name = n.name;
+                                }
+                            });
+                    return name;
+                }
 
                 var updating = false;
 
@@ -238,16 +248,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             })
                             .attr("class", "node")
                             .attr("name", function (d) {
-                                var name = "";
-                                if (d.names)
-                                    if (d.names.length !== 0)
-                                        d.names.forEach(function (n) {
-                                            if (isASCII(n.name)) {
-                                                name = n.name;
-                                            }
-                                        });
-                                //name = d.names[0].name;
-                                return name;
+                                return getEnglishName(d.names);
                             })
                             .attr("address", function (d) {
                                 return d.addresses[0].country;
@@ -411,13 +412,14 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             if (node.names === undefined)
                                 name = " ";
                             else
-                                name = node.names[0].name;
+                                name = getEnglishName(node.names);
                             var numberLists;
                             if (node.infos === undefined)
                                 numberLists = 0;
                             else
                                 numberLists = node.infos.length;
-                            tooltip.html(node.names[0].name +
+
+                            tooltip.html(name +
                                     "<br>" + self.tooltipType() + ": " + node.type +
                                     "<br>" + self.tooltipStatus() + ": <span style='color: " + statusColor + "'>" + node.status + "</span>" +
                                     "<br>" + self.tooltipListDetails1() + " " + numberLists + " " + self.tooltipListDetails2());
@@ -578,10 +580,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     /**/
                 };
 
-                /*
-                 * 
-                 */
-
                 self.searchedEntity = ko.observableArray([]);
                 self.relatedEntities = ko.observableArray([]);
                 self.relatedEntitiesUnstructured = ko.observableArray([]);
@@ -737,43 +735,46 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
 
                     //creating new trees
                     if (d3.event.shiftKey) {
-                        //There are to ids: the document id and the node id
-                        var entity_id = node._id;
-                        var entityid = node.id;
-                        //Arrays to store the nodes and the links
-                        var newLinks;
-                        var newEntitiesUnstructured;
-                        var newEntities;
-                        //Queries to make
-                        var queryRelation = "FOR c IN EntityRelation FILTER c._from==" + "\"" + entity_id + "\"" + " OR c._to==" + "\"" + entity_id + "\"" + " RETURN c";
-                        var queryEntities = "RETURN UNIQUE( UNION( FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "FROM" + entityid + "%" + "\"" + " RETURN (FOR d IN Entity FILTER d._id == c._to RETURN d),FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "%TO" + entityid + "%" + "\"" + "RETURN  (FOR d IN Entity FILTER d._id == c._from RETURN d)))";
-                        db.query(queryRelation).then(function (lin) {
-                            var links = lin._result;
-                            if (links.length > 1) {
-                                newLinks = links;
-                            }
-                        }).then(function () {
-                            if (newLinks)
-                                db.query(queryEntities).then(function (rel) {
-                                    var relations = rel._result;
-                                    newEntitiesUnstructured = relations;
-                                    newEntities = [node];
-                                    newEntitiesUnstructured[0].forEach(function (entity) {
-                                        newEntities.push(entity[0]);
-                                    });
-                                }).then(function () {
-                                    //Remove the nodes before. For some reason d3, on updating, duplicates the graph.    
-                                    container.selectAll("*").remove();
-                                    d3.select("#list").selectAll("li").remove();
-                                    //Update
-                                    updating = true;
-                                    self.createGraphAndAddInfo([node], newLinks, newEntities);
-                                });
-                        });
+
                         return;
                     }
                     if (d3.event.defaultPrevented)
                         return;
+
+                    //There are to ids: the document id and the node id
+                    var entity_id = node._id;
+                    var entityid = node.id;
+                    //Arrays to store the nodes and the links
+                    var newLinks;
+                    var newEntitiesUnstructured;
+                    var newEntities;
+                    //Queries to make
+                    var queryRelation = "FOR c IN EntityRelation FILTER c._from==" + "\"" + entity_id + "\"" + " OR c._to==" + "\"" + entity_id + "\"" + " RETURN c";
+                    var queryEntities = "RETURN UNIQUE( UNION( FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "FROM" + entityid + "%" + "\"" + " RETURN (FOR d IN Entity FILTER d._id == c._to RETURN d),FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "%TO" + entityid + "%" + "\"" + "RETURN  (FOR d IN Entity FILTER d._id == c._from RETURN d)))";
+                    db.query(queryRelation).then(function (lin) {
+                        var links = lin._result;
+                        if (links.length > 1) {
+                            newLinks = links;
+                        }
+                    }).then(function () {
+                        if (newLinks)
+                            db.query(queryEntities).then(function (rel) {
+                                var relations = rel._result;
+                                newEntitiesUnstructured = relations;
+                                newEntities = [node];
+                                newEntitiesUnstructured[0].forEach(function (entity) {
+                                    newEntities.push(entity[0]);
+                                });
+                            }).then(function () {
+                                //Remove the nodes before. For some reason d3, on updating, duplicates the graph.    
+                                container.selectAll("*").remove();
+                                d3.select("#list").selectAll("li").remove();
+                                //Update
+                                updating = true;
+                                self.createGraphAndAddInfo([node], newLinks, newEntities);
+                            });
+                    });
+
                     d3.selectAll(".node")
                             .attr("isChosen", "no")
                             .select(".node_image")
@@ -873,7 +874,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                 function populateDetailPage(node) {
                     ///Special case for changing Identification
                     self.nodeData(node);
-                    
+
+
                     switch (node.type) {
                         case "company":
                             d3.select("#identification_label")
@@ -892,7 +894,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                                     .text("Identification");
                             break;
                     }
-
 
 
                     //////////////////////Populate content in to detail div/////////////////// 
@@ -1090,7 +1091,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .style("font-size", 15 + "px")
                             .text(node.sanctionName)
                             .style("text-anchor", "start")
-                            .on("click", overlayTable)
+                            .on("click", overlay)
                             .on("mouseover", function () {
                                 if (node.validto !== undefined)
                                     mouseOverList(node.validto);
@@ -1138,39 +1139,131 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .style("text-anchor", "start");
                 }
 
-                function overlayTable() {
-                    var table = d3.select('#overlayTableContainer').append('table');
-                    
-                    var tr = table.selectAll('tr')
-                            .data(self.nodeData())
-                            .enter()
-                            .append('tr');
-                    
-                    tr.append('td').html(function(node) {
-                        return node; 
-                    });
-                }
-
-
                 function overlay() {
+                    //Show the table and add closing conditions
                     el = d3.select("#overlay");
-                    el
-                            .style("visibility",
-                                    (el.style("visibility") === "visible") ? "hidden" : "visible")
-                            .on("click", closeOverlay);
-                    ;
+                    el.style("visibility", (el.style("visibility") === "visible") ? "hidden" : "visible").on("click", closeOverlay);
+                    el.select(".close").on("click", closeOverlay);
 
-                    el.select(".close")
-                            .on("click", closeOverlay);
+                    //
+                    //Build the rest of the table using d3
+                    //
+                    //Table for Known Names
+                    knownNamesTableColumns = ["Full Name"];
+                    var knownNamesTableColumnsTitle = d3.select("#known_names_table")
+                            .append("tr")
+                            .selectAll("tr")
+                            .data([knownNamesTableColumns])
+                            .enter()
+                            .append("th")
+                            .text(function (title) {
+                                return title;
+                            });
+                    for (var i = 0; i < self.nodeData().names.length; ++i) {
+                        var knownNamesTableData = d3.select("#known_names_table")
+                                .append("tr")
+                                .selectAll("tr")
+                                .data([self.nodeData().names[i]])
+                                .enter()
+                                .append("td")
+                                .text(function (names) {
+                                    return names.name;
+                                });
+                    }
+                    //Table for Known Addresses
+                    knownAddressesTableColumns = ["Country", "State", "Zipcode", "City", "District", "Street", "House Nr.", "Building", "Floor", "Appartment", "Room Nr.", "Sources"];
+                    arrayArangoAllAddresses = ["country", "state", "zipcode", "city", "district", "street", "house", "building", "floor", "appartment", "room", "sourceclass"];
+                    arrayExistingFieldsAddresses = new Array();
+                    var knownAddressesTableColumnsTitle = d3.select("#known_addresses_table")
+                            .append("tr")
+                            .selectAll("tr")
+                            .data(knownAddressesTableColumns)
+                            .enter()
+                            .append("th")
+                            .text(function (title) {
+                                return title;
+                            });
+                    for (var i = 0; i < self.nodeData().addresses.length; ++i) {
+                        for (var k = 0; k < arrayArangoAllAddresses.length; k++) {
+                            var addressField = arrayArangoAllAddresses[k];
+                            var addressValue = "";
+
+                            if (self.nodeData().addresses[i][addressField] !== undefined) {
+                                addressValue = self.nodeData().addresses[i][addressField];
+                            }
+                            arrayExistingFieldsAddresses.push([addressValue]);
+                        }
+                        var knownAddressesTableData = d3.select("#known_addresses_table")
+                                .append("tr")
+                                .selectAll("tr")
+                                .data(arrayExistingFieldsAddresses)
+                                .enter()
+                                .append("td")
+                                .text(function (address) {
+                                    return address;
+                                });
+                    }
+                    //Table made by div elements for General Info
+                    if(self.nodeData().date !== undefined)
+                    d3.select("#general_info_div_table")
+                            .append("div")
+                            .attr("class", "general_info")
+                            .text("Date: " + self.nodeData().date);
+                    if(self.nodeData().status !== undefined)
+                    d3.select("#general_info_div_table")
+                            .append("div")
+                            .attr("class", "general_info")
+                            .text("Status: " + self.nodeData().status);
+                    if(self.nodeData().type !== undefined)
+                    d3.select("#general_info_div_table")
+                            .append("div")
+                            .attr("class", "general_info")
+                            .text("Type: " + self.nodeData().type);
+                    if(self.nodeData().validfrom !== undefined)
+                    d3.select("#general_info_div_table")
+                            .append("div")
+                            .attr("class", "general_info")
+                            .text("Valid From: " + self.nodeData().validfrom);
+                    if(self.nodeData().validto !== undefined)
+                    d3.select("#general_info_div_table")
+                            .append("div")
+                            .attr("class", "general_info")
+                            .text("Valid From: " + self.nodeData().validto);
+                    var arrayGeneralInfo = self.nodeData().infos;
+                    var regulationLink = "";
+                    for (var i = 0; i < arrayGeneralInfo.length; ++i) {
+                        if (arrayGeneralInfo[i].type === "DBRegulationLink") {
+                            regulationLink = arrayGeneralInfo[i].info;
+                            d3.select("#general_info_div_table")
+                                    .append("div")
+                                    .attr("class", "general_info")
+                                    .html('<a href="' + regulationLink + '" target="_blank">Regulation Link</a>')
+                        } else if (arrayGeneralInfo[i].type !== "DBRegulationLink") {
+                            d3.select("#general_info_div_table")
+                                    .append("div")
+                                    .attr("class", "general_info")
+                                    .text(arrayGeneralInfo[i].info);
+                        }
+                    }
 
                 }
 
                 function closeOverlay() {
-
                     el = d3.select("#overlay");
                     d3.select(".close")
                             .on("click", el.style("visibility", "hidden"));
 
+                    //Destroy the part of the table for known names that was built in overlay function
+                    d3.select("#known_names_table")
+                            .selectAll("tr").remove();
+
+                    //Destroy the part of the table for known addresses that was built in overlay function
+                    d3.select("#known_addresses_table")
+                            .selectAll("tr").remove();
+                    
+                    //Destroy the part of the table for general information that was built in overlay function
+                    d3.select("#general_info_div_table")
+                            .selectAll("div").remove();
                 }
 
                 /**/
@@ -1246,12 +1339,16 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         //Second Part
                         //Sanction Lists Description
                         var extractedListsNumber = parseInt($('#numOfList').text());
+                        if (isNaN(extractedListsNumber))
+                            extractedListsNumber = 0;
                         var firstPartListDesc = german.detailsPage.sanctionListsDescription1;
                         var secondPartListDesc = german.detailsPage.sanctionListsDescription2;
                         $('#sanction_lists_label').text("");
                         $('#sanction_lists_label').append(firstPartListDesc + ' ' + '<label id="numOfList" class="numOfList">' + extractedListsNumber + '</label>' + ' ' + secondPartListDesc);
                         //Known Names Description
                         var extractedNamesNumber = parseInt($('#numOfName').text());
+                        if (isNaN(extractedNamesNumber))
+                            extractedNamesNumber = 0;
                         var firstPartNamesDesc = german.detailsPage.knownNamesDescription1;
                         var secondPartNamesDesc = german.detailsPage.knownNamesDescription2;
                         $('#also_known_as_label').text("");
@@ -1259,6 +1356,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         //
                         //Known Addresses Description
                         var extractedAddressesNumber = parseInt($('#numOfAddress').text());
+                        if (isNaN(extractedAddressesNumber))
+                            extractedAddressesNumber = 0;
                         var firstPartAddressDesc = german.detailsPage.knownAddressDescription1;
                         var secondPartAddressDesc = german.detailsPage.knownAddressDescription2;
                         $('#known_address_label').text("");
@@ -1272,6 +1371,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         self.tooltipStatus(german.detailsPage.tooltipStatus);
                         self.tooltipListDetails1(german.detailsPage.tooltipListDetails1);
                         self.tooltipListDetails2(german.detailsPage.tooltipListDetails2);
+                        //Overlay Table
+                        $('#known_names_table_head').text(german.detailsPage.knownNames);
+                        $('#known_addresses_table_head').text(german.detailsPage.knownAddresses);
+                        $('#known_names_table_head').text(german.detailsPage.generalInfo);
                     } else if (selectedLanguage === "english") {
                         //First part
                         $('#name_label').text(english.detailsPage.name);
@@ -1281,18 +1384,24 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         //Second Part
                         //Sanction Lists Description
                         var extractedListsNumber = parseInt($('#numOfList').text());
+                        if (isNaN(extractedListsNumber))
+                            extractedListsNumber = 0;
                         var firstPart = english.detailsPage.sanctionListsDescription1;
                         var secondPart = english.detailsPage.sanctionListsDescription2;
                         $('#sanction_lists_label').text("");
                         $('#sanction_lists_label').append(firstPart + ' ' + '<label id="numOfList" class="numOfList">' + extractedListsNumber + '</label>' + ' ' + secondPart);
                         //Known Names Description
                         var extractedNamesNumber = parseInt($('#numOfName').text());
+                        if (isNaN(extractedNamesNumber))
+                            extractedNamesNumber = 0;
                         var firstPartNamesDesc = english.detailsPage.knownNamesDescription1;
                         var secondPartNamesDesc = english.detailsPage.knownNamesDescription2;
                         $('#also_known_as_label').text("");
                         $('#also_known_as_label').append(firstPartNamesDesc + ' ' + '<label id="numOfName" class="numOfList">' + extractedNamesNumber + '</label>' + ' ' + secondPartNamesDesc);
                         //Known Addresses Description
                         var extractedAddressesNumber = parseInt($('#numOfAddress').text());
+                        if (isNaN(extractedAddressesNumber))
+                            extractedAddressesNumber = 0;
                         var firstPartAddressDesc = english.detailsPage.knownAddressDescription1;
                         var secondPartAddressDesc = english.detailsPage.knownAddressDescription2;
                         $('#known_address_label').text("");
@@ -1302,10 +1411,14 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         //Hide link's label
                         $('#visualization_hide_link_label span').text(english.detailsPage.hideLinkName);
                         //Tooltip
-                        self.tooltipType(german.detailsPage.tooltipType);
-                        self.tooltipStatus(german.detailsPage.tooltipStatus);
-                        self.tooltipListDetails1(german.detailsPage.tooltipListDetails1);
-                        self.tooltipListDetails2(german.detailsPage.tooltipListDetails2);
+                        self.tooltipType(english.detailsPage.tooltipType);
+                        self.tooltipStatus(english.detailsPage.tooltipStatus);
+                        self.tooltipListDetails1(english.detailsPage.tooltipListDetails1);
+                        self.tooltipListDetails2(english.detailsPage.tooltipListDetails2);
+                        //Overlay Table
+                        $('#known_names_table_head').text(english.detailsPage.knownNames);
+                        $('#known_addresses_table_head').text(english.detailsPage.knownAddresses);
+                        $('#known_names_table_head').text(english.detailsPage.generalInfo);
                     } else if (selectedLanguage === "french") {
                         //First part
                         $('#name_label').text(french.detailsPage.name);
@@ -1315,18 +1428,24 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         //Second Part
                         //Sanction Lists Description
                         var extractedListsNumber = parseInt($('#numOfList').text());
+                        if (isNaN(extractedListsNumber))
+                            extractedListsNumber = 0;
                         var firstPart = french.detailsPage.sanctionListsDescription1;
                         var secondPart = french.detailsPage.sanctionListsDescription2;
                         $('#sanction_lists_label').text("");
                         $('#sanction_lists_label').append(firstPart + ' ' + '<label id="numOfList" class="numOfList">' + extractedListsNumber + '</label>' + ' ' + secondPart);
                         //Known Names Description
                         var extractedNamesNumber = parseInt($('#numOfName').text());
+                        if (isNaN(extractedNamesNumber))
+                            extractedNamesNumber = 0;
                         var firstPartNamesDesc = french.detailsPage.knownNamesDescription1;
                         var secondPartNamesDesc = french.detailsPage.knownNamesDescription2;
                         $('#also_known_as_label').text("");
                         $('#also_known_as_label').append(firstPartNamesDesc + ' ' + '<label id="numOfName" class="numOfList">' + extractedNamesNumber + '</label>' + ' ' + secondPartNamesDesc);
                         //Known Addresses Description
                         var extractedAddressesNumber = parseInt($('#numOfAddress').text());
+                        if (isNaN(extractedAddressesNumber))
+                            extractedAddressesNumber = 0;
                         var firstPartAddressDesc = french.detailsPage.knownAddressDescription1;
                         var secondPartAddressDesc = french.detailsPage.knownAddressDescription2;
                         $('#known_address_label').text("");
@@ -1340,6 +1459,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         self.tooltipStatus(french.detailsPage.tooltipStatus);
                         self.tooltipListDetails1(french.detailsPage.tooltipListDetails1);
                         self.tooltipListDetails2(french.detailsPage.tooltipListDetails2);
+                        //Overlay Table
+                        $('#known_names_table_head').text(french.detailsPage.knownNames);
+                        $('#known_addresses_table_head').text(french.detailsPage.knownAddresses);
+                        $('#known_names_table_head').text(french.detailsPage.generalInfo);
                     }
                 });
 

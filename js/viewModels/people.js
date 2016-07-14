@@ -43,7 +43,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //variables to control data requests
                 var nameBeforeUpdate = '';
 
-
                 //Observable array for the filter tree
                 self.filterTree = ko.observableArray([]);
                 self.fq = ko.observable("");
@@ -57,38 +56,35 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                 //control access to tree method
                 self.treeInit = ko.observable("");
-
+                
+                //nodes for OJ Tree
+                self.nodeTreeCountry = ko.observableArray([]);
+                self.nodeTreeList = ko.observableArray([]);
+                
+                //trees filter variables for remembering size
+                self.treeHeight = ko.observable();
+                self.treeListHeight = ko.observable();
+                
                 //Observable array for the filter to apear on the combobox when it is selcted
                 self.comboboxSelectValue = ko.observable([]);
                 self.comboObservable = ko.observable("");
                 //Observable array to transport filter information from the tree change event to valueChangeHandleCombobox function
                 self.arrSelCheckbox = ko.observableArray([]);
 
-
-                //nodes for OJ Tree
-                self.nodeTreeCountry = ko.observableArray([]);
-                self.nodeTreeList = ko.observableArray([]);
-
                 //workers
                 self.worker = new Worker('js/viewModels/worker.js');
                 self.workerList = new Worker('js/viewModels/workerList.js');
-
-
 
                 //store the worker result
                 self.workerResult = ko.observableArray([]);
                 self.workerListResult = ko.observableArray([]);
 
-
                 //something temporary for the expand feature of the tree
                 var treeExpanded = false;
 
-
                 self.searched = ko.observableArray([]);
 
-
                 self.keepFilter = false;
-
 
                 //a ko observable to display the number of hits
                 self.hitsText = ko.observable("results")
@@ -98,6 +94,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //a ko observable to display when there are no results
                 self.noResults = ko.observable("");
                 self.noResults.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
+                
+                //For the number of entities found in one group
+                self.found = ko.observable("Found");
+                self.entities = ko.observable("Entities");
 
                 //
                 //For the Advanced Menu
@@ -137,11 +137,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //self.wordsDistanceAlgorithmDefinition = ko.observable("Defines which algorithm must be used to calculate the distance between words");//this is for the help def
                 //For the Words Distance Algorithm Value
                 self.wordsDistanceAlgorithm = ko.observable("DA_LV");
-
+                
                 //
                 //Bindings for the Languages
                 //
-                
                 var countryFilterPanelTitle = "Country";
                 var listFilterPanelTitle = "List";
                 self.percentageText = ko.observable("Percentage");
@@ -182,7 +181,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.countryText(german.searchPage.searchedEntityProperty.country);
                             self.addressStatus(german.searchPage.searchedEntityProperty.addressStatus);
                             self.countryStatus(german.searchPage.searchedEntityProperty.countryStatus);
-
+                            self.found(german.searchPage.searchedEntityProperty.found);
+                            self.entities(german.searchPage.searchedEntityProperty.entities);
                         }
                         else if (selectedLanguage === "english") {
                             //Translate search input placeholder
@@ -209,6 +209,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.countryText(english.searchPage.searchedEntityProperty.country);
                             self.addressStatus(english.searchPage.searchedEntityProperty.addressStatus);
                             self.countryStatus(english.searchPage.searchedEntityProperty.countryStatus);
+                            self.found(english.searchPage.searchedEntityProperty.found);
+                            self.entities(english.searchPage.searchedEntityProperty.entities);
                         }
                         else if (selectedLanguage === "french") {
                             //Translate search input placeholder
@@ -235,6 +237,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.countryText(french.searchPage.searchedEntityProperty.country);
                             self.addressStatus(french.searchPage.searchedEntityProperty.addressStatus);
                             self.countryStatus(french.searchPage.searchedEntityProperty.countryStatus);
+                            self.found(french.searchPage.searchedEntityProperty.found);
+                            self.entities(french.searchPage.searchedEntityProperty.entities);
                         }
                     }
                 });
@@ -559,8 +563,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 self.cardViewPagingDataSource.extend({rateLimit: {timeout: 10, method: "notifyWhenChangesStop"}});
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
-
-
+                    
                     if (self.keepFilter === false) {
                         self.worker.postMessage(self.facetsCountries());
                         self.worker.onmessage = function (m) {
@@ -630,35 +633,29 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                     $(function () {
                         $("#tree").draggable().resizable({
-                            minHeight: 40,
-                            minWidth: 200,
-                            animate: true
+                            
                         });
                         $("#treeList").draggable().resizable({
-                            minHeight: 40,
-                            minWidth: 200,
-                            animate: true
+                            
                         });
                     });
 
                     $('#tree').on("ojcollapse", function (e, ui) {
-                        if (oj.Router.rootInstance.tx !== "back")
-                            $("#tree").css({"height": 40});
+                        self.treeHeight($("#tree").css("height"));
+                        $("#tree").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
                     $('#tree').on("ojexpand", function (e, ui) {
-                        if (oj.Router.rootInstance.tx !== "back")
-                            $("#tree").css({"height": 220});
+                        $("#tree").css({"height": self.treeHeight()});
                         e.stopImmediatePropagation();
                     });
                     $('#treeList').on("ojcollapse", function (e, ui) {
-                        if (oj.Router.rootInstance.tx !== "back")
-                            $("#treeList").css({"height": 40});
+                        self.treeListHeight($("#treeList").css("height"));
+                        $("#treeList").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
                     $('#treeList').on("ojexpand", function (e, ui) {
-                        if (oj.Router.rootInstance.tx !== "back")
-                            $("#treeList").css({"height": 220});
+                        $("#treeList").css({"height": self.treeListHeight()});
                         e.stopImmediatePropagation();
                     });
 
@@ -779,12 +776,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 };
 
 
-                /**/
                 self.getList = function (company) {
                     return company.doclist.docs[0].lis_name;
                 };
-                /**/
-                /**/
+                
                 self.getName = function (company) {
                     //var name = company.doclist.docs[0].nam_comp_name;
                     //var name = self.allHighlighting()[company.doclist.docs[0].sse_id].nam_comp_name[0];
@@ -796,7 +791,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         var name = "";
                     return name;
                 };
-                /**/
+                
                 /*/
                  
                  self.getNumberEntity = function (company) {
@@ -805,20 +800,18 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                  return number;
                  };
                  /**/
-                /**/
+             
                 self.getPercentage = function (company) {
                     var value = company.doclist.docs[0].score * 100 + "";
                     var percentage = value.substring(0, 5) + "%";
                     return percentage;
                 };
-                /**/
-                /**/
+                
                 self.getPercentageColor = function (company) {
                     var percentage = company.doclist.docs[0].score * 100;
                     return percentage;
                 };
-                /**/
-                /**/
+                
                 self.getHits = function (company) {
                     var matches;
                     if (self.allPeople().grouped.ent_id.groups.length !== 0)
@@ -827,8 +820,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         matches = "";
                     return matches;
                 };
-                /**/
-                /**/
+              
                 self.getCountry = function (company) {
                     var country;
                     if (company.doclist.docs[0].add_country)
@@ -837,8 +829,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         country = this.countryStatus();
                     return country;
                 };
-                /**/
-                /**/
+                
                 self.getAddress = function (company) {
                     var city;
                     if (company.doclist.docs[0].add_city)
@@ -864,8 +855,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         address = this.addressStatus();
                     return address;
                 };
-                /**/
-                /**/
+                
                 self.getNumberMatches = function (company) {
                     var matches;
                     if (self.allPeople().grouped.ent_id.groups.length !== 0)
@@ -874,15 +864,19 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         matches = 0;
                     return matches;
                 };
-                /**/
-
+                
+                self.getNumFound = function (company) {
+                    var numFound = company.doclist.numFound;
+                    var str = self.found() + " " + numFound + " " + self.entities();
+                    return str;
+                };
 
                 //To load the details page when click on an entity
                 self.loadPersonPage = function (comp) {
                     if (comp.doclist.docs[0].ent_id) {
                         id = comp.doclist.docs[0].ent_id;
                         var lang;
-                        if (self.languageSel() !== undefined)
+                        if (self.languageSel() !== "")
                             lang = self.languageSel().toString().substring(0, 2);
                         else
                             lang = "en";
