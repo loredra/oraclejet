@@ -16,7 +16,7 @@ requirejs.config({
         'knockout-amd-helpers': 'libs/knockout/knockout-amd-helpers.min',
         'jquery': 'libs/jquery/jquery-2.1.3.min',
         'jqueryui-amd': 'libs/jquery/jqueryui-amd-1.11.4.min',
-        'd3' : 'libs/d3/d3.min',
+        'd3' : 'libs/d3/d3',
         'lang': 'lang',
         'arangodb' : 'libs/arango/arangojs.min',
         'aql' : 'libs/arango/aql-query',

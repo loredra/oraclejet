@@ -143,77 +143,33 @@
             <!-- ko foreach: cardViewDataSource()  -->
 
             <div class="oj-flex-items oj-sm-12 oj-md-6 oj-lg-4 oj-xl-3" data-bind="event:{keypress:$parent.onEnter}"> 
-
+                
                 <div class="oj-panel oj-panel-alt1" style="height: 226px; margin: 5px 0px 10px 0px; min-width: 333px" >
-
-                    <div class="oj-flex oj-flex-items-pad">
+                    <div class="oj-flex oj-flex-items-pad" style="position:absolute; width:90%; height: 48%;">
                         <div class="oj-flex-items oj-sm-4" data-bind="click: $parent.loadPersonPage">
-                            <img alt="employee image" class="demo-circular demo-employee-photo" style="cursor:pointer" data-bind="attr: {src: $parent.getPhoto($data['empId'])}"/>
+                            <img alt="employee image" class="entity-photo entity-shape-circular" style="cursor:pointer" data-bind="attr: {src: $parent.getPhoto($data)}"/>
                         </div>
                         <div class="oj-flex-items oj-sm-8">
-                            <h2 id="nameEntity" class="demo-employee-name" aria-label="employee name" data-bind="html: $parent.getName($data)" tabindex="0"></h2>
-
-                            <div class="demo-employee-dept" data-bind="text: $parent.getList($data)"></div>
-                            <!-- -->
-
-                            <!-- --
-                            <div class="demo-employee-title" data-bind="text: $data['title']"></div>
-                            <div class="demo-employee-dept" data-bind="text: $data['deptName']"></div>
-                            <!-- -->
+                            <div id="nameEntity" data-bind="html: $parent.getName($data)" ></div>
+                            <div id="sanctionListName" data-bind="text: $parent.getList($data), style: {'font-size': $parent.getList($data).length < 50? '87%' : '77%'}"></div>
                         </div>
                     </div>
-                    <div class="oj-flex oj-flex-items-pad" style="margin-top: 40px">
-                        <!-- ->
-                        <div class="oj-flex-items oj-sm-4">
-                            <div class="demo-employee-tenure" data-bind="text: $parent.getList($data)"></div>
+                    <div class="oj-flex oj-flex-items-pad" style="position:absolute; margin-top:35%; width:90%; ">
+                        <div style="position: absolute;">
+                            <div class="middle-left-indicator" data-bind="text: $parent.getPercentage($data) ,style: {color: $parent.getPercentageColor($data) < 80? '#e95b54' : '#3f9a2b'}"></div>
+                            <div id="percentageText" class="middle-left-indicatorlabel" data-bind="text: $parent.percentageText"></div>
                         </div>
-                        <!-- -->
-                        <!-- -->
-                        <div class="oj-flex-items oj-sm-4">
-                            <div class="demo-employee-tenure" data-bind="text: $parent.getPercentage($data) ,style: {color: $parent.getPercentageColor($data) < 80? '#e95b54' : '#3f9a2b'}"></div>
-                            <div id="percentageText" class="demo-employee-tenure-label" data-bind="text: $parent.percentageText"></div>
+                        <div style="position: relative; left:30%;">
+                            <div class="middle-left-indicator" data-bind="text: $parent.getCountry($data) "></div>
+                            <div id="countryText" class="middle-left-indicator-label" data-bind="text: $parent.countryText"></div>
                         </div>
-                        <div class="oj-flex-items oj-sm-4">
-                            <div class="demo-employee-tenure" data-bind="text: $parent.getCountry($data) "></div>
-                            <div id="countryText" class="demo-employee-tenure-label" data-bind="text: $parent.countryText"></div>
-                        </div>
-
-                        <div class="oj-flex-items oj-sm-4">
-                            <div class="address" data-bind="text: $parent.getAddress($data) " style="margin-top:10px"></div>
-                        </div>
-
-                        <!-- -->
-                        <!-- --
-                        <div class="oj-flex-items oj-sm-4">
-                            <div class="demo-employee-perf" data-bind="text:$data['rating'], style: {color: $data['rating'] < 3 ? '#e95b54' : '#309fdb'}"></div>
-                            <div class="demo-employee-perf-label">Rating</div>
-                        </div>
-                        <!-- -->
-
-                        <!-- --
-                        <div class="oj-flex-items oj-sm-4">
-                            <div class="demo-employee-perf" data-bind="text:$data['potential'], style: {color: $data['potential'] < 3 ? '#e95b54' : '#309fdb'}"></div>
-                            <div class="demo-employee-perf-label">Potential</div>
-                        </div>
-                        <!-- -->
-
+                        <div id="address" data-bind="text: $parent.getAddress($data), style: {'font-size': $parent.getAddress($data).length < 100? '90%' : '70%'}" ></div>
                     </div>
-                    
                     <div class="oj-flex-items oj-sm-4" style="position: absolute; top:180px; ">
-                      <div class="address" data-bind="text: $parent.getNumFound($data) " style="position:absolute; margin-top:16px; margin-bottom: 16px; color:#608DA5">aaa</div>
+                      <div id="numFound" data-bind="text: $parent.getNumFound($data)"></div>
                     </div>
-
-                    <!--                    
-                        <div id="numberEntity" data-bind="html: $parent.getNumberEntity($data)" tabindex="0" style="position:relative; left:95%; top:25px">
-                        </div>-->
-
-                    <!-- --
-                    <div class="oj-flex oj-flex-items-pad" style="float: right;">
-                        <a tabindex="0" data-bind="attr:{href: function(data, event){$parent.getEmail(data)}" title="email employee" class="demo-employee-email-icon"></a>
-                        <a tabindex="0" data-bind="click: function(data, event){$parent.getOrg(data, event)}, clickBubble: false"  title="show team members" class="demo-employee-org-icon"></a>
-                    </div>
-                    <!-- -->
                 </div>
+                
             </div>
             <!-- /ko -->
         </div>

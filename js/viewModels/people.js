@@ -20,12 +20,12 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                 /**/
                 self.nameSearch = ko.observable('');
-                self.url = ko.observable('/solr/CoreOne/select?indent=on&wt=json');
+                self.url = ko.observable('/solr/EntityCore/select?indent=on&wt=json');
                 self.start = ko.observable(0);
                 self.rows = ko.observable(20);
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
-                self.facetField = ko.observable('&facet.field=add_country&facet.field=lis_name&facet=on');
+                self.facetField = ko.observable('&facet.field=add_country&facet.field=reg_number&facet=on');
                 self.scoreField = ko.observable('&fl=*,score');
                 //self.wordPercentage = ko.observable('')
                 self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE f=nam_comp_name}');
@@ -56,15 +56,15 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                 //control access to tree method
                 self.treeInit = ko.observable("");
-                
+
                 //nodes for OJ Tree
                 self.nodeTreeCountry = ko.observableArray([]);
                 self.nodeTreeList = ko.observableArray([]);
-                
+
                 //trees filter variables for remembering size
                 self.treeHeight = ko.observable();
                 self.treeListHeight = ko.observable();
-                
+
                 //Observable array for the filter to apear on the combobox when it is selcted
                 self.comboboxSelectValue = ko.observable([]);
                 self.comboObservable = ko.observable("");
@@ -94,7 +94,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //a ko observable to display when there are no results
                 self.noResults = ko.observable("");
                 self.noResults.extend({rateLimit: {timeout: 100, method: "notifyWhenChangesStop"}});
-                
+
                 //For the number of entities found in one group
                 self.found = ko.observable("Found");
                 self.entities = ko.observable("Entities");
@@ -137,7 +137,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //self.wordsDistanceAlgorithmDefinition = ko.observable("Defines which algorithm must be used to calculate the distance between words");//this is for the help def
                 //For the Words Distance Algorithm Value
                 self.wordsDistanceAlgorithm = ko.observable("DA_LV");
-                
+
                 //
                 //Bindings for the Languages
                 //
@@ -147,10 +147,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 self.countryText = ko.observable("Country");
                 self.addressStatus = ko.observable("without address");
                 self.countryStatus = ko.observable("worldwide");
-                
+
                 //Variable in order to specify to not translate the search page when the user is inside details page
                 var translate = true;
-                
+
                 self.languageSel = ko.observable("");
                 self.languageSel.subscribeTo('languagesSearchPage');
 
@@ -183,8 +183,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.countryStatus(german.searchPage.searchedEntityProperty.countryStatus);
                             self.found(german.searchPage.searchedEntityProperty.found);
                             self.entities(german.searchPage.searchedEntityProperty.entities);
-                        }
-                        else if (selectedLanguage === "english") {
+                        } else if (selectedLanguage === "english") {
                             //Translate search input placeholder
                             $('#searchText').attr("placeholder", english.searchPage.basic.search);
                             //Translate tree panels
@@ -211,8 +210,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.countryStatus(english.searchPage.searchedEntityProperty.countryStatus);
                             self.found(english.searchPage.searchedEntityProperty.found);
                             self.entities(english.searchPage.searchedEntityProperty.entities);
-                        }
-                        else if (selectedLanguage === "french") {
+                        } else if (selectedLanguage === "french") {
                             //Translate search input placeholder
                             $('#searchText').attr("placeholder", french.searchPage.basic.search);
                             //Translate tree panels
@@ -270,7 +268,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.queryField().toString() +
                             self.nameQ()).then(function (people) {
                         self.facetsCountries(people.facet_counts.facet_fields.add_country);
-                        self.facetsLists(people.facet_counts.facet_fields.lis_name);
+                        self.facetsLists(people.facet_counts.facet_fields.reg_number);
                     }).fail(function (error) {
                         console.log('Error in getting People data: ' + error.message);
                     });
@@ -563,7 +561,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 self.cardViewPagingDataSource.extend({rateLimit: {timeout: 10, method: "notifyWhenChangesStop"}});
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
-                    
+
                     if (self.keepFilter === false) {
                         self.worker.postMessage(self.facetsCountries());
                         self.worker.onmessage = function (m) {
@@ -633,10 +631,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                     $(function () {
                         $("#tree").draggable().resizable({
-                            
                         });
                         $("#treeList").draggable().resizable({
-                            
                         });
                     });
 
@@ -686,20 +682,26 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     $("#treeList").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
                             var pos = $(ui.value).text().indexOf(",");
-                            var filterValue = $(ui.value).children("a").children("span").text().substring(0, pos - 2);
-                            if (filterValue !== "List" && filterValue !== undefined && filterValue !== "") {
-                                var foundDuplicate = self.filterTreeList().find(function (el) {
-                                    return filterValue === el;
-                                });
-                                if (foundDuplicate === undefined) {
-                                    self.filterTreeList().push(filterValue);
-                                    self.keepFilter = true;
-                                    self.filterTreeObs("load");
-                                    self.processFilterLists();
-                                    $("#treeList").ojTree("deselectAll");
+                            var text = $(ui.value).text();
+                            if (text !== "") {
+                                //Regex to find the position of the last coma
+                                var match = (/,(?=[^,]*$)/).exec(text);
+                                var pos = match.index;
+                                var filterValue = $(ui.value).children("a").children("span").text().substring(0, pos - 2);
+                                if (filterValue !== "List" && filterValue !== undefined && filterValue !== "") {
+                                    var foundDuplicate = self.filterTreeList().find(function (el) {
+                                        return filterValue === el;
+                                    });
+                                    if (foundDuplicate === undefined) {
+                                        self.filterTreeList().push(filterValue);
+                                        self.keepFilter = true;
+                                        self.filterTreeObs("load");
+                                        self.processFilterLists();
+                                        $("#treeList").ojTree("deselectAll");
+                                    }
                                 }
+                                e.stopImmediatePropagation();
                             }
-                            e.stopImmediatePropagation();
                         }
                     });
 
@@ -733,10 +735,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     var fqList = "";
 
                     if (self.filterTreeList().length > 0) {
-                        fqList = "lis_name:" + "\"" + self.filterTreeList()[0] + "\"";
+                        fqList = "reg_number:" + "\"" + self.filterTreeList()[0] + "\"";
                         for (var i = 1; i < self.filterTreeList().length; ++i) {
                             if (self.filterTreeList()[i] !== undefined)
-                                fqList = fqList + " OR " + "lis_name:" + "\"" + self.filterTreeList()[i] + "\"";
+                                fqList = fqList + " OR " + "reg_number:" + "\"" + self.filterTreeList()[i] + "\"";
                         }
                         fqList = "&fq=" + fqList;
                     }
@@ -765,21 +767,20 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     }
                 });
 
-                self.getPhoto = function (empId) {
-                    var src;
-                    if (empId < 188) {
-                        src = 'css/images/people/' + empId + '.png';
-                    } else {
-                        src = 'css/images/people/nopic.png';
-                    }
+                self.getPhoto = function (company) {
+                    var src = 'css/images/people/nopic.png';
                     return src;
                 };
 
-
                 self.getList = function (company) {
-                    return company.doclist.docs[0].lis_name;
+                    var listName;
+                    if (company.doclist.docs[0].reg_number === "null")
+                        listName = "NO LIST";
+                    else
+                        listName = company.doclist.docs[0].reg_number;
+                    return listName;
                 };
-                
+
                 self.getName = function (company) {
                     //var name = company.doclist.docs[0].nam_comp_name;
                     //var name = self.allHighlighting()[company.doclist.docs[0].sse_id].nam_comp_name[0];
@@ -791,7 +792,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         var name = "";
                     return name;
                 };
-                
+
                 /*/
                  
                  self.getNumberEntity = function (company) {
@@ -800,18 +801,18 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                  return number;
                  };
                  /**/
-             
+
                 self.getPercentage = function (company) {
                     var value = company.doclist.docs[0].score * 100 + "";
                     var percentage = value.substring(0, 5) + "%";
                     return percentage;
                 };
-                
+
                 self.getPercentageColor = function (company) {
                     var percentage = company.doclist.docs[0].score * 100;
                     return percentage;
                 };
-                
+
                 self.getHits = function (company) {
                     var matches;
                     if (self.allPeople().grouped.ent_id.groups.length !== 0)
@@ -820,7 +821,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         matches = "";
                     return matches;
                 };
-              
+
                 self.getCountry = function (company) {
                     var country;
                     if (company.doclist.docs[0].add_country)
@@ -829,33 +830,82 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         country = this.countryStatus();
                     return country;
                 };
-                
+
                 self.getAddress = function (company) {
-                    var city;
-                    if (company.doclist.docs[0].add_city)
-                        city = company.doclist.docs[0].add_city;
-                    else
-                        city = "";
 
-                    var street;
-                    if (company.doclist.docs[0].add_street)
-                        street = ", " + company.doclist.docs[0].add_street;
-                    else
-                        street = "";
-
-                    var zipcode;
-                    if (company.doclist.docs[0].add_zipcode)
-                        zipcode = ", " + company.doclist.docs[0].add_zipcode;
-                    else
-                        zipcode = "";
-
-                    var address;
-                    address = city + street + zipcode;
-                    if (!address)
+                    var address = "";
+                    //For the full address Solr field
+                    if (company.doclist.docs[0].add_whole !== "null")
+                        address = company.doclist.docs[0].add_whole;
+                    else {
+                        //For the streetaddress Solr field(up to city level)
+                        if (company.doclist.docs[0].add_streetAddress !== "null")
+                            address = company.doclist.docs[0].add_streetAddress;
+                        else {
+                            //room
+                            var room = "";
+                            if (company.doclist.docs[0].add_room !== "null")
+                                room = company.doclist.docs[0].add_room;
+                            //appartment
+                            var appartment = "";
+                            if (company.doclist.docs[0].add_appartment !== "null")
+                                appartment = ", " + company.doclist.docs[0].add_appartment;
+                            //floor
+                            var floor = "";
+                            if (company.doclist.docs[0].add_floor !== "null")
+                                floor = ", " + company.doclist.docs[0].add_floor;
+                            //building
+                            var building = "";
+                            if (company.doclist.docs[0].add_building !== "null")
+                                building = ", " + company.doclist.docs[0].add_building;
+                            //house
+                            var house = "";
+                            if (company.doclist.docs[0].add_house !== "null")
+                                house = ", " + company.doclist.docs[0].add_house;
+                            //street
+                            var street = "";
+                            if (company.doclist.docs[0].add_street !== "null")
+                                street = ", " + company.doclist.docs[0].add_street;
+                            //
+                            //Address Result
+                            //
+                            address = room + appartment + building + house + street + district + city;
+                        }
+                        //district
+                        var district = "";
+                        if (company.doclist.docs[0].add_district !== "null")
+                            district = ", " + company.doclist.docs[0].add_district;
+                        //city
+                        var city = "";
+                        if (company.doclist.docs[0].add_city !== "null")
+                            city = ", " + company.doclist.docs[0].add_city;
+                        //zipcode
+                        var zipCode = "";
+                        if (company.doclist.docs[0].add_zipCode !== "null")
+                            zipCode = ", " + company.doclist.docs[0].add_zipCode;
+                        //state
+                        var state = "";
+                        if (company.doclist.docs[0].add_state !== "null")
+                            state = ", " + company.doclist.docs[0].add_state;
+                        //country
+                        var country = "";
+                        if (company.doclist.docs[0].add_country !== "null")
+                            country = ", " + company.doclist.docs[0].add_country;
+                        //
+                        //Address Result
+                        //
+                        address = address + district + city + zipCode + state + country;
+                    }
+                    //delete if there is a comma at the begining of the address
+                    address = address.replace(/^,/, '');
+                    //delete if there is a comma at the end of the address
+                    address = address.replace(/\,$/, "");
+                    //show message for no found address
+                    if (address === "")
                         address = this.addressStatus();
                     return address;
                 };
-                
+
                 self.getNumberMatches = function (company) {
                     var matches;
                     if (self.allPeople().grouped.ent_id.groups.length !== 0)
@@ -864,7 +914,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         matches = 0;
                     return matches;
                 };
-                
+
                 self.getNumFound = function (company) {
                     var numFound = company.doclist.numFound;
                     var str = self.found() + " " + numFound + " " + self.entities();

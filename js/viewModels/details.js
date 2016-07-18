@@ -22,9 +22,16 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
             self.tooltipListDetails2 = ko.observable("Sanction Lists");
             //self.validFrom = ko.observable("The Expiration Date is");
 
+            //In order to remember clicked entities on the graph
+            self.clickedNodes = new Array();
 
-            //Observables to store nodes
+
+            //Observable to store node information
             self.nodeData = ko.observableArray([""]);
+
+            //To store state before expanding the tree
+            self.oldNodes = new Array();
+            self.oldLinks = new Array();
 
             //window.timeout to launch the code after the dom loaded
             window.setTimeout(function () {
@@ -46,9 +53,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                 var isChosen = 0;
 
                 var force = d3.layout.force()
-                        .charge(-7700)
-                        .linkDistance(70)
+                        .charge(-270)
+                        .distance(370)
                         .size([width, height]);
+
 
                 var drag = force.drag()
                         .origin(function (d) {
@@ -94,6 +102,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                 self.createGraphAndAddInfo = function (searchedEntity, linksBetweenEntities, relatedEntities) {
 
                     if (updating) {
+
                         var nodes = force.nodes();
                         var links = force.links();
 
@@ -111,35 +120,42 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             });
                             relation["source"] = resultSource[0];
                             relation["target"] = resultTarget[0];
+                            
+//                            if(relation.source !== undefined){
+//                                var source = relation.source
+//                                if(source.x === undefined)
+//                                    alert(source.names[0].name)
+//                            var s
+//                        }
                         });
 
-                        //relations = linksBetweenEntities;
 
                         linksBetweenEntities.forEach(function (newRelation) {
-                            var linkExist = $.grep(firstLinks, function (relation) {
+                            var linkExist = $.grep(self.oldLinks, function (relation) {
                                 return relation._id === newRelation._id;
                             });
                             if (linkExist.length === 0) {
-                                relations.push(newRelation);
+                                self.oldLinks.push(newRelation);
                             }
                             //newRelation["name"] = newRelation.names[0].name;
                         });
 
-                        // entities = relatedEntities;
 
                         relatedEntities.forEach(function (newEntity) {
-                            newEntity["name"] = newEntity.names[0].name;
-                            var entityExist = $.grep(firstNodes, function (relatedEntity) {
+                            //newEntity["name"] = newEntity.names[0].name;
+                            var entityExist = $.grep(self.oldNodes, function (relatedEntity) {
                                 return newEntity._id === relatedEntity._id;
                             });
                             if (entityExist.length === 0) {
-                                entities.push(newEntity);
+                                self.oldNodes.push(newEntity);
                             }
 
                         });
 
-                        relations = linksBetweenEntities;
-                        entities = relatedEntities;
+                        relations = self.oldLinks;
+                        entities = self.oldNodes;
+
+                        //Store old state
 
                         firstLoad = true;
                         updating = false;
@@ -163,10 +179,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             relation["target"] = resultTarget[0];
                         });
 
+                        self.oldLinks = linksBetweenEntities;
+                        self.oldNodes = relatedEntities;
+
                         var relations = linksBetweenEntities;
                         var entities = relatedEntities;
                     }
-
 
 
 
@@ -205,10 +223,14 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                                 return d.target.y;
                             })
                             .attr("type", function (d) {
-                                return d.relationType;
+                                var text = "";
+                                d.relationType.forEach(function (relationType) {
+                                    text = text + relationType;
+                                });
+                                return text;
                             })
                             .on("mouseover", function (d) {
-                                linkToolTip(d3.select(this));
+                                linkToolTip(d.relationType);
                             })
                             .on("mouseout", function (d) {
                                 tooltip
@@ -339,6 +361,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .nodes(entities)
                             .links(relations)
                             .start();
+
+
 
 
                     var text_link = container.append("g").selectAll(".text_link_svg")
@@ -555,7 +579,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     }
 
                     var list = d3.select("#list").append("ul").selectAll("li")
-                            .data(relatedEntities)
+                            .data(self.oldNodes)
                             .enter()
                             .append("li")
                             .attr("id", function (d, i) {
@@ -578,6 +602,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     click(d3.select("#list").select("li").datum());
 
                     /**/
+
                 };
 
                 self.searchedEntity = ko.observableArray([]);
@@ -593,6 +618,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     if (entity !== undefined)
                         queryForTheLinksBetweenEntities = "FOR c IN EntityRelation FILTER c._from==" + "\"" + entity._id + "\"" + " OR c._to==" + "\"" + entity._id + "\"" + " RETURN c";
                     self.searchedEntity(entity);
+                    self.clickedNodes.push(entity);
                 }).then(function () {
                     if (queryForTheLinksBetweenEntities !== undefined)
                         db.query(queryForTheLinksBetweenEntities).then(function (lin) {
@@ -673,9 +699,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     IsExpanded = false;
                 }
 
-                function linkToolTip(link) {
-
-                    var text = link.attr("type");
+                function linkToolTip(linkRelationType) {
+                    var text = "";
+                    linkRelationType.forEach(function (relationType) {
+                        text = text + relationType + "\r\n"
+                    });
                     tooltip.text(text);
                     tooltip.style("visibility", "visible");
                 }
@@ -733,48 +761,52 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                 function clickImage(node) {
                     //root.fixed = false;
 
-                    //creating new trees
-                    if (d3.event.shiftKey) {
 
-                        return;
-                    }
+
                     if (d3.event.defaultPrevented)
                         return;
 
-                    //There are to ids: the document id and the node id
-                    var entity_id = node._id;
-                    var entityid = node.id;
-                    //Arrays to store the nodes and the links
-                    var newLinks;
-                    var newEntitiesUnstructured;
-                    var newEntities;
-                    //Queries to make
-                    var queryRelation = "FOR c IN EntityRelation FILTER c._from==" + "\"" + entity_id + "\"" + " OR c._to==" + "\"" + entity_id + "\"" + " RETURN c";
-                    var queryEntities = "RETURN UNIQUE( UNION( FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "FROM" + entityid + "%" + "\"" + " RETURN (FOR d IN Entity FILTER d._id == c._to RETURN d),FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "%TO" + entityid + "%" + "\"" + "RETURN  (FOR d IN Entity FILTER d._id == c._from RETURN d)))";
-                    db.query(queryRelation).then(function (lin) {
-                        var links = lin._result;
-                        if (links.length > 1) {
-                            newLinks = links;
-                        }
-                    }).then(function () {
-                        if (newLinks)
-                            db.query(queryEntities).then(function (rel) {
-                                var relations = rel._result;
-                                newEntitiesUnstructured = relations;
-                                newEntities = [node];
-                                newEntitiesUnstructured[0].forEach(function (entity) {
-                                    newEntities.push(entity[0]);
-                                });
-                            }).then(function () {
-                                //Remove the nodes before. For some reason d3, on updating, duplicates the graph.    
-                                container.selectAll("*").remove();
-                                d3.select("#list").selectAll("li").remove();
-                                //Update
-                                updating = true;
-                                self.createGraphAndAddInfo([node], newLinks, newEntities);
-                            });
+                    //Creating new trees
+                    var clickedNode = $.grep(self.clickedNodes, function (clickedNode) {
+                        return clickedNode._id === node._id;
                     });
+                    if (clickedNode.length === 0) {
+                        //There are to ids: the document id and the node id
+                        var entity_id = node._id;
+                        var entityid = node.id;
+                        //Arrays to store the nodes and the links
+                        var newLinks;
+                        var newEntitiesUnstructured;
+                        var newEntities;
+                        //Queries to make
+                        var queryRelation = "FOR c IN EntityRelation FILTER c._from==" + "\"" + entity_id + "\"" + " OR c._to==" + "\"" + entity_id + "\"" + " RETURN c";
+                        var queryEntities = "RETURN UNIQUE( UNION( FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "FROM" + entityid + "%" + "\"" + " RETURN (FOR d IN Entity FILTER d._id == c._to RETURN d),FOR c IN EntityRelation FILTER c._key LIKE " + "\"" + "%TO" + entityid + "%" + "\"" + "RETURN  (FOR d IN Entity FILTER d._id == c._from RETURN d)))";
+                        db.query(queryRelation).then(function (lin) {
+                            var links = lin._result;
+                            if (links.length > 1) {
+                                newLinks = links;
 
+                            }
+                        }).then(function () {
+                            if (newLinks)
+                                db.query(queryEntities).then(function (rel) {
+                                    var relations = rel._result;
+                                    newEntitiesUnstructured = relations;
+                                    newEntities = [node];
+                                    newEntitiesUnstructured[0].forEach(function (entity) {
+                                        newEntities.push(entity[0]);
+                                    });
+                                }).then(function () {
+                                    //Remove the nodes and relations before. For some reason d3, on updating, duplicates the graph.    
+                                    container.selectAll("*").remove();
+                                    d3.select("#list").selectAll("li").remove();
+                                    //Update
+                                    updating = true;
+                                    self.clickedNodes.push(node);
+                                    self.createGraphAndAddInfo([node], newLinks, newEntities);
+                                });
+                        });
+                    }
                     d3.selectAll(".node")
                             .attr("isChosen", "no")
                             .select(".node_image")
@@ -871,6 +903,73 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .style("left", (d3.event.pageX + 16) + "px");
                 }
 
+                function getAddressFields(nodeAddress) {
+                    var detailAddress = "";
+                    if (nodeAddress.whole)
+                        detailAddress = nodeAddress.whole;
+                    else {
+                        if (nodeAddress.streetaddress)
+                            detailAddress = nodeAddress.streetaddress;
+                        else {
+                            if (nodeAddress.room)
+                                detailAddress = nodeAddress.room;
+                            if (nodeAddress.appartment)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + ", " + nodeAddress.appartment;
+                                else
+                                    detailAddress = nodeAddress.appartment;
+                            if (nodeAddress.floor)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + ", " + nodeAddress.floor;
+                                else
+                                    detailAddress = nodeAddress.floor;
+                            if (nodeAddress.building)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + ", " + nodeAddress.building;
+                                else
+                                    detailAddress = nodeAddress.building;
+                            if (nodeAddress.house)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + ", " + nodeAddress.house;
+                                else
+                                    detailAddress = nodeAddress.house;
+                            if (nodeAddress.street)
+                                if (detailAddress !== "")
+                                    detailAddress = detailAddress + ", " + nodeAddress.street;
+                                else
+                                    detailAddress = nodeAddress.street;
+                        }
+                        if (nodeAddress.district)
+                            if (detailAddress !== "")
+                                detailAddress = detailAddress + ", " + nodeAddress.district;
+                            else
+                                detailAddress = nodeAddress.district;
+                        if (nodeAddress.city)
+                            if (detailAddress !== "")
+                                detailAddress = detailAddress + ", " + nodeAddress.city;
+                            else
+                                detailAddress = nodeAddress.city;
+
+                        if (nodeAddress.zipcode)
+                            if (detailAddress !== "")
+                                detailAddress = detailAddress + ", " + nodeAddress.zipcode;
+                            else
+                                detailAddress = nodeAddress.zipcode;
+
+                        if (nodeAddress.state)
+                            if (detailAddress !== "")
+                                detailAddress = detailAddress + ", " + nodeAddress.state;
+                            else
+                                detailAddress = nodeAddress.state;
+                        if (nodeAddress.country)
+                            if (detailAddress !== "")
+                                detailAddress = detailAddress + ", " + nodeAddress.country;
+                            else
+                                detailAddress = nodeAddress.country;
+                    }
+                    return detailAddress;
+                }
+
                 function populateDetailPage(node) {
                     ///Special case for changing Identification
                     self.nodeData(node);
@@ -926,7 +1025,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         }
                     }
 
-                    detail.select("#name").append("div").text(nodename)
+                    detail.select("#detailsName").append("div").text(nodename)
                             .attr("class", "detail_name")
                             .attr("position", "relative");
 
@@ -938,73 +1037,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                         nodeAddress = "";
                     else {
                         nodeAddress = node.addresses[0];
-                        if (nodeAddress.whole)
-                            detailAddress = nodeAddress.whole;
-                        else {
-                            if (nodeAddress.streetaddress)
-                                detailAddress = nodeAddress.streetaddress;
-                            else {
-                                if (nodeAddress.room)
-                                    detailAddress = nodeAddress.room;
-                                if (nodeAddress.appartment)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.appartment;
-                                    else
-                                        detailAddress = nodeAddress.appartment;
-                                if (nodeAddress.floor)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.floor;
-                                    else
-                                        detailAddress = nodeAddress.floor;
-                                if (nodeAddress.building)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.building;
-                                    else
-                                        detailAddress = nodeAddress.building;
-                                if (nodeAddress.house)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.house;
-                                    else
-                                        detailAddress = nodeAddress.house;
-                                if (nodeAddress.street)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.street;
-                                    else
-                                        detailAddress = nodeAddress.street;
-                                if (nodeAddress.district)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.district;
-                                    else
-                                        detailAddress = nodeAddress.district;
-                                if (nodeAddress.city)
-                                    if (detailAddress !== "")
-                                        detailAddress = detailAddress + " ," + nodeAddress.city;
-                                    else
-                                        detailAddress = nodeAddress.city;
-                            }
-
-                            if (nodeAddress.zipcode)
-                                if (detailAddress !== "")
-                                    detailAddress = detailAddress + " ," + nodeAddress.zipcode;
-                                else
-                                    detailAddress = nodeAddress.zipcode;
-
-                            if (nodeAddress.state)
-                                if (detailAddress !== "")
-                                    detailAddress = detailAddress + " ," + nodeAddress.state;
-                                else
-                                    detailAddress = nodeAddress.state;
-                            if (nodeAddress.country)
-                                if (detailAddress !== "")
-                                    detailAddress = detailAddress + " ," + nodeAddress.country;
-                                else
-                                    detailAddress = nodeAddress.country;
-                        }
-
-
-
+                        detailAddress = getAddressFields(nodeAddress);
                     }
-                    detail.select("#address").append("div").text(detailAddress)
+
+                    detail.select("#detailsAddress").append("div").text(detailAddress)
                             .attr("class", "detail_address")
                             .attr("position", "relative");
 
@@ -1133,8 +1169,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .append("tr")
                             .attr("class", "listKA")
                             .style("font-size", 15 + "px")
-                            .text(function (d) {
-                                return d.country;
+                            .text(function (addressNode) {
+                                var address = getAddressFields(addressNode);
+                                return address;
                             })
                             .style("text-anchor", "start");
                 }
@@ -1142,7 +1179,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                 function overlay() {
                     //Show the table and add closing conditions
                     el = d3.select("#overlay");
-                    el.style("visibility", (el.style("visibility") === "visible") ? "hidden" : "visible").on("click", closeOverlay);
+                    el.style("visibility", (el.style("visibility") === "visible") ? "hidden" : "visible")
+//                            .on("click", closeOverlay);
                     el.select(".close").on("click", closeOverlay);
 
                     //
@@ -1173,7 +1211,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     //Table for Known Addresses
                     knownAddressesTableColumns = ["Country", "State", "Zipcode", "City", "District", "Street", "House Nr.", "Building", "Floor", "Appartment", "Room Nr.", "Sources"];
                     arrayArangoAllAddresses = ["country", "state", "zipcode", "city", "district", "street", "house", "building", "floor", "appartment", "room", "sourceclass"];
-                    arrayExistingFieldsAddresses = new Array();
+
                     var knownAddressesTableColumnsTitle = d3.select("#known_addresses_table")
                             .append("tr")
                             .selectAll("tr")
@@ -1184,6 +1222,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                                 return title;
                             });
                     for (var i = 0; i < self.nodeData().addresses.length; ++i) {
+                        var arrayExistingFieldsAddresses = new Array();
                         for (var k = 0; k < arrayArangoAllAddresses.length; k++) {
                             var addressField = arrayArangoAllAddresses[k];
                             var addressValue = "";
@@ -1204,31 +1243,31 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                                 });
                     }
                     //Table made by div elements for General Info
-                    if(self.nodeData().date !== undefined)
-                    d3.select("#general_info_div_table")
-                            .append("div")
-                            .attr("class", "general_info")
-                            .text("Date: " + self.nodeData().date);
-                    if(self.nodeData().status !== undefined)
-                    d3.select("#general_info_div_table")
-                            .append("div")
-                            .attr("class", "general_info")
-                            .text("Status: " + self.nodeData().status);
-                    if(self.nodeData().type !== undefined)
-                    d3.select("#general_info_div_table")
-                            .append("div")
-                            .attr("class", "general_info")
-                            .text("Type: " + self.nodeData().type);
-                    if(self.nodeData().validfrom !== undefined)
-                    d3.select("#general_info_div_table")
-                            .append("div")
-                            .attr("class", "general_info")
-                            .text("Valid From: " + self.nodeData().validfrom);
-                    if(self.nodeData().validto !== undefined)
-                    d3.select("#general_info_div_table")
-                            .append("div")
-                            .attr("class", "general_info")
-                            .text("Valid From: " + self.nodeData().validto);
+                    if (self.nodeData().date !== undefined)
+                        d3.select("#general_info_div_table")
+                                .append("div")
+                                .attr("class", "general_info")
+                                .text("Date: " + self.nodeData().date);
+                    if (self.nodeData().status !== undefined)
+                        d3.select("#general_info_div_table")
+                                .append("div")
+                                .attr("class", "general_info")
+                                .text("Status: " + self.nodeData().status);
+                    if (self.nodeData().type !== undefined)
+                        d3.select("#general_info_div_table")
+                                .append("div")
+                                .attr("class", "general_info")
+                                .text("Type: " + self.nodeData().type);
+                    if (self.nodeData().validfrom !== undefined)
+                        d3.select("#general_info_div_table")
+                                .append("div")
+                                .attr("class", "general_info")
+                                .text("Valid From: " + self.nodeData().validfrom);
+                    if (self.nodeData().validto !== undefined)
+                        d3.select("#general_info_div_table")
+                                .append("div")
+                                .attr("class", "general_info")
+                                .text("Valid From: " + self.nodeData().validto);
                     var arrayGeneralInfo = self.nodeData().infos;
                     var regulationLink = "";
                     for (var i = 0; i < arrayGeneralInfo.length; ++i) {
@@ -1260,7 +1299,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     //Destroy the part of the table for known addresses that was built in overlay function
                     d3.select("#known_addresses_table")
                             .selectAll("tr").remove();
-                    
+
                     //Destroy the part of the table for general information that was built in overlay function
                     d3.select("#general_info_div_table")
                             .selectAll("div").remove();
