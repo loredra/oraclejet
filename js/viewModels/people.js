@@ -11,7 +11,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
         {
             function PeopleViewModel() {
                 var self = this;
-
                 /**/
                 self.peopleLayoutType = ko.observable('peopleCardLayout');
                 self.allPeople = ko.observableArray([]);
@@ -815,6 +814,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                         var posTreeList = $("#treeList").position();
                         utils.rememberPositionTrees(sizeTreeCountry, posTreeCountry, sizeTreeList, posTreeList);
                     }
+               
 
                 };
 
@@ -827,7 +827,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'ojs/ojrouter', 'ojs/ojknoc
                     self.filterTreeObs("done");
                     self.nameSearch(utils.resetState()[0]);
                 }
-
             }
             return PeopleViewModel;
         });

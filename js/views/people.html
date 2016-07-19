@@ -35,7 +35,7 @@
                                                                                 label: 'Default Value'},
                                                                                 click: setInputWordPerNumberValueTo80">
                                 </button>
-                            </div>
+                            </div>  
                         </form>
                         <form id="formPhrasePercentage">
                             <label for="inputPhrasePercentage">Total Percentage</label> 
@@ -87,6 +87,10 @@
                     icons: {start:'demo-icon-font demo-gear-icon-16'}}"></button>
 
                 </div>
+                <div id="dialogWrapper" style="position:relative; max-height:30%; max-width:30%;" >
+                     <button id="printOpener" style="margin-right:6px; " data-bind="ojComponent: {component: 'ojButton', display: 'icons', 
+                    icons: {start:'demo-icon-font demo-gear-icon-16'}}"></button>
+                </div> 
 
                 <div id="hits" class="oj-flex-items oj-sm-2" style="position: relative; right:100px; top:47px; font-family: Courier New;" 
                      data-bind="text: numberMatches">

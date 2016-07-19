@@ -15,6 +15,7 @@ requirejs.config({
         'knockout': 'libs/knockout/knockout-3.4.0',
         'knockout-amd-helpers': 'libs/knockout/knockout-amd-helpers.min',
         'jquery': 'libs/jquery/jquery-2.1.3.min',
+        'jsreport': 'libs/jsreportClient/jsreport',
         'jqueryui-amd': 'libs/jquery/jqueryui-amd-1.11.4.min',
         'd3' : 'libs/d3/d3.min',
         'arangodb' : 'libs/arango/arangojs.min',
@@ -64,6 +65,7 @@ require(['ojs/ojcore',
     'knockout',
     'jquery',
     'utils',
+    'jsreport',
     'ojs/ojrouter',
     'knockout-amd-helpers',
     'ojs/ojknockout',
@@ -74,7 +76,7 @@ require(['ojs/ojcore',
     'ojs/ojinputtext'
     
 ],
-        function (oj, ko, $, utils) {
+        function (oj, ko, $, utils,jsreport) {
 
             ko.amdTemplateEngine.defaultPath = "views";
             ko.amdTemplateEngine.defaultSuffix = ".html";
@@ -102,6 +104,16 @@ require(['ojs/ojcore',
                     var csslink = document.getElementById('css');
                     csslink.href = theme;
                 }
+            }
+            function initReport(){ 
+            jsreport.serverUrl = 'http://localhost:5488';
+            var request = {
+            template: { 
+             "shortid":"rJPUhdmv",
+              "data":"data_default"
+                   
+                }};
+            jsreport.render('_blank', request);
             }
 
             function MainViewModel() {
@@ -154,6 +166,7 @@ require(['ojs/ojcore',
                         ko.applyBindings(new MainViewModel(), document.getElementById('globalBody'));
                         $('#globalBody').show();
                         initTheme();
+                        initReport();
                     },
                     function (error) {
                         oj.Logger.error('Error in root start: ' + error.message);
