@@ -6,8 +6,53 @@
         This is where any of your application specific styles should be included
 */
 
+#nameEntity{
+    color: #333;
+    font-size: 90%;
+    font-weight: bold;
+    padding-bottom: 5px;
+    margin-top: 10px;
+    text-align: center;
+}
 
+#sanctionListName{
+    white-space: normal;
+    overflow: hidden;
+    color: #333;
+    font-size: 90%;
+    font-family: Times New Roman;
+    text-align: center;
+}
 
+.entity-photo{
+    margin: 0px;
+    position: relative;
+}
+
+.entity-shape-circular {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    -webkit-border-radius: 40px;
+    -moz-border-radius: 40px;
+}
+
+#address{
+    position: relative;
+    left: 40%;
+    width: 50%;
+    color: #309fdb;
+    text-align: center;
+}
+
+#numFound{
+    position:absolute; 
+    margin-top:16px; 
+    margin-bottom: 16px; 
+    color:#608DA5;
+    font-size:70%;
+        
+}
 span.highlight{
     background-color:#FF9;
     color:#555;
@@ -144,33 +189,16 @@ span.highlight{
     font-family: Times New Roman;
 }
 
-.demo-employee-photo{
-    margin: 0px;
-    position: relative;
-}
 
-.demo-employee-photo-person-detail{
-    position: relative;
-    margin: auto;
-    width:108px;
-    height:108px;
-    border: 1px solid #d5dfe5;
-    border-radius: 55px;
-    background-color: #fff;
-}
 
-.demo-employee-tenure{
+
+.middle-left-indicator{
     color: #309fdb;
     font-size: 100%;
     text-align: center;
 }
 
-.address{
-    color: #309fdb;
-    font-size: 70%;
-    text-align: center;
-    font-style: oblique;
-}
+
 
 .demo-employee-comp-ratio{
     color: #309fdb;
@@ -184,7 +212,7 @@ span.highlight{
     text-align: center;
 }
 
-.demo-employee-tenure-label{
+.middle-left-indicator-label{
     text-align: center;
     white-space: nowrap;
 }
@@ -304,23 +332,8 @@ span.highlight{
     top: 75px;
 }
 
-.demo-circular {
-    width: 80px;
-    height: 80px;
-    border-radius: 40px;
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
-}
 
-.demo-circular-person-detail {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 50px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    left: -8px;
-}
+
 
 .demo-breadcrumb{
     min-height: 12px;

@@ -13,7 +13,7 @@
     <div class="tooltip">Tipsy!</div>
 
 
-    <div id="main_layout" class=layout data-bind="svg:entid">
+    <div id="main_layout" class=layout data-bind="svg:handle">
 
         <div id=profile_container>
             <div id="profile_of_node" class=profile>
@@ -36,56 +36,81 @@
                 <div id="detail_info" class=line_by_line>
 
                     <div id="name_and_address_container" class=name_and_address_container>
-                        <div id="name" class=nameandAddress>
-                            <label class="description_label">Name </label>
+                        <div id="detailsName" class=nameandAddress>
+                            <label id="name_label" class="description_label">Name </label>
                         </div>
-                        <div id="address" class=nameandAddress>
-                            <label class="description_label">Primary Address </label>
+                        <div id="detailsAddress" class=nameandAddress>
+                            <label id="address_label" class="description_label">Primary Address </label>
                         </div>
                     </div>
-                    <div id=measure_detail class=measure_detail>
+<!--                    <div id=measure_detail class=measure_detail>
                         <div id="measure_label" class=measure_label>
-                            <label class="description_label" >Measures against this entity * </label>
+                            <label id="measure_detail_label" class="description_label" >Measures against this entity * </label>
                             <div class=measure>
                             </div>
                         </div>
-
-                    </div>
+                    </div>-->
 
                     <div id="name_and_address_container" class=name_and_address_container>
                         <div id="identification_container" class=nameandAddress>
                             <label id="identification_label" class="description_label">Identification  </label>
                         </div>
                         <div id="country_container" class=nameandAddress>
-                            <label class="description_label">Country </label>
+                            <label id="country_label" class="description_label">Country </label>
                         </div>
                     </div>
-                    <div id=measure_detail class=measure_detail>
+<!--                    <div id=measure_detail class=measure_detail>
                         <div id="measure_label" class=measure_label>
-                            <label class="description_label">Actions </label>
+                            <label id="actions_label" class="description_label">Actions </label>
                             <div class=measure>
                                 <img class=measure_icon src="resources/notify.svg"> </img>
                                 <img class=measure_icon src="resources/whitelist.svg"> </img>
                                 <img class=measure_icon src="resources/pdf.svg"> </img>
                             </div>
                         </div>
-                    </div>
-
-                    <div id="list_and_program_container" class=list_and_program_container>
-                        <div id="numList" class=numListandaka>
-                            <label class="name_label">Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists
-                            </label>
+                    </div>-->
+                    
+                    <div id="akaTable">
+                    <table >
+                        <tr id="numList" >
+                            <td >
+                                <label id="sanction_lists_label" class=name_label> Mentioned in <label id="numOfList" class=numOfList></label> Sanction Lists</label> 
+                            </td>
+                        </tr>
+                        
+                        <tr id="listList" >
+                        </tr>
+                    </table>
+                    
+                    <table style="cursor: default">
+                        <tr id="aka" >
+                            <td >
+                                <label id="also_known_as_label" class=name_label>Have <label id="numOfName" class=numOfList></label> known names</label>
+                            </td>
+                        </tr>
+                        <tr id="listAKA" >
+                        </tr>
+                    </table>
+                    
+                    <table style="cursor: default">
+                        <tr id="known_address">
+                            <td >
+                                <label id="known_address_label" class=name_label>Have <label id="numOfAddress" class=numOfList></label> known addresses</label>
+                            </td>
+                        </tr>
+                        <tr id="listKA" >
+                        </tr>
+                    </table>
                         </div>
-                        <div id="listList" class=line_by_line_small>
-                        </div>
-                    </div>
-                    <div id="also_known_as_name_and" class=list_and_program_container >
+                    
+<!--                    <div id="also_known_as_name_and" class=list_and_program_container >
                         <div id="aka" class=numListandaka>
                             <label class="name_label">Have <label id="numOfName" class=numOfList></label> known names</label>
                         </div>
                         <div id="listAKA" class=line_by_line_small>
                         </div>
                     </div>
+                    
                     <div id="known_address" class=list_and_program_container >
                         <div id="known_address" class=numListandaka>
                             <label class="name_label">Have <label id="numOfAddress" class=numOfList></label> known addresses</label>
@@ -93,13 +118,15 @@
                         <div id="listKA" class=line_by_line_small>
                         </div>
                     </div>
+                    
                     <div id="related_sanction_entity" class=list_and_program_container >
                         <div id="related_sanction_entity" class=numListandaka>
                             <label class="name_label">Have relationship with <label id="numOfRelatedSanctionEntity" class=numOfList></label> entities on Sanction List</label>
                         </div>
                         <div id="listSE" class=line_by_line_small>
                         </div>
-                    </div>
+                    </div>-->
+                    
                 </div>
                 <div id="list" class="line_by_line"> 
 
@@ -108,147 +135,53 @@
             <div id="visualization" class=associate_info_node>
                 <div class=toolbox>
                     <span id="expand_forcelayout" onclick="expandForceLayout()"  class=close style="font-size:18px;"> <<< </span>
-                    <label class=checkboxname><input id="node_check_box" type="checkbox"> Hide node's name</label>
-                    <label class=checkboxlink><input id="link_check_box" type="checkbox" checked=''> Hide link's type</label>
-                    <label class=buttonroot><input id="root_button" type="checkbox" > Return to primary search</label>
+                    <label id="visualization_hide_node_label" class=checkboxname>
+                        <input id="node_check_box" type="checkbox"> 
+                        <span>
+                            Hide node's name
+                        </span>
+                    </label>
+                    <label id="visualization_hide_link_label" class=checkboxlink>
+                        <input id="link_check_box" type="checkbox" checked=''> 
+                        <span>
+                            Hide link's type
+                        </span>
+                    </label>
+                    <!--<label class=buttonroot><input id="root_button" type="checkbox" > Return to primary search</label>-->
                 </div>
                 <!--<script type="text/javascript" src="concep3_forcelayout.js"></script>-->
                 <!--<script type="text/javascript" src="js/viewModels/detail.js"></script>-->
             </div>
         </div>
     </div>
+    
+    
+<!--    <div id="overlayTableContainer">
+        
+    </div>-->
 
     <div id="overlay">
         <div id="overlay_window">
-            <div class=overlay_container>
+            <div class=overlay_container >
                 <span class="close">x</span>
                 <p>INFORMATION IN THE LIST</p>
             </div>
             <div class=overlay_container>
-                <div class=heading>Known Names</div>
-                <table class=table-style style="width:100%">
-                    <tr>
-                        <th>Full Name</th>
-                        <th>Last Name</th>		
-                        <th>Middle Name</th>
-                        <th>First Name</th>
-                        <th>Source</th>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
+                <div id="known_names_table_head" class=heading>Known Names</div>
+                <table id="known_names_table" style="width:100%; ">
                 </table>
             </div>
 
             <div class=overlay_container>
-                <div class=heading>Known Addresses</div>
-                <table class=table-style style="width:100%">
-                    <tr>
-                        <th>Country</th>		
-                        <th>City</th>
-                        <th>District</th>
-                        <th>Zip</th>
-                        <th>Street</th>
-                        <th>House Nr</th>		
-                        <th>Building</th>
-                        <th>Room Nr</th>
-                        <th>Sources</th>
-                    </tr>
-                    <tr>
-                        <td>Germany</td>
-                        <td>Jenaaaaaaaaaaaaaaaaaaa</td>
-                        <td>Beuternbug</td>		
-                        <td></td>
-                        <td>Blabla street</td>
-                        <td>Some house number very longofndjk fdjsbgk fjusgs fgsuifbs gfsugf</td>		
-                        <td>Center</td>
-                        <td>1</td>
-                        <td>76RF 67059</td>
-                    </tr>
-                    <tr>
-                        <td>Germany</td>
-                        <td>Jena</td>
-                        <td>Beuternbug</td>		
-                        <td></td>
-                        <td>Blabla street</td>
-                        <td>Some house number</td>		
-                        <td>Center</td>
-                        <td>1</td>
-                        <td>76RF 67059</td>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Smith Jill</td>
-                        <td>Jill</td>
-                        <td></td>		
-                        <td>Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Germany</td>
-                        <td>Jenaaaaaaaaaaaaaaaaaaa</td>
-                        <td>Beuternbug</td>		
-                        <td></td>
-                        <td>Blabla street</td>
-                        <td>Some house number very longofndjk fdjsbgk fjusgs fgsuifbs gfsugf</td>		
-                        <td>Center</td>
-                        <td>1</td>
-                        <td>76RF 67059</td>
-                    </tr>
+                <div id="known_addresses_table_head" class=heading>Known Addresses</div>
+                <table id="known_addresses_table" style="width:100%">
+
                 </table>
             </div>
             <div class=overlay_container>
-                <div class=heading>General Information</div>
-                <div class=general_info_container>
-                    <div class=general_info>
-                        This Company is really dangerous blalbalabl fsibhuijkg fsughuigf gfuihfjksh   isdhfsdfhsd fihsdfsdhfdbsf 343tz27bdbds fsfds
-                    </div>
-                    <div class=general_info>
-                        Expiration Date is 2024
-                    </div>
-                    <div class=general_info>
-                        I see death people
-                    </div>
-                    <div class=general_info>
-                        This Company is really dangerous blalbalabl 
-                    </div>
-                    <div class=general_info>
-                        Expiration Date is 2024
-                    </div>
-                    <div class=general_info>
-                        I see death people
-                    </div>
+                <div id="general_info_div_table_head" class=heading>General Information</div>
+                <div id="general_info_div_table" class=general_info_container>
+
                 </div>
             </div>
 

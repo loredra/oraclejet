@@ -12,6 +12,16 @@ define(['knockout'],
             self.previousFilterList = ko.observableArray([]);
             var oldSizeTreeCountry, oldPosTreeCountry, oldPosTreeList, oldSizeTreeList;
             
+            var langSel ;
+            
+            function setLanguage(language){
+                langSel = language;
+            };
+            
+            function getLanguage(){
+                return langSel;
+            }
+            
             function rememberState(name,filterTreeCountry,filterTreeList){
                 self.previousName(name);
                 if(filterTreeCountry===undefined)
@@ -118,6 +128,6 @@ define(['knockout'],
                 return query_string;
             };
 
-            return {rememberPositionTrees:rememberPositionTrees,resetTreesPos:resetTreesPos, rememberState:rememberState, resetState:resetState, createCookie: createCookie, readCookie: readCookie, eraseCookie: eraseCookie, readSettings: readSettings, QueryString: QueryString};
+            return {setLanguage:setLanguage,getLanguage:getLanguage,rememberPositionTrees:rememberPositionTrees,resetTreesPos:resetTreesPos, rememberState:rememberState, resetState:resetState, createCookie: createCookie, readCookie: readCookie, eraseCookie: eraseCookie, readSettings: readSettings, QueryString: QueryString};
 
         });
