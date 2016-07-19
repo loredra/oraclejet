@@ -120,13 +120,28 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             });
                             relation["source"] = resultSource[0];
                             relation["target"] = resultTarget[0];
-                            
-//                            if(relation.source !== undefined){
-//                                var source = relation.source
-//                                if(source.x === undefined)
-//                                    alert(source.names[0].name)
-//                            var s
-//                        }
+
+//                            relation.source["x"]=0;
+//                            relation.source["y"]=0;
+//                            relation.target["x"]=0;
+//                            relation.target["y"]=0;
+
+
+                            if (relation.source !== undefined) {
+                                var source = relation.source;
+                                if (source.x === undefined) {
+//                                    alert(source.names[0].name + " source has x to 0");
+                                    source["x"] = 0;
+                                    source["y"] = 0;
+                                }
+                                var target = relation.target;
+                                if (target.x === undefined) {
+//                                    alert(target.names[0].name + " target has x to 0");
+                                    target["x"] = 0;
+                                    target["y"] = 0;
+                                }
+                                var s
+                            }
                         });
 
 
@@ -363,6 +378,29 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .start();
 
 
+//                    force.on("end", function () {
+//                        entities.attr('r', width / 25)
+//                                .attr('cx', function (d) {
+//                                    return d.x;
+//                                })
+//                                .attr('cy', function (d) {
+//                                    return d.y;
+//                                });
+//
+//
+//                        relations.attr('x1', function (d) {
+//                            return d.source.x;
+//                        })
+//                                .attr('y1', function (d) {
+//                                    return d.source.y;
+//                                })
+//                                .attr('x2', function (d) {
+//                                    return d.target.x;
+//                                })
+//                                .attr('y2', function (d) {
+//                                    return d.target.y;
+//                                });
+//                    });
 
 
                     var text_link = container.append("g").selectAll(".text_link_svg")
