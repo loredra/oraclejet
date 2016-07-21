@@ -25,7 +25,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 self.rows = ko.observable(20);
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
-                self.facetField = ko.observable('&facet.field=add_country&facet.field=reg_number&facet=on');
+                self.facetField = ko.observable('&facet.field=add_country&facet.field=program_number&facet.field=ent_typeTree&facet=on');
                 self.scoreField = ko.observable('&fl=*,score');
                 //self.wordPercentage = ko.observable('')
                 self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE f=nam_comp_name}');
@@ -39,6 +39,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //Observable array for Facets
                 self.facetsCountries = ko.observableArray([]);
                 self.facetsLists = ko.observableArray([]);
+                self.facetsTypes = ko.observableArray([]);
 
                 //variables to control data requests
                 var nameBeforeUpdate = '';
@@ -74,10 +75,12 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //workers
                 self.worker = new Worker('js/viewModels/worker.js');
                 self.workerList = new Worker('js/viewModels/workerList.js');
-
+                self.workerType = new Worker('js/viewModels/workerType.js');
+                
                 //store the worker result
                 self.workerResult = ko.observableArray([]);
                 self.workerListResult = ko.observableArray([]);
+                self.workerTypeResult = ko.observableArray([]);
 
                 //something temporary for the expand feature of the tree
                 var treeExpanded = false;
@@ -143,6 +146,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 //
                 var countryFilterPanelTitle = "Country";
                 var listFilterPanelTitle = "List";
+                var typeFilterPanelTitle = "Type";
                 self.percentageText = ko.observable("Percentage");
                 self.countryText = ko.observable("Country");
                 self.addressStatus = ko.observable("without address");
@@ -268,7 +272,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.queryField().toString() +
                             self.nameQ()).then(function (people) {
                         self.facetsCountries(people.facet_counts.facet_fields.add_country);
-                        self.facetsLists(people.facet_counts.facet_fields.reg_number);
+                        self.facetsLists(people.facet_counts.facet_fields.program_number);
+                        self.facetsTypes(people.facet_counts.facet_fields.ent_typeTree);
                     }).fail(function (error) {
                         console.log('Error in getting People data: ' + error.message);
                     });
@@ -453,7 +458,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     fn(self.workerListResult());
                 };
 
-
+                self.getNodeDataType = function (node, fn) {
+                    fn(self.workerTypeResult());
+                };
+                
                 /*/
                  self.listViewDataSource = ko.computed(function () {
                  return new oj.ArrayTableDataSource(self.filteredAllPeople(), {idAttribute: 'empId'});
@@ -577,6 +585,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             $('#treeList').ojTree("refresh");
                             $('#treeList').ojTree("expandAll");
                         };
+                        self.workerType.postMessage(self.facetsTypes());
+                        self.workerType.onmessage = function (m) {
+                            m.data[0].title = typeFilterPanelTitle;
+                            self.workerTypeResult(m.data);
+                            $('#treeType').ojTree("refresh");
+                            $('#treeType').ojTree("expandAll");
+                        };
                     }
                     if (!self.keepFilter && self.nameSearch().length === 0) {
                         self.workerResult("");
@@ -634,6 +649,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         });
                         $("#treeList").draggable().resizable({
                         });
+                        $("#treeType").draggable().resizable({
+                        });
                     });
 
                     $('#tree').on("ojcollapse", function (e, ui) {
@@ -652,6 +669,15 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     });
                     $('#treeList').on("ojexpand", function (e, ui) {
                         $("#treeList").css({"height": self.treeListHeight()});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeType').on("ojcollapse", function (e, ui) {
+                        self.treeListHeight($("#treeList").css("height"));
+                        $("#treeType").css({"height": 40});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeType').on("ojexpand", function (e, ui) {
+                        $("#treeType").css({"height": self.treeListHeight()});
                         e.stopImmediatePropagation();
                     });
 
@@ -735,10 +761,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     var fqList = "";
 
                     if (self.filterTreeList().length > 0) {
-                        fqList = "reg_number:" + "\"" + self.filterTreeList()[0] + "\"";
+                        fqList = "program_number:" + "\"" + self.filterTreeList()[0] + "\"";
                         for (var i = 1; i < self.filterTreeList().length; ++i) {
                             if (self.filterTreeList()[i] !== undefined)
-                                fqList = fqList + " OR " + "reg_number:" + "\"" + self.filterTreeList()[i] + "\"";
+                                fqList = fqList + " OR " + "program_number:" + "\"" + self.filterTreeList()[i] + "\"";
                         }
                         fqList = "&fq=" + fqList;
                     }
@@ -774,10 +800,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                 self.getList = function (company) {
                     var listName;
-                    if (company.doclist.docs[0].reg_number === "null")
+                    if (company.doclist.docs[0].program_number === "null")
                         listName = "NO LIST";
                     else
-                        listName = company.doclist.docs[0].reg_number;
+                        listName = company.doclist.docs[0].program_number;
                     return listName;
                 };
 
@@ -824,7 +850,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                 self.getCountry = function (company) {
                     var country;
-                    if (company.doclist.docs[0].add_country)
+                    if (company.doclist.docs[0].add_country !== "null")
                         country = "'" + company.doclist.docs[0].add_country + "'";
                     else
                         country = this.countryStatus();
@@ -832,7 +858,6 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 };
 
                 self.getAddress = function (company) {
-
                     var address = "";
                     //For the full address Solr field
                     if (company.doclist.docs[0].add_whole !== "null")
@@ -869,7 +894,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             //
                             //Address Result
                             //
-                            address = room + appartment + building + house + street + district + city;
+                            address = room + appartment + building + house + street;
                         }
                         //district
                         var district = "";

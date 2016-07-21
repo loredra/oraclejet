@@ -128,6 +128,14 @@
                  data : { data: getNodeDataList }
                }">
 </div>
+<div id="treeType" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:70%; overflow: auto; background: #EAC2EC"
+     data-bind="ojComponent:
+               {
+                 component: 'ojTree',
+                 icons : false,
+                 data : { data: getNodeDataType }
+               }">
+</div>
 <div id="nores" style="position: absolute; top:228px; left:333px; opacity: 0.3; font-family: Courier New; font-size: 700%" 
      data-bind="text: noResults">
 </div>

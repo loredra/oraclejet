@@ -1,8 +1,8 @@
 
 /* global d3, tooltip, german */
 
-define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lang.ge', 'lang/lang.en', 'lang/lang.fr', 'knockout-postbox'
-], function (oj, ko, $, d3, arangodb, utils) {
+define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatables', 'lang/lang.ge', 'lang/lang.en', 'lang/lang.fr', 'knockout-postbox'
+], function (oj, ko, $, d3, arangodb, utils, datatables) {
 
     ko.bindingHandlers.svg = {
         init: function (element, valueAccessor) {
@@ -479,7 +479,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             if (node.infos === undefined)
                                 numberLists = 0;
                             else
-                                numberLists = node.infos.length;
+                                numberLists = 1;
 
                             tooltip.html(name +
                                     "<br>" + self.tooltipType() + ": " + node.type +
@@ -941,6 +941,70 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                             .style("left", (d3.event.pageX + 16) + "px");
                 }
 
+                function getAddressFieldsObject(nodeAddress) {
+                    var detailAddress = new Object();
+                    if (nodeAddress.whole)
+                        detailAddress["Whole"] = nodeAddress.whole;
+                    else
+                        detailAddress["Whole"] = "";
+                    if (nodeAddress.country)
+                        detailAddress["Country"] = nodeAddress.country;
+                    else
+                        detailAddress["Country"] = "";
+                    if (nodeAddress.state)
+                        detailAddress["State"] = nodeAddress.state;
+                    else
+                        detailAddress["State"] = "";
+                    if (nodeAddress.zipcode)
+                        detailAddress["Zipcode"] = nodeAddress.zipcode;
+                    else
+                        detailAddress["Zipcode"] = "";
+                    if (nodeAddress.city)
+                        detailAddress["City"] = nodeAddress.city;
+                    else
+                        detailAddress["City"] = "";
+                    if (nodeAddress.district)
+                        detailAddress["District"] = nodeAddress.district;
+                    else
+                        detailAddress["District"] = "";
+                    if (nodeAddress.streetaddress) 
+                        detailAddress["StreetAddress"] = nodeAddress.streetaddress;
+                    else
+                        detailAddress["StreetAddress"] = "";
+                    if (nodeAddress.street)
+                        detailAddress["Street"] = nodeAddress.street;
+                    else
+                        detailAddress["Street"] = "";
+                    if (nodeAddress.house)
+                        detailAddress["House"] = nodeAddress.house;
+                    else
+                        detailAddress["House"] = "";
+                    if (nodeAddress.building)
+                        detailAddress["Building"] = nodeAddress.building;
+                    else
+                        detailAddress["Building"] = "";
+                    if (nodeAddress.floor)
+                        detailAddress["Floor"] = nodeAddress.floor;
+                    else
+                        detailAddress["Floor"] = "";
+                    if (nodeAddress.appartment)
+                        detailAddress["Appartment"] = nodeAddress.appartment;
+                    else
+                        detailAddress["Appartment"] = "";
+                    if (nodeAddress.room)
+                        detailAddress["Room"] = nodeAddress.room;
+                    else
+                        detailAddress["Room"] = "";
+                    if (nodeAddress.sources)
+                        detailAddress["Sources"] = nodeAddress.sources;
+                    else
+                        detailAddress["Sources"] = "";
+
+
+//                    }
+                    return detailAddress;
+                }
+
                 function getAddressFields(nodeAddress) {
                     var detailAddress = "";
                     if (nodeAddress.whole)
@@ -1034,11 +1098,11 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
 
 
                     //////////////////////Populate content in to detail div/////////////////// 
-                    d3.select(".detail_name").remove();
-                    d3.select(".detail_address").remove();
-                    d3.select(".identification").remove();
-                    d3.select(".country").remove();
-                    d3.selectAll(".ul_list_List").remove();
+                    d3.select("#mainName").remove();
+                    d3.select("#mainAddress").remove();
+                    d3.select("#mainIdentification").remove();
+                    d3.select("#mainCountry").remove();
+                    //d3.select("#TableSanctionLists").select("tbody").selectAll("tr").remove();
 
 
                     //////////////////////Populate content in to detail div///////////////////
@@ -1064,7 +1128,8 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     }
 
                     detail.select("#detailsName").append("div").text(nodename)
-                            .attr("class", "detail_name")
+                            .attr("class", "description_value")
+                            .attr("id", "mainName")
                             .attr("position", "relative");
 
                     var nodeAddress;
@@ -1079,15 +1144,18 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     }
 
                     detail.select("#detailsAddress").append("div").text(detailAddress)
-                            .attr("class", "detail_address")
+                            .attr("class", "description_value")
+                            .attr("id", "mainAddress")
                             .attr("position", "relative");
 
                     detail.select("#identification_container").append("div").text(node.id)
-                            .attr("class", "identification")
+                            .attr("class", "description_value")
+                            .attr("id", "mainIdentification")
                             .attr("position", "relative");
 
                     detail.select("#country_container").append("div").text(nodeAddress.country)
-                            .attr("class", "country")
+                            .attr("class", "description_value")
+                            .attr("id", "mainCountry")
                             .attr("position", "relative");
 
 
@@ -1154,64 +1222,70 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
 
                     d3.select("#numOfAddress").text(numOfAddress);
 
-////////////////////////////////////////////////////////////////////
-                    var listOfList = d3.select("#listList").append("tr")
-                            .attr("class", "ul_list_List")
-                            .selectAll("tr")
-                            .data([node])
-                            .enter()
-                            .append("tr")
-                            .attr("class", "listList")
-                            .style("font-size", 15 + "px")
-                            .text(node.sanctionName)
-                            .style("text-anchor", "start")
-                            .on("click", overlay)
-                            .on("mouseover", function () {
-                                if (node.validto !== undefined)
-                                    mouseOverList(node.validto);
-                            })
-                            .on("mousemove", mousemove)
-                            .on("mouseout", mouseout);
+                    //
+                    //Tables Informatio
+                    //
+                    //Table for Sanction Lists
+                    var dataSanctionLists = new Array();
+                    for (var i = 0; i < [node.sanctionName].length; ++i) {
+                        dataSanctionLists.push({sanctionList: node.sanctionName});
+                    }
+                    var tableSanctionLists = $("#TableSanctionLists").DataTable({
+                        data: dataSanctionLists,
+                        columns: [
+                            {data: 'sanctionList'}
+                        ],
+                        "paging": false,
+                        "info": false,
+                        "destroy": true,
+                        "searching": false
+                    });
+                    $("#TableSanctionLists").find("tbody").find("tr").find("td").attr("style", "cursor:pointer");
+                    $("#TableSanctionLists").find("thead").find("tr").find("th").attr("style", "cursor:default");
+                    $("#TableSanctionLists").find("tbody").find("tr").on("click", overlay);
+                    //Table for known names
+                    var dataNames = node.names;
+                    var languageEmpty = true;
+                    for (var i = 0; i < dataNames.length; ++i) {
+                        if (dataNames[i].language === undefined)
+                            dataNames[i]["language"] = "";
+                        else
+                            languageEmpty = false;
 
-                    var listOfAKA = d3.select("#listAKA").append("tr")
-                            .attr("class", "ul_list_List")
-                            .selectAll("tr")
-                            .data(listAKA)
-                            .enter()
-                            .append("tr")
-                            .attr("class", "listAKA")
-                            .style("font-size", 15 + "px")
-                            .text(function (d) {
-                                return d.name;
-                            })
-                            .style("text-anchor", "start");
-
-//                    var listOfAKA = d3.select("#listAKA").append("td")
-//                            .attr("class", "ul_list_List")
-//                            .selectAll("tr")
-//                            .data(listAKA)
-//                            .enter()
-//                            .append("tr")
-//                            .attr("class", "listAKA")
-//                            .style("font-size", 15 + "px")
-//                            .text(function (d) {
-//                                return d.name;
-//                            })
-//                            .style("text-anchor", "start");
-
-                    var listOfKA = d3.select("#listKA").append("tr")
-                            .attr("class", "ul_list_List")
-                            .selectAll("tr")
-                            .data(listKA)
-                            .enter()
-                            .append("tr")
-                            .attr("class", "listKA")
-                            .style("font-size", 15 + "px")
-                            .text(function (addressNode) {
-                                var address = getAddressFields(addressNode);
-                                return address;
-                            })
-                            .style("text-anchor", "start");
+                    }
+                    //$("#TableNames").DataTable().fnReloadAjax();
+                    var tableNames = $("#TableNames").DataTable({
+                        data: dataNames,
+                        columns: [
+                            {data: 'name'},
+                            {data: 'language'}
+                        ],
+                        "paging": false,
+                        "info": false,
+                        "destroy": true,
+                        "searching": false
+                    });
+                    if (languageEmpty === true)
+                        tableNames.column(1).visible(false);
+                    $("#TableNames").find("tbody").find("tr").find("td").attr("style", "cursor:text");
+                    $("#TableNames").find("thead").find("tr").find("th").attr("style", "cursor:default");
+                    //Table for known addresses
+                    var dataAddresses = new Array();
+                    for (var i = 0; i < node.addresses.length; ++i) {
+                        dataAddresses.push({Address: getAddressFields(node.addresses[i])});
+                    }
+                    var tableAddresses = $("#TableAddresses").DataTable({
+                        data: dataAddresses,
+                        columns: [
+                            {data: 'Address'}
+                        ],
+                        "paging": false,
+                        "info": false,
+                        "destroy": true,
+                        "searching": false
+                    });
+                    $("#TableAddresses").find("tbody").find("tr").find("td").attr("style", "cursor:text");
+                    $("#TableAddresses").find("thead").find("tr").find("th").attr("style", "cursor:default");
                 }
 
                 function overlay() {
@@ -1225,61 +1299,191 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'lang/lan
                     //Build the rest of the table using d3
                     //
                     //Table for Known Names
-                    knownNamesTableColumns = ["Full Name"];
-                    var knownNamesTableColumnsTitle = d3.select("#known_names_table")
-                            .append("tr")
-                            .selectAll("tr")
-                            .data([knownNamesTableColumns])
-                            .enter()
-                            .append("th")
-                            .text(function (title) {
-                                return title;
-                            });
-                    for (var i = 0; i < self.nodeData().names.length; ++i) {
-                        var knownNamesTableData = d3.select("#known_names_table")
-                                .append("tr")
-                                .selectAll("tr")
-                                .data([self.nodeData().names[i]])
-                                .enter()
-                                .append("td")
-                                .text(function (names) {
-                                    return names.name;
-                                });
+//                    knownNamesTableColumns = ["Full Name"];
+//                    var knownNamesTableColumnsTitle = d3.select("#known_names_table")
+//                            .append("tr")
+//                            .selectAll("tr")
+//                            .data([knownNamesTableColumns])
+//                            .enter()
+//                            .append("th")
+//                            .text(function (title) {
+//                                return title;
+//                            });
+//                    for (var i = 0; i < self.nodeData().names.length; ++i) {
+//                        var knownNamesTableData = d3.select("#known_names_table")
+//                                .append("tr")
+//                                .selectAll("tr")
+//                                .data([self.nodeData().names[i]])
+//                                .enter()
+//                                .append("td")
+//                                .text(function (names) {
+//                                    return names.name;
+//                                });
+//                    }
+                    //
+                    //Table for known names
+                    var dataNames = self.nodeData().names;
+                    var languageEmpty = true;
+                    for (var i = 0; i < dataNames.length; ++i) {
+                        if (dataNames[i].language === undefined)
+                            dataNames[i]["language"] = "";
+                        else
+                            languageEmpty = false;
                     }
+                    var tableNames = $("#known_names_overlay_table").DataTable({
+                        data: dataNames,
+                        columns: [
+                            {data: 'name'},
+                            {data: 'language'}
+                        ],
+                        "paging": false,
+                        "info": false,
+                        "destroy": true,
+                        "searching": false
+                    });
+                    if (languageEmpty === true)
+                        tableNames.column(1).visible(false);
+                    $("#known_names_overlay_table").find("tbody").find("tr").find("td").attr("style", "cursor:text");
+                    $("#known_names_overlay_table").find("thead").find("tr").find("th").attr("style", "cursor:pointer");
                     //Table for Known Addresses
-                    knownAddressesTableColumns = ["Country", "State", "Zipcode", "City", "District", "Street", "House Nr.", "Building", "Floor", "Appartment", "Room Nr.", "Sources"];
-                    arrayArangoAllAddresses = ["country", "state", "zipcode", "city", "district", "street", "house", "building", "floor", "appartment", "room", "sourceclass"];
+                    var emptyWholeColumn = true;
+                    var emptyCountryColumn = true;
+                    var emptyStateColumn = true;
+                    var emptyZipcodeColumn = true;
+                    var emptyCityColumn = true;
+                    var emptyDistrictColumn = true;
+                    var emptyStreetAddressColumn = true;
+                    var emptyStreetColumn = true;
+                    var emptyHouseColumn = true;
+                    var emptyBuildingColumn = true;
+                    var emptyFloorColumn = true;
+                    var emptyAppartmentColumn = true;
+                    var emptyRoomColumn = true;
+                    var emptySourcesColumn = true;
 
-                    var knownAddressesTableColumnsTitle = d3.select("#known_addresses_table")
-                            .append("tr")
-                            .selectAll("tr")
-                            .data(knownAddressesTableColumns)
-                            .enter()
-                            .append("th")
-                            .text(function (title) {
-                                return title;
-                            });
+                    var dataAddresses = new Array();
                     for (var i = 0; i < self.nodeData().addresses.length; ++i) {
-                        var arrayExistingFieldsAddresses = new Array();
-                        for (var k = 0; k < arrayArangoAllAddresses.length; k++) {
-                            var addressField = arrayArangoAllAddresses[k];
-                            var addressValue = "";
+                        dataAddresses.push(getAddressFieldsObject(self.nodeData().addresses[i]));
+                        if (dataAddresses[i].Whole !== "")
+                            emptyWholeColumn = false;
+                        if (dataAddresses[i].Country !== "")
+                            emptyCountryColumn = false;
+                        if (dataAddresses[i].State !== "")
+                            emptyStateColumn = false;
+                        if (dataAddresses[i].Zipcode !== "")
+                            emptyZipcodeColumn = false;
+                        if (dataAddresses[i].City !== "")
+                            emptyCityColumn = false;
+                        if (dataAddresses[i].District !== "")
+                            emptyDistrictColumn = false;
+                        if (dataAddresses[i].StreetAddress !== "")
+                            emptyStreetAddressColumn = false;
+                        if (dataAddresses[i].Street !== "")
+                            emptyStreetColumn = false;
+                        if (dataAddresses[i].House !== "")
+                            emptyHouseColumn = false;
+                        if (dataAddresses[i].Building !== "")
+                            emptyBuildingColumn = false;
+                        if (dataAddresses[i].Floor !== "")
+                            emptyFloorColumn = false;
+                        if (dataAddresses[i].Appartment !== "")
+                            emptyAppartmentColumn = false;
+                        if (dataAddresses[i].Room !== "")
+                            emptyRoomColumn = false;
+                        if (dataAddresses[i].Sources !== "")
+                            emptySourcesColumn = false;
 
-                            if (self.nodeData().addresses[i][addressField] !== undefined) {
-                                addressValue = self.nodeData().addresses[i][addressField];
-                            }
-                            arrayExistingFieldsAddresses.push([addressValue]);
-                        }
-                        var knownAddressesTableData = d3.select("#known_addresses_table")
-                                .append("tr")
-                                .selectAll("tr")
-                                .data(arrayExistingFieldsAddresses)
-                                .enter()
-                                .append("td")
-                                .text(function (address) {
-                                    return address;
-                                });
                     }
+                    var tableAddresses = $("#known_addresses_overlay_table").DataTable({
+                        data: dataAddresses,
+                        columns: [
+                            {data: 'Country'},
+                            {data: 'State'},
+                            {data: 'Zipcode'},
+                            {data: 'City'},
+                            {data: 'District'},
+                            {data: 'Street'},
+                            {data: 'House'},
+                            {data: 'Building'},
+                            {data: 'Floor'},
+                            {data: 'Appartment'},
+                            {data: 'Room'},
+                            {data: 'Whole'},
+                            {data: 'StreetAddress'},
+                            {data: 'Sources'}
+                        ],
+                        "paging": false,
+                        "info": false,
+                        "destroy": true,
+                        "searching": false,
+                        "width" : "100%"
+                    });
+
+                    
+                    if (emptyCountryColumn === true)
+                        tableAddresses.column(0).visible(false);
+                    if (emptyStateColumn === true)
+                        tableAddresses.column(1).visible(false);
+                    if (emptyZipcodeColumn === true)
+                        tableAddresses.column(2).visible(false);
+                    if (emptyCityColumn === true)
+                        tableAddresses.column(3).visible(false);
+                    if (emptyDistrictColumn === true)
+                        tableAddresses.column(4).visible(false);
+                    if (emptyStreetColumn === true)
+                        tableAddresses.column(5).visible(false);
+                    if (emptyHouseColumn === true)
+                        tableAddresses.column(6).visible(false);
+                    if (emptyBuildingColumn === true)
+                        tableAddresses.column(7).visible(false);
+                    if (emptyFloorColumn === true)
+                        tableAddresses.column(8).visible(false);
+                    if (emptyAppartmentColumn === true)
+                        tableAddresses.column(9).visible(false);
+                    if (emptyRoomColumn === true)
+                        tableAddresses.column(10).visible(false);
+                    if (emptyWholeColumn === true)
+                        tableAddresses.column(11).visible(false);
+                    if (emptyStreetAddressColumn === true)
+                        tableAddresses.column(12).visible(false);
+                    if (emptySourcesColumn === true)
+                        tableAddresses.column(13).visible(false);
+                    $("#known_addresses_overlay_table").find("tbody").find("tr").find("td").attr("style", "cursor:text");
+                    $("#known_addresses_overlay_table").find("thead").find("tr").find("th").attr("style", "cursor:pointer");
+                    //
+//                    knownAddressesTableColumns = ["Country", "State", "Zipcode", "City", "District", "Street", "House Nr.", "Building", "Floor", "Appartment", "Room Nr.", "Sources"];
+//                    arrayArangoAllAddresses = ["country", "state", "zipcode", "city", "district", "street", "house", "building", "floor", "appartment", "room", "sourceclass"];
+//
+//                    var knownAddressesTableColumnsTitle = d3.select("#known_addresses_table")
+//                            .append("tr")
+//                            .selectAll("tr")
+//                            .data(knownAddressesTableColumns)
+//                            .enter()
+//                            .append("th")
+//                            .text(function (title) {
+//                                return title;
+//                            });
+//                    for (var i = 0; i < self.nodeData().addresses.length; ++i) {
+//                        var arrayExistingFieldsAddresses = new Array();
+//                        for (var k = 0; k < arrayArangoAllAddresses.length; k++) {
+//                            var addressField = arrayArangoAllAddresses[k];
+//                            var addressValue = "";
+//
+//                            if (self.nodeData().addresses[i][addressField] !== undefined) {
+//                                addressValue = self.nodeData().addresses[i][addressField];
+//                            }
+//                            arrayExistingFieldsAddresses.push([addressValue]);
+//                        }
+//                        var knownAddressesTableData = d3.select("#known_addresses_table")
+//                                .append("tr")
+//                                .selectAll("tr")
+//                                .data(arrayExistingFieldsAddresses)
+//                                .enter()
+//                                .append("td")
+//                                .text(function (address) {
+//                                    return address;
+//                                });
+//                    }
                     //Table made by div elements for General Info
                     if (self.nodeData().date !== undefined)
                         d3.select("#general_info_div_table")
