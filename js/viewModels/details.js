@@ -125,7 +125,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
 //                            relation.source["y"]=0;
 //                            relation.target["x"]=0;
 //                            relation.target["y"]=0;
-
+                            
+                            console.log(relation.target.names[0].name);
+                            console.log(relation.target.x);
 
                             if (relation.source !== undefined) {
                                 var source = relation.source;
@@ -140,7 +142,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                                     target["x"] = 0;
                                     target["y"] = 0;
                                 }
-                                var s
+
                             }
                         });
 
@@ -225,6 +227,12 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                             .data(relations)
                             .enter().append("line")
                             .attr("class", "link")
+//                            .attr("source", function (d) {
+//                                return d.source.id;
+//                            })
+//                            .attr("target", function (d) {
+//                                return d.target.id;
+//                            })
                             .attr("x1", function (d) {
                                 return d.source.x;
                             })
@@ -256,7 +264,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                                 return 6;
                             })
                             .style("marker-end", "url(#resolved)");
-
                     var marker = container.append("g").selectAll("marker")
                             .data(["suit", "licensing", "resolved"])
                             .enter().append("marker")
@@ -288,7 +295,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                                 return getEnglishName(d.names);
                             })
                             .attr("address", function (d) {
-                                return d.addresses[0].country;
+                                if (d.addresses !== undefined)
+                                    if (d.addresses[0] !== undefined)
+                                        if (d.addresses[0].country !== undefined)
+                                            return d.addresses[0].country;
                             })
                             .attr("isListedIn", function (d) {
                                 if (d.sanctionName !== null)
@@ -296,6 +306,9 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                                 else
                                     return "";
                             })
+//                            .attr("id", function (d) {
+//                                return d.id;
+//                            })
                             .attr("x", function (d) {
                                 return d.x;
                             })
@@ -523,6 +536,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                     render();
                     function render() {
                         force.on("tick", function () {
+
 
                             text_link.attr("x", function (d) {
                                 return (d.source.x + d.target.x) / 2 + 3;
@@ -967,7 +981,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                         detailAddress["District"] = nodeAddress.district;
                     else
                         detailAddress["District"] = "";
-                    if (nodeAddress.streetaddress) 
+                    if (nodeAddress.streetaddress)
                         detailAddress["StreetAddress"] = nodeAddress.streetaddress;
                     else
                         detailAddress["StreetAddress"] = "";
@@ -1416,10 +1430,10 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'd3', 'arangodb', 'utils', 'datatabl
                         "info": false,
                         "destroy": true,
                         "searching": false,
-                        "width" : "100%"
+                        "width": "100%"
                     });
 
-                    
+
                     if (emptyCountryColumn === true)
                         tableAddresses.column(0).visible(false);
                     if (emptyStateColumn === true)

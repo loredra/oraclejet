@@ -730,7 +730,26 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             }
                         }
                     });
-
+                    
+                    $("#treeType").on("ojoptionchange", function (e, ui) {
+                        if (ui.option === "selection") {
+                            var filterValue = $(ui.value).attr("id");
+                            if (filterValue !== "type" && filterValue !== undefined) {
+                                var foundDuplicate = self.filterTree().find(function (el) {
+                                    return filterValue === el;
+                                });
+                                if (foundDuplicate === undefined) {
+                                    self.filterTree().push(filterValue);
+                                    self.keepFilter = true;
+                                    self.filterTreeObs("load");
+                                    self.processFilterCountries();
+                                    $("#tree").ojTree("deselectAll");
+                                }
+                            }
+                            e.stopImmediatePropagation();
+                        }
+                    });
+                    
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
 
                 });
