@@ -76,7 +76,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 self.worker = new Worker('js/viewModels/worker.js');
                 self.workerList = new Worker('js/viewModels/workerList.js');
                 self.workerType = new Worker('js/viewModels/workerType.js');
-                
+
                 //store the worker result
                 self.workerResult = ko.observableArray([]);
                 self.workerListResult = ko.observableArray([]);
@@ -459,9 +459,17 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 };
 
                 self.getNodeDataType = function (node, fn) {
+                    if (self.workerTypeResult()[0] !== undefined) {
+                        if (self.workerTypeResult()[0].children !==undefined){
+                        var object1 = self.workerTypeResult()[0].children[0];
+                        var object2 = self.workerTypeResult()[0].children[2];
+                        $.extend( object1, object2 );
+                        object1;
+                    }
+                    }
                     fn(self.workerTypeResult());
                 };
-                
+
                 /*/
                  self.listViewDataSource = ko.computed(function () {
                  return new oj.ArrayTableDataSource(self.filteredAllPeople(), {idAttribute: 'empId'});
@@ -730,7 +738,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             }
                         }
                     });
-                    
+
                     $("#treeType").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
                             var filterValue = $(ui.value).attr("id");
@@ -749,7 +757,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             e.stopImmediatePropagation();
                         }
                     });
-                    
+
                     self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList()));
 
                 });
