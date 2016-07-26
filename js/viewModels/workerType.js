@@ -26,7 +26,7 @@ function setChildren(tree, parent, list, hits, iteration) {
     if (list[iteration]) {
 
         children.push({
-            title: list[iteration] + ", " + hits,
+            title: list[iteration],
             attr: {id: list[iteration]}
         });
         parent["children"] = JSON.parse(JSON.stringify(children));
@@ -43,27 +43,7 @@ function setChildren(tree, parent, list, hits, iteration) {
     return result;
 }
 
-function addNode(object, tree, parent) {
-//    if(find(tree, parent.id) === null){
-//        
-//    }
 
-    //The string filter should be applied to place the node inside the tree
-    return tree;
-}
-
-function checkObject(object, tree, parent) {
-    if (find(tree, object.id) === null) {
-        if (object.children !== undefined) {
-            parent = object[0];
-            checkObject(object.children[0], tree, parent);
-        }
-    } else
-        var updatedTree = addNode(object, tree, parent);
-
-    return updatedTree;
-
-}
 
 onmessage = function (e) {
     var pointer = new Array();
@@ -85,7 +65,7 @@ onmessage = function (e) {
 //                });
 
                 arr.push({
-                    title: splitted[0] + ", " + hits,
+                    title: splitted[0],
                     id: splitted[0]
                 });
                 var childrenNode = new Array();
@@ -101,13 +81,41 @@ onmessage = function (e) {
             break;
     }
 
-    //Build tree
+    function addNode(object, tree, match) {
+        var match = false;
+        
+        if (match) {
+            match = false;
+            tree[0].children.push(object[0].children);
+        }
+        if (tree[0].id === object[0].id) {
+            if (tree[0].children && object[0].children)
+                addNode(object[0].children, tree[0].children, match);
+            
+        }
+
+
+        //The string filter should be applied to place the node inside the tree
+        return tree;
+    }
+
+    function checkObject(object, tree, parent) {
+        if (find(tree, object[0].id) === null) {
+            if (object.children !== undefined) {
+                parent = object;
+                checkObject(object.children, tree, parent);
+            }
+        } else
+            var updatedTree = addNode(object, tree, false);
+        return updatedTree;
+    }
+//Build tree
     if (formatedFacets[0] !== undefined) {
         var treeStructure = formatedFacets[0];
         for (var i = 1; i < formatedFacets.length; ++i) {
             if (formatedFacets[i][0] !== undefined)
 //                if (find(treeStructure[0], formatedFacets[i][0].id) !== null)
-                checkObject(formatedFacets[i][0], treeStructure[0], [])
+                checkObject(formatedFacets[i], treeStructure, []);
         }
     }
 
@@ -115,7 +123,7 @@ onmessage = function (e) {
     if (formatedFacets.length !== 0)
         var tree = [{"title": "Type",
                 "id": "type",
-                "children": formatedFacets}];
+                "children": treeStructure}];
     else
         var tree = [{"title": "Type", "attr": {"id": "type"}}];
     postMessage(tree);

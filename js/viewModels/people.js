@@ -821,7 +821,16 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 });
 
                 self.getPhoto = function (company) {
-                    var src = 'css/images/people/nopic.png';
+                    var  src = 'js/views/resources/company.svg';
+                    if(company.doclist.docs[0].ent_type === "ENTITY_INDIVIDUAL")
+                        src = 'js/views/resources/human.svg';
+                    else if(company.doclist.docs[0].ent_type === "ENTITY_COMPANY")
+                        src = 'js/views/resources/company.svg';
+                    else if(company.doclist.docs[0].ent_type === "ENTITY_BANK")
+                        src = 'js/views/resources/bank.svg';
+                    else if(company.doclist.docs[0].ent_type === "ENTITY_VESSEL")
+                        src = 'js/views/resources/boat.svg';
+                     
                     return src;
                 };
 
