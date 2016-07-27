@@ -30,7 +30,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                 self.rows = ko.observable(20);
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
-                self.facetField = ko.observable('&facet.field=add_country&facet.field=program_number&facet=on');
+                self.facetField = ko.observable('&facet.field=add_country&facet.field=program_number&facet.field=ent_typeTree&facet=on');
                 self.scoreField = ko.observable('&fl=*,score');
                 //self.wordPercentage = ko.observable('')
                 self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE f=nam_comp_name}');
@@ -44,6 +44,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                 //Observable array for Facets
                 self.facetsCountries = ko.observableArray([]);
                 self.facetsLists = ko.observableArray([]);
+                self.facetsTypes = ko.observableArray([]);
 
                 //variables to control data requests
                 var nameBeforeUpdate = '';
@@ -79,10 +80,12 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                 //workers
                 self.worker = new Worker('js/viewModels/worker.js');
                 self.workerList = new Worker('js/viewModels/workerList.js');
+                self.workerType = new Worker('js/viewModels/workerType.js');
 
                 //store the worker result
                 self.workerResult = ko.observableArray([]);
                 self.workerListResult = ko.observableArray([]);
+                self.workerTypeResult = ko.observableArray([]);
 
                 //something temporary for the expand feature of the tree
                 var treeExpanded = false;
@@ -148,6 +151,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                 //
                 var countryFilterPanelTitle = "Country";
                 var listFilterPanelTitle = "List";
+                var typeFilterPanelTitle = "Type";
                 self.percentageText = ko.observable("Percentage");
                 self.countryText = ko.observable("Country");
                 self.addressStatus = ko.observable("without address");
@@ -274,7 +278,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                             self.nameQ()).then(function (people) {
                         self.facetsCountries(people.facet_counts.facet_fields.add_country);
                         self.facetsLists(people.facet_counts.facet_fields.program_number);
-                      
+                        self.facetsTypes(people.facet_counts.facet_fields.ent_typeTree);
                     }).fail(function (error) {
                         console.log('Error in getting People data: ' + error.message);
                     });
@@ -471,6 +475,17 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                     fn(self.workerListResult());
                 };
 
+                self.getNodeDataType = function (node, fn) {
+                    if (self.workerTypeResult()[0] !== undefined) {
+                        if (self.workerTypeResult()[0].children !==undefined){
+                        var object1 = self.workerTypeResult()[0].children[0];
+                        var object2 = self.workerTypeResult()[0].children[2];
+                        $.extend( object1, object2 );
+                        object1;
+                    }
+                    }
+                    fn(self.workerTypeResult());
+                };
 
                 /*/
                  self.listViewDataSource = ko.computed(function () {
@@ -596,6 +611,13 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                             $('#treeList').ojTree("refresh");
                             $('#treeList').ojTree("expandAll");
                         };
+                        self.workerType.postMessage(self.facetsTypes());
+                        self.workerType.onmessage = function (m) {
+                            m.data[0].title = typeFilterPanelTitle;
+                            self.workerTypeResult(m.data);
+                            $('#treeType').ojTree("refresh");
+                            $('#treeType').ojTree("expandAll");
+                        };
                     }
                     if (!self.keepFilter && self.nameSearch().length === 0) {
                         self.workerResult("");
@@ -653,6 +675,8 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                         });
                         $("#treeList").draggable().resizable({
                         });
+                        $("#treeType").draggable().resizable({
+                        });
                     });
 
                     $('#tree').on("ojcollapse", function (e, ui) {
@@ -671,6 +695,15 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                     });
                     $('#treeList').on("ojexpand", function (e, ui) {
                         $("#treeList").css({"height": self.treeListHeight()});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeType').on("ojcollapse", function (e, ui) {
+                        self.treeListHeight($("#treeList").css("height"));
+                        $("#treeType").css({"height": 40});
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeType').on("ojexpand", function (e, ui) {
+                        $("#treeType").css({"height": self.treeListHeight()});
                         e.stopImmediatePropagation();
                     });
 
@@ -721,6 +754,25 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                                 }
                                 e.stopImmediatePropagation();
                             }
+                        }
+                    });
+
+                    $("#treeType").on("ojoptionchange", function (e, ui) {
+                        if (ui.option === "selection") {
+                            var filterValue = $(ui.value).attr("id");
+                            if (filterValue !== "type" && filterValue !== undefined) {
+                                var foundDuplicate = self.filterTree().find(function (el) {
+                                    return filterValue === el;
+                                });
+                                if (foundDuplicate === undefined) {
+                                    self.filterTree().push(filterValue);
+                                    self.keepFilter = true;
+                                    self.filterTreeObs("load");
+                                    self.processFilterCountries();
+                                    $("#tree").ojTree("deselectAll");
+                                }
+                            }
+                            e.stopImmediatePropagation();
                         }
                     });
 
@@ -787,7 +839,16 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                 });
 
                 self.getPhoto = function (company) {
-                    var src = 'css/images/people/nopic.png';
+                    var  src = 'js/views/resources/company.svg';
+                    if(company.doclist.docs[0].ent_type === "ENTITY_INDIVIDUAL")
+                        src = 'js/views/resources/human.svg';
+                    else if(company.doclist.docs[0].ent_type === "ENTITY_COMPANY")
+                        src = 'js/views/resources/company.svg';
+                    else if(company.doclist.docs[0].ent_type === "ENTITY_BANK")
+                        src = 'js/views/resources/bank.svg';
+                    else if(company.doclist.docs[0].ent_type === "ENTITY_VESSEL")
+                        src = 'js/views/resources/boat.svg';
+                     
                     return src;
                 };
 
@@ -843,7 +904,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
 
                 self.getCountry = function (company) {
                     var country;
-                    if (company.doclist.docs[0].add_country)
+                    if (company.doclist.docs[0].add_country !== "null")
                         country = "'" + company.doclist.docs[0].add_country + "'";
                     else
                         country = this.countryStatus();
@@ -851,7 +912,6 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                 };
 
                 self.getAddress = function (company) {
-
                     var address = "";
                     //For the full address Solr field
                     if (company.doclist.docs[0].add_whole !== "null")
@@ -888,7 +948,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 
                             //
                             //Address Result
                             //
-                            address = room + appartment + building + house + street + district + city;
+                            address = room + appartment + building + house + street;
                         }
                         //district
                         var district = "";

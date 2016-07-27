@@ -22,11 +22,11 @@ german = {
                 text: "Wörter Entfernung Algorithmus"
             }
         },
-        hits: "werte",
+        hits: "Werte",
         searchedEntityProperty: {
             percentage: "Prozentsatz",
             country: "Land",
-            addressStatus: "ohne adresse",
+            addressStatus: "ohne Adresse",
             countryStatus: "weltweit",
             found: "Gefunden",
             entities: "Entitäten"
