@@ -4,18 +4,24 @@
  * Copyright (c) 2014, 2016, Oracle and/or its affiliates.
  * The Universal Permissive License (UPL), Version 1.0
  */
-define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.en', 'lang/lang.fr', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
+define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.en', 'lang/lang.fr', 'ojs/ojrouter', 'ojs/ojknockout', 'promise', 'ojs/ojlistview',
     'ojs/ojmodel', 'ojs/ojpagingcontrol', 'ojs/ojpagingcontrol-model', 'ojs/ojbutton', 'ojs/ojtreemap', 'ojs/ojtree', 'libs/jsTree/jstree',
     'ojs/ojselectcombobox', 'ojs/ojjsontreedatasource', 'ojs/ojdialog', 'ojs/ojinputnumber', 'jquery-ui', 'knockout-postbox'],
-        function (oj, ko, utils, $)
+        function (jsreport,oj, ko, utils, $)
         {
+          
+          
+            
             function PeopleViewModel() {
+                //temporary global variable for printing
                 var self = this;
                 /**/
                 self.peopleLayoutType = ko.observable('peopleCardLayout');
                 self.allPeople = ko.observableArray([]);
                 self.ready = ko.observable(false);
                 /**/
+                var AJAXurl;
+
 
                 /**/
                 self.nameSearch = ko.observable('');
@@ -24,7 +30,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 self.rows = ko.observable(20);
                 self.highlightField = ko.observable('&hl.fl=nam_comp_name&hl.simple.pre=<span class="highlight">&hl.simple.post=</span>&hl=on');
                 self.groupField = ko.observable('&group.cache.percent=100&group.field=ent_id&group.ngroups=true&group.truncate=true&group=true');
-                self.facetField = ko.observable('&facet.field=add_country&facet.field=reg_number&facet=on');
+                self.facetField = ko.observable('&facet.field=add_country&facet.field=program_number&facet=on');
                 self.scoreField = ko.observable('&fl=*,score');
                 //self.wordPercentage = ko.observable('')
                 self.queryField = ko.observable('&q={!percentage t=QUERY_SIDE f=nam_comp_name}');
@@ -267,7 +273,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                             self.queryField().toString() +
                             self.nameQ()).then(function (people) {
                         self.facetsCountries(people.facet_counts.facet_fields.add_country);
-                        self.facetsLists(people.facet_counts.facet_fields.reg_number);
+                        self.facetsLists(people.facet_counts.facet_fields.program_number);
+                      
                     }).fail(function (error) {
                         console.log('Error in getting People data: ' + error.message);
                     });
@@ -382,6 +389,13 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                                 self.fqTotalPercentage("");
 
                             self.nameQ(name);
+                            
+                               AJAXurl=self.url().toString() + '&start=' + self.start() + '&rows=10000'  +
+                                    self.highlightField().toString() +
+                                    self.groupField().toString() +
+                                    self.scoreField().toString() + fqCountries + fqLists + self.fqTotalPercentage() +
+                                    self.queryField().toString() +
+                                    name;
 
                             $.getJSON(
                                     self.url().toString() + '&start=' + self.start() + '&rows=' + self.rows() +
@@ -390,6 +404,8 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                                     self.scoreField().toString() + fqCountries + fqLists + self.fqTotalPercentage() +
                                     self.queryField().toString() +
                                     name).then(function (people) {
+                                    //Save the query to an global variable
+                                     
                                 self.allPeople(people);
                                 self.allHighlighting(people.highlighting);
                                 //self.facetsCountries(people.facet_counts.facet_fields.add_country);
@@ -424,7 +440,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     }
 
 
-
+     
                     //console.log(self.comboboxSelectValue());
 
                     //if (self.allPeople().grouped !== undefined)
@@ -432,7 +448,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     starting = false;
                     self.ready(true);
                     return peopleFilter;
+                    
+                    
                 });
+              
 
                 //self.filteredAllPeople.extend({rateLimit: {timeout: 200, method: "notifyWhenChangesStop"}});
 
@@ -542,6 +561,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                         $("#modalDialog1").ojDialog("open");
                         event.stopImmediatePropagation();
                     });
+                
 
                     self.handleOKClose = $("#okButton").click(function (event) {
                         $("#modalDialog1").ojDialog("close");
@@ -657,7 +677,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     //
                     // End of interaction
                     //
-
+                    
 
                     $("#tree").on("ojoptionchange", function (e, ui) {
                         if (ui.option === "selection") {
@@ -734,10 +754,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     var fqList = "";
 
                     if (self.filterTreeList().length > 0) {
-                        fqList = "reg_number:" + "\"" + self.filterTreeList()[0] + "\"";
+                        fqList = "program_number:" + "\"" + self.filterTreeList()[0] + "\"";
                         for (var i = 1; i < self.filterTreeList().length; ++i) {
                             if (self.filterTreeList()[i] !== undefined)
-                                fqList = fqList + " OR " + "reg_number:" + "\"" + self.filterTreeList()[i] + "\"";
+                                fqList = fqList + " OR " + "program_number:" + "\"" + self.filterTreeList()[i] + "\"";
                         }
                         fqList = "&fq=" + fqList;
                     }
@@ -749,7 +769,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                     self.filterTreeObs("ready");
 
                 };
-
+                    
                 /**/
                 self.cardViewDataSource = ko.pureComputed(function () {
                     return self.cardViewPagingDataSource().getWindowObservable();
@@ -773,10 +793,10 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
 
                 self.getList = function (company) {
                     var listName;
-                    if (company.doclist.docs[0].reg_number === "null")
+                    if (company.doclist.docs[0].program_number === "null")
                         listName = "NO LIST";
                     else
-                        listName = company.doclist.docs[0].reg_number;
+                        listName = company.doclist.docs[0].program_number;
                     return listName;
                 };
 
@@ -943,6 +963,94 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                
 
                 };
+                 //print button
+                   self.print = function () {
+                       
+                      
+                          
+             /*             $.ajax({
+            type : "POST",
+            url:'http://localhost:5488/api/report',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            data: JSON.stringify({
+                "template": { "shortid" : "HkzkEpVd" },
+                "data": { "aProperty": ["value2"],
+                    "options": {  "Content-Disposition": "attachment; filename=myreport.pdf",
+                                         }
+                                                }
+            })
+            })
+            
+                        var http = require('http');
+            http.createServer(function (req, res) {
+            require("jsreport").render("<h1>Hello world</h1>").then(function(out) {
+            out.result.pipe(res);
+            }).fail(function(e) {
+            console.log(e);
+            });
+            }).listen(1337, '127.0.0.1');
+
+                  */       
+                       
+                       
+                   
+                                  $.getJSON(
+ 
+                        // self.url().toString() + '&start=' + self.start() + '&rows=' + self.rows() +
+                        // self.highlightField().toString() +
+                        // self.groupField().toString() +
+                        // self.scoreField().toString() + self.fqCountries + self.fqLists + self.fqTotalPercentage() +
+                         //self.queryField().toString() +
+                         //self.name)
+                         AJAXurl)
+                         .done(function (people) {
+                             var data=people;
+                         jsreport.serverUrl = 'http://localhost:5488';
+                         var request = {
+                         template: { 
+                              shortid:"rJPUhdmv"
+                    
+                                    }
+                                    ,
+                              data: data,
+                               "options": {                            
+                                "reports": {
+                                  "save": true
+                                }
+                               }
+                             };     
+                            // jsreport.render('reportPlaceholder', request);
+                            //jsreport.render(request);
+                            jsreport.renderAsync(request).then(function(response) {
+        var uInt8Array = new Uint8Array(response);
+        var i = uInt8Array.length;
+        var binaryString = new Array(i);
+        while (i--)
+        {
+            binaryString[i] = String.fromCharCode(uInt8Array[i]);
+        }
+        var data = binaryString.join('');
+        var base64 = window.btoa(data);
+
+        window.open("data:application/pdf;base64, " + base64);    
+    })
+                           // jsreport.renderAsync(request).then(function(arrayBuffer) {
+                                
+                                
+                             //  console.log(arrayBuffer);
+                             //   window.open("data:application/pdf;base64," + arrayBuffer);
+                           //   });
+                        //jsreport.renderAsync(request).then(function(arrayBuffer) {
+                       //  var pdfWin= window.open("data:application/pdf;base64, " + escape(arrayBuffer), '', 'height=650,width=840');
+                       // jsreport.download(arrayBuffer);
+                             //   });             
+                                   // })
+                                    
+                       
+                    });
+              }
 
                 //To establish the previous state after returning from details page
                 if (oj.Router.rootInstance.tx === "back") {
@@ -957,4 +1065,5 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'lang/lang.ge', 'lang/lang.
                 }
             }
             return PeopleViewModel;
+       
         });

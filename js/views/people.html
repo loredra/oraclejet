@@ -14,7 +14,9 @@
                                 ojComponent: {component: 'ojInputText', rootAttributes:{'style':'max-width:99%; '}}"/>
                     <div id="searchIcon" class="demo-icon-sprite demo-icon-search demo-search-position"></div>
                 </div>
-
+                 
+                
+                
                 <div id="dialogWrapper" style="position:relative; max-height:30%; max-width:30%;  ">
                     <div style="display:none" id="modalDialog1"
                          data-bind="ojComponent:{component: 'ojDialog', initialVisibility: 'hide' , title:advancedSearchTitle}">
@@ -84,9 +86,11 @@
                     icons: {start:'demo-icon-font demo-gear-icon-16'}}"></button>
 
                 </div>
-                <div id="dialogWrapper" style="position:relative; max-height:30%; max-width:30%;" >
-                     <button id="printOpener" style="margin-right:6px; " data-bind="ojComponent: {component: 'ojButton', display: 'icons', 
-                    icons: {start:'demo-icon-font demo-gear-icon-16'}}"></button>
+                <div id="dialogWrapper2" style="position:relative; max-height:30%; max-width:30%;" >
+                    <button id="printPdf" style="margin-right:6px; " 
+                            data-bind="click:print,
+                            ojComponent: {component: 'ojButton', display: 'icons', 
+                            icons: {start:'demo-icon-font demo-home-icon-16'}}"></button>
                 </div> 
 
                 <div id="hits" class="oj-flex-items oj-sm-2" style="position: relative; right:100px; top:47px; font-family: Courier New;" 
@@ -136,6 +140,7 @@
      data-bind="text: noResults">
 </div>
 <!-- -->
+
 
 <!-- this is the template content for the cardLayout. It uses standard responsive CSS design and oj-panels for the layout. A Pagination control is used to provide the paging -->
 <script id="peopleCardLayout" type="text/html">

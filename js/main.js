@@ -78,7 +78,7 @@ require(['ojs/ojcore',
     'ojs/ojinputtext'
     
 ],
-        function (oj, ko, $, utils,jsreport) {
+        function (oj, ko, $, utils) {
 
             ko.amdTemplateEngine.defaultPath = "views";
             ko.amdTemplateEngine.defaultSuffix = ".html";
@@ -107,16 +107,7 @@ require(['ojs/ojcore',
                     csslink.href = theme;
                 }
             }
-            function initReport(){ 
-            jsreport.serverUrl = 'http://localhost:5488';
-            var request = {
-            template: { 
-             "shortid":"rJPUhdmv",
-              "data":"data_default"
-                   
-                }};
-            jsreport.render('_blank', request);
-            }
+      
 
             function MainViewModel() {
                 var self = this;
@@ -168,7 +159,6 @@ require(['ojs/ojcore',
                         ko.applyBindings(new MainViewModel(), document.getElementById('globalBody'));
                         $('#globalBody').show();
                         initTheme();
-                        initReport();
                     },
                     function (error) {
                         oj.Logger.error('Error in root start: ' + error.message);
