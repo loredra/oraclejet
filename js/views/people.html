@@ -112,7 +112,7 @@
     <!-- /ko -->
 </div>
 <!-- -->
-<div id="tree" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:20%; overflow-y: auto; background:burlywood"
+<!--<div id="tree" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:20%; overflow-y: auto; background:burlywood"
      data-bind="ojComponent:
                {
                  component: 'ojTree',
@@ -127,15 +127,32 @@
                  icons : false,
                  data : { data: getNodeDataList }
                }">
-</div>
-<div id="treeType" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:70%; overflow: auto; background: #EAC2EC"
+</div>-->
+<!--<div id="treeType" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:70%; overflow: auto; background: #EAC2EC"
      data-bind="ojComponent:
                {
                  component: 'ojTree',
                  icons : false,
                  data : { data: getNodeDataType }
                }">
+</div>-->
+
+<div id="treeCountryLibContainer" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:20%; overflow-y: auto; background:burlywood" >
+    <div id="treeCountryLib">
+
+    </div>
 </div>
+<div id="treeListLibContainer" class="oj-flex draggable" style="width:220px; height:200px; left:88%; position: absolute; top:45%; overflow: auto; background: #EBE6F5" >
+    <div id="treeListLib">
+
+    </div>
+</div>
+<div id="treeTypeLibContainer" class="oj-flex draggable" style="width:220px; height:200px; left:55%; position: absolute; top:70%; overflow: auto; background: #ffC2ff" >
+    <div id="treeTypeLib">
+
+    </div>
+</div>
+
 <div id="nores" style="position: absolute; top:228px; left:333px; opacity: 0.3; font-family: Courier New; font-size: 700%" 
      data-bind="text: noResults">
 </div>
