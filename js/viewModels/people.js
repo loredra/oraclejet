@@ -699,7 +699,7 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/lang.ge', '
                     //
                     // Filter Tree Panels interaction
                     //
-
+                    
                     $(function () {
                         $("#tree").draggable().resizable({
                         });
@@ -712,31 +712,31 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/lang.ge', '
                         $("#treeTypeLibContainer").draggable().resizable();
                     });
 
-                    $('#tree').on("ojcollapse", function (e, ui) {
-                        self.treeHeight($("#tree").css("height"));
-                        $("#tree").css({"height": 40});
+                    $('#treeCountryLibContainer').on("ojcollapse", function (e, ui) {
+                        self.treeHeight($("#treeCountryLibContainer").css("height"));
+                        $("#treeCountryLibContainer").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
-                    $('#tree').on("ojexpand", function (e, ui) {
-                        $("#tree").css({"height": self.treeHeight()});
+                    $('#treeCountryLibContainer').on("ojexpand", function (e, ui) {
+                        $("#treeCountryLibContainer").css({"height": self.treeHeight()});
                         e.stopImmediatePropagation();
                     });
-                    $('#treeList').on("ojcollapse", function (e, ui) {
-                        self.treeListHeight($("#treeList").css("height"));
+                    $('#treeListLibContainer').on("ojcollapse", function (e, ui) {
+                        self.treeListHeight($("#treeListLibContainer").css("height"));
                         $("#treeList").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
-                    $('#treeList').on("ojexpand", function (e, ui) {
-                        $("#treeList").css({"height": self.treeListHeight()});
+                    $('#treeListLibContainer').on("ojexpand", function (e, ui) {
+                        $("#treeListLibContainer").css({"height": self.treeListHeight()});
                         e.stopImmediatePropagation();
                     });
-                    $('#treeType').on("ojcollapse", function (e, ui) {
+                    $('#treeTypeLibContainer').on("ojcollapse", function (e, ui) {
                         self.treeListHeight($("#treeList").css("height"));
-                        $("#treeType").css({"height": 40});
+                        $("#treeTypeLibContainer").css({"height": 40});
                         e.stopImmediatePropagation();
                     });
-                    $('#treeType').on("ojexpand", function (e, ui) {
-                        $("#treeType").css({"height": self.treeListHeight()});
+                    $('#treeTypeLibContainer').on("ojexpand", function (e, ui) {
+                        $("#treeTypeLibContainer").css({"height": self.treeListHeight()});
                         e.stopImmediatePropagation();
                     });
 
@@ -1208,10 +1208,15 @@ define(['ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/lang.ge', '
                         oj.Router.sync();
                         utils.rememberState(self.nameSearch(), self.filterTree(), self.filterTreeList());
                         //Store the position of the Filter Tree Panels
-                        var sizeTreeCountry = $("#tree").css(["width", "height"]);
-                        var posTreeCountry = $("#tree").position();
-                        var sizeTreeList = $("#treeList").css(["width", "height"]);
-                        var posTreeList = $("#treeList").position();
+                        
+                        $("#treeCountryLibContainer").draggable().resizable();
+                        $("#treeListLibContainer").draggable().resizable();
+                        $("#treeTypeLibContainer").draggable().resizable()
+                        
+                        var sizeTreeCountry = $("#treeCountryLibContainer").css(["width", "height"]);
+                        var posTreeCountry = $("#treeCountryLibContainer").position();
+                        var sizeTreeList = $("#treeListLibContainer").css(["width", "height"]);
+                        var posTreeList = $("#treeListLibContainer").position();
                         utils.rememberPositionTrees(sizeTreeCountry, posTreeCountry, sizeTreeList, posTreeList);
                     }
 
