@@ -172,7 +172,7 @@ onmessage = function (e) {
     //restructured = [{"id": "type", "parent": "#", "text": "Type", "state": {"opened": true}}];
     var temp = new Array();
     var facets = e.data;
-    console.log(facets);
+//    console.log(facets);
     var formatedFacets = new Array();
     if (facets.length !== 0) {
         var len = (parseInt(facets.length / 2) + 2);

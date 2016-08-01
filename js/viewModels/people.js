@@ -52,7 +52,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                 var nameBeforeUpdate = '';
 
                 //Observable array for the filter tree
-                self.filterTree = ko.observableArray([]);
+                self.filterTreeCountry = ko.observableArray([]);
                 self.fq = ko.observable("");
                 self.filterTreeList = ko.observableArray([]);
                 self.fqList = ko.observable("");
@@ -309,19 +309,25 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                     var peopleFilter = new Array();
                     //set the position of the filter tree panels after returning from the details page
                     if (oj.Router.rootInstance.tx === "back") {
-                        //$("#tree").css({'top': utils.resetTreesPos()[0].top, 'left' :utils.resetTreesPos()[0].left });
-                        $("#tree").css({
+                        $("#treeCountryLibContainer").css({
                             "width": utils.resetTreesPos()[0].width,
                             "height": utils.resetTreesPos()[0].height,
                             "top": utils.resetTreesPos()[1].top,
                             "left": utils.resetTreesPos()[1].left
                         });
 
-                        $("#treeList").css({
+                        $("#treeListLibContainer").css({
                             "width": utils.resetTreesPos()[2].width,
                             "height": utils.resetTreesPos()[2].height,
                             "top": utils.resetTreesPos()[3].top,
                             "left": utils.resetTreesPos()[3].left
+                        });
+
+                        $("#treeTypeLibContainer").css({
+                            "width": utils.resetTreesPos()[4].width,
+                            "height": utils.resetTreesPos()[4].height,
+                            "top": utils.resetTreesPos()[5].top,
+                            "left": utils.resetTreesPos()[5].left
                         });
                     }
                     //Reseting search input
@@ -590,6 +596,8 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                 self.cardViewPagingDataSource.extend({rateLimit: {timeout: 10, method: "notifyWhenChangesStop"}});
 
                 self.cardViewPagingDataSource.subscribe(function (newValue) {
+
+
                     $('#treeCountryLib').jstree({
                         "core": {
                             "themes": {
@@ -640,13 +648,6 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                             self.workerTypeResult(m.data);
                             $('#treeType').ojTree("refresh");
                             $('#treeType').ojTree("expandAll");
-
-                            var data = [
-                                {"id": "ajson1", "parent": "#", "text": "Simple root node"},
-                                {"id": "ajson2", "parent": "#", "text": "Root node 2"},
-                                {"id": "ajson3", "parent": "ajson2", "text": "Child 1"},
-                                {"id": "ajson4", "parent": "ajson2", "text": "Child 2"},
-                            ]
                             $('#treeTypeLib').jstree(true).settings.core.data = self.workerTypeResult();
                             $('#treeTypeLib').jstree(true).refresh();
                         };
@@ -668,7 +669,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                                     selected.push(el);
                             });
 
-                            var isCountry = self.filterTree().find(function (el) {
+                            var isCountry = self.filterTreeCountry().find(function (el) {
                                 return el === selected[0];
                             });
                             var isList = self.filterTreeList().find(function (el) {
@@ -679,13 +680,13 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                             });
 
                             if (isCountry !== undefined) {
-                                var oldTreeCountry = self.filterTree();
+                                var oldTreeCountry = self.filterTreeCountry();
                                 var newTreeCountry = new Array();
                                 $.grep(oldTreeCountry, function (el) {
                                     if ($.inArray(el, selected) === -1)
                                         newTreeCountry.push(el);
                                 });
-                                self.filterTree(newTreeCountry);
+                                self.filterTreeCountry(newTreeCountry);
                                 self.processFilterCountries();
                                 $("#treeCountryLib").jstree("deselect_node", selected);
                             }
@@ -720,6 +721,32 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                     // Filter Tree Panels interaction
                     //
                     
+                    //In order to restore the values of the trees when returning from the details page
+                    $('#treeCountryLib').on('refresh.jstree', function (e, data) {
+                        if (oj.Router.rootInstance.tx === "back") {
+                            for (var c = 0; c < utils.resetState()[1].length; ++c) {
+                                $("#treeCountryLib").jstree("select_node", utils.resetState()[1][c]);
+                            }
+                        }
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeListLib').on('refresh.jstree', function (e, data) {
+                        if (oj.Router.rootInstance.tx === "back") {
+                            for (var c = 0; c < utils.resetState()[2].length; ++c) {
+                                $("#treeListLib").jstree("select_node", utils.resetState()[2][c]);
+                            }
+                        }
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeTypeLib').on('refresh.jstree', function (e, data) {
+                        if (oj.Router.rootInstance.tx === "back") {
+                            for (var c = 0; c < utils.resetState()[3].length; ++c) {
+                                $("#treeTypeLib").jstree("select_node", utils.resetState()[3][c]);
+                            }
+                        }
+                        e.stopImmediatePropagation();
+                    });
+
                     $(function () {
                         $("#tree").draggable().resizable({
                         });
@@ -731,34 +758,49 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         $("#treeListLibContainer").draggable().resizable();
                         $("#treeTypeLibContainer").draggable().resizable();
                     });
+                    $('#treeCountryLib').on('close_node.jstree', function (e, data) {
+                        if (data.node.id === "country") {
+                            self.treeHeight($("#treeCountryLibContainer").css("height"));
+                            $("#treeCountryLibContainer").css({"height": 50});
+                        }
+                        e.stopImmediatePropagation();
+                    });
+                    $('#treeCountryLib').on('open_node.jstree', function (e, data) {
+                        if (data.node.id === "country") {
+                            $("#treeCountryLibContainer").css({"height": self.treeHeight()});
+                        }
+                        e.stopImmediatePropagation();
+                    });
 
-                    $('#treeCountryLibContainer').on("ojcollapse", function (e, ui) {
-                        self.treeHeight($("#treeCountryLibContainer").css("height"));
-                        $("#treeCountryLibContainer").css({"height": 40});
+                    $('#treeListLib').on('close_node.jstree', function (e, data) {
+                        if (data.node.id === "list") {
+                            self.treeHeight($("#treeListLibContainer").css("height"));
+                            $("#treeListLibContainer").css({"height": 50});
+                        }
                         e.stopImmediatePropagation();
                     });
-                    $('#treeCountryLibContainer').on("ojexpand", function (e, ui) {
-                        $("#treeCountryLibContainer").css({"height": self.treeHeight()});
+                    $('#treeListLib').on('open_node.jstree', function (e, data) {
+                        if (data.node.id === "list") {
+                            $("#treeListLibContainer").css({"height": self.treeHeight()});
+                        }
                         e.stopImmediatePropagation();
                     });
-                    $('#treeListLibContainer').on("ojcollapse", function (e, ui) {
-                        self.treeListHeight($("#treeListLibContainer").css("height"));
-                        $("#treeList").css({"height": 40});
+
+                    $('#treeTypeLib').on('close_node.jstree', function (e, data) {
+                        if (data.node.id === "ENTITY_GENERAL") {
+                            self.treeHeight($("#treeTypeLibContainer").css("height"));
+                            $("#treeTypeLibContainer").css({"height": 50});
+                        }
                         e.stopImmediatePropagation();
                     });
-                    $('#treeListLibContainer').on("ojexpand", function (e, ui) {
-                        $("#treeListLibContainer").css({"height": self.treeListHeight()});
+                    $('#treeTypeLib').on('open_node.jstree', function (e, data) {
+                        if (data.node.id === "ENTITY_GENERAL") {
+                            $("#treeTypeLibContainer").css({"height": self.treeHeight()});
+                        }
                         e.stopImmediatePropagation();
                     });
-                    $('#treeTypeLibContainer').on("ojcollapse", function (e, ui) {
-                        self.treeListHeight($("#treeList").css("height"));
-                        $("#treeTypeLibContainer").css({"height": 40});
-                        e.stopImmediatePropagation();
-                    });
-                    $('#treeTypeLibContainer').on("ojexpand", function (e, ui) {
-                        $("#treeTypeLibContainer").css({"height": self.treeListHeight()});
-                        e.stopImmediatePropagation();
-                    });
+
+
 
                     //
                     // End of interaction
@@ -769,11 +811,11 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         if (ui.option === "selection") {
                             var filterValue = $(ui.value).attr("id");
                             if (filterValue !== "country" && filterValue !== undefined) {
-                                var foundDuplicate = self.filterTree().find(function (el) {
+                                var foundDuplicate = self.filterTreeCountry().find(function (el) {
                                     return filterValue === el;
                                 });
                                 if (foundDuplicate === undefined) {
-                                    self.filterTree().push(filterValue);
+                                    self.filterTreeCountry().push(filterValue);
                                     self.keepFilter = true;
                                     self.filterTreeObs("load");
                                     self.processFilterCountries();
@@ -814,11 +856,11 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         if (ui.option === "selection") {
                             var filterValue = $(ui.value).attr("id");
                             if (filterValue !== "type" && filterValue !== undefined) {
-                                var foundDuplicate = self.filterTree().find(function (el) {
+                                var foundDuplicate = self.filterTreeCountry().find(function (el) {
                                     return filterValue === el;
                                 });
                                 if (foundDuplicate === undefined) {
-                                    self.filterTree().push(filterValue);
+                                    self.filterTreeCountry().push(filterValue);
                                     self.keepFilter = true;
                                     self.filterTreeObs("load");
                                     self.processFilterCountries();
@@ -836,7 +878,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                                     var filterValue = data.node.id;
                                 else
                                     var filterValue = data.node.children_d[c];
-                                var foundDuplicate = self.filterTree().find(function (el) {
+                                var foundDuplicate = self.filterTreeCountry().find(function (el) {
                                     var found = false;
                                     if (filterValue === el) {
                                         found = true;
@@ -844,8 +886,8 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                                     return found;
                                 });
                                 if (foundDuplicate === undefined) {
-                                    if(filterValue !== "country")
-                                    self.filterTree().push(filterValue);
+                                    if (filterValue !== "country")
+                                        self.filterTreeCountry().push(filterValue);
                                     self.keepFilter = true;
                                     self.filterTreeObs("load");
                                     self.processFilterCountries();
@@ -859,16 +901,16 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                                     var filterValue = data.node.id;
                                 else
                                     var filterValue = data.node.children_d[c];
-                                var isType = self.filterTree().find(function (el) {
+                                var isType = self.filterTreeCountry().find(function (el) {
                                     return el === filterValue;
                                 });
                                 if (isType !== undefined) {
-                                    var oldArray = self.filterTree();
-                                    for (var i = 0; i < self.filterTree().length; i++) {
-                                        if (filterValue === self.filterTree()[i])
+                                    var oldArray = self.filterTreeCountry();
+                                    for (var i = 0; i < self.filterTreeCountry().length; i++) {
+                                        if (filterValue === self.filterTreeCountry()[i])
                                             oldArray.splice(i, 1);
                                     }
-                                    self.filterTree(oldArray);
+                                    self.filterTreeCountry(oldArray);
                                     self.keepFilter = true;
                                     self.filterTreeObs("load");
                                     self.processFilterCountries();
@@ -878,7 +920,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         }
                         e.stopImmediatePropagation();
                     });
-                    
+
                     $('#treeListLib').on('changed.jstree', function (e, data) {
                         if (data.action === "select_node") {
                             for (var c = 0; c < data.node.children_d.length + 1; ++c) {
@@ -894,8 +936,8 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                                     return found;
                                 });
                                 if (foundDuplicate === undefined) {
-                                    if(filterValue !== "country")
-                                    self.filterTreeList().push(filterValue);
+                                    if (filterValue !== "country")
+                                        self.filterTreeList().push(filterValue);
                                     self.keepFilter = true;
                                     self.filterTreeObs("load");
                                     self.processFilterLists();
@@ -928,7 +970,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         }
                         e.stopImmediatePropagation();
                     });
-                    
+
                     $('#treeTypeLib').on('changed.jstree', function (e, data) {
                         if (data.action === "select_node") {
                             for (var c = 0; c < data.node.children_d.length + 1; ++c) {
@@ -977,24 +1019,30 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         e.stopImmediatePropagation();
                     });
 
-                    self.comboboxSelectValue(self.filterTree().concat(self.filterTreeList().concat(self.filterTreeType())));
+                    self.comboboxSelectValue(self.filterTreeCountry().concat(self.filterTreeList().concat(self.filterTreeType())));
 
-                });
+                }
+                );
                 /**/
 
 
                 //Process filter for countries
                 self.processFilterCountries = function () {
                     var fq = "";
-                    if (self.filterTree().length > 0) {
-                        fq = "add_country:" + "\"" + self.filterTree()[0] + "\"";
-                        for (var i = 1; i < self.filterTree().length; ++i) {
-                            if (self.filterTree()[i] !== undefined)
-                                fq = fq + " OR " + "add_country:" + "\"" + self.filterTree()[i] + "\"";
+                    if (oj.Router.rootInstance.tx === "back") {
+                        for (var c = 0; c < utils.resetState()[1].length; ++c) {
+                            $("#treeCountryLib").jstree("select_node", utils.resetState()[1][c]);
+                        }
+                    }
+                    if (self.filterTreeCountry().length > 0) {
+                        fq = "add_country:" + "\"" + self.filterTreeCountry()[0] + "\"";
+                        for (var i = 1; i < self.filterTreeCountry().length; ++i) {
+                            if (self.filterTreeCountry()[i] !== undefined)
+                                fq = fq + " OR " + "add_country:" + "\"" + self.filterTreeCountry()[i] + "\"";
                         }
                         fq = "&fq=" + fq;
                     }
-                    if (self.filterTree().length === 0)
+                    if (self.filterTreeCountry().length === 0)
                         fq = "";
 
                     self.fq(fq);
@@ -1226,18 +1274,15 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                         translate = false;
                         history.pushState(null, '', 'index.html?root=details&ent_id=' + id + '&lang=' + lang);
                         oj.Router.sync();
-                        utils.rememberState(self.nameSearch(), self.filterTree(), self.filterTreeList());
+                        utils.rememberState(self.nameSearch(), self.filterTreeCountry(), self.filterTreeList(), self.filterTreeType());
                         //Store the position of the Filter Tree Panels
-                        
-                        $("#treeCountryLibContainer").draggable().resizable();
-                        $("#treeListLibContainer").draggable().resizable();
-                        $("#treeTypeLibContainer").draggable().resizable()
-                        
                         var sizeTreeCountry = $("#treeCountryLibContainer").css(["width", "height"]);
                         var posTreeCountry = $("#treeCountryLibContainer").position();
                         var sizeTreeList = $("#treeListLibContainer").css(["width", "height"]);
                         var posTreeList = $("#treeListLibContainer").position();
-                        utils.rememberPositionTrees(sizeTreeCountry, posTreeCountry, sizeTreeList, posTreeList);
+                        var sizeTreeType = $("#treeTypeLibContainer").css(["width", "height"]);
+                        var posTreeType = $("#treeTypeLibContainer").position();
+                        utils.rememberPositionTrees(sizeTreeCountry, posTreeCountry, sizeTreeList, posTreeList, sizeTreeType, posTreeType);
                     }
                
 
@@ -1335,12 +1380,12 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
 
                 //To establish the previous state after returning from details page
                 if (oj.Router.rootInstance.tx === "back") {
-//                    var language = utils.getLanguage().toString()
-//                    self.languageSel("german");
-                    self.filterTree(utils.resetState()[1]);
+                    //self.filterTreeCountry(utils.resetState()[1]);
                     self.filterTreeList(utils.resetState()[2]);
-                    self.processFilterCountries();
+                    self.filterTreeType(utils.resetState()[3]);
+                    //self.processFilterCountries();
                     self.processFilterLists();
+                    self.processFilterTypes();
                     self.filterTreeObs("done");
                     self.nameSearch(utils.resetState()[0]);
                 }
