@@ -20,6 +20,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                 self.peopleLayoutType = ko.observable('peopleCardLayout');
                 self.allPeople = ko.observableArray([]);
                 self.ready = ko.observable(false);
+                self.selectPrintOption=ko.observable("");
                 /**/
                 var AJAXurl;
 
@@ -1244,7 +1245,6 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                  //print button
                    self.print = function () {
                        
-                      
                           
              /*             $.ajax({
             type : "POST",
@@ -1292,10 +1292,13 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
                     
                                     }
                                     ,
+                              "Content-Disposition": "attachment; filename=myreport.pdf" ,
+                              //contentDisposition: "inline; filename=MyFile.pdf",
                               data: data,
-                               "options": {                            
+                               "options": { 
+                                 
                                 "reports": {
-                                  "save": true
+                                  "save": false
                                 }
                                }
                              };     
@@ -1312,7 +1315,7 @@ define(['jsreport','ojs/ojcore', 'knockout', 'utils', 'jquery', 'jstree', 'lang/
         var data = binaryString.join('');
         var base64 = window.btoa(data);
 
-        window.open("data:application/pdf;base64, " + base64);    
+        window.open("data:application/pdf;base64, " + base64,"_blank");    
     })
                            // jsreport.renderAsync(request).then(function(arrayBuffer) {
                                 

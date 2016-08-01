@@ -86,11 +86,22 @@
                     icons: {start:'demo-icon-font demo-gear-icon-16'}}"></button>
 
                 </div>
-                <div id="dialogWrapper2" style="position:relative; max-height:30%; max-width:30%;" >
-                    <button id="printPdf" style="margin-right:6px; " 
-                            data-bind="click:print,
-                            ojComponent: {component: 'ojButton', display: 'icons', 
-                            icons: {start:'demo-icon-font demo-home-icon-16'}}"></button>
+                <div id="dialogWrapper2" style="position:relative; max-height:1%; max-width:1%;">
+                    <button id="printPdf" style="margin-right:6px;"
+                            data-bind="
+                            ojComponent: {component: 'ojButton',            
+                                          menu:'#choices',
+                                          icons: {start:'oj-menu-item-icon demo-icon-font demo-chat-icon-24'}}"/>
+                    
+                   <ul id="choices" style="display:none"
+                    data-bind="ojComponent: {component: 'ojMenu', select: print}">
+                  <li id="zoomin">
+                    <a href="#"><span class="oj-menu-item-icon demo-icon-font demo-chat-icon-24"></span>PDF</a>
+                  </li>
+                  <li id="zoomout">
+                    <a href="#"><span class="oj-menu-item-icon demo-icon-font demo-chat-icon-24"></span>Excel</a>
+                  </li>     
+                    </ul> 
                 </div> 
 
                 <div id="hits" class="oj-flex-items oj-sm-2" style="position: relative; right:100px; top:47px; font-family: Courier New;" 
