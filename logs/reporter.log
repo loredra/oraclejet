@@ -28142,3 +28142,161 @@ From previous event:
 2016-07-27T14:46:14.960Z - debug: phantom-pdf recipe finished with 2 pages generated requestId=202
 2016-07-27T14:46:14.964Z - debug: Skipping storing report. requestId=202
 2016-07-27T14:46:15.032Z - info: Rendering request 203 finished in 790 ms requestId=202
+2016-07-27T14:59:55.394Z - info: Starting rendering request 204 (user: null) requestId=204
+2016-07-27T14:59:55.396Z - info: Rendering template {shortid:rJPUhdmv, recipe:phantom-pdf,engine:handlebars} requestId=204
+2016-07-27T14:59:55.396Z - debug: Inline data specified. requestId=204
+2016-07-27T14:59:55.398Z - debug: Executing script HJesfUxlL requestId=204
+2016-07-27T14:59:55.527Z - debug: Resources not defined for this template. requestId=204
+2016-07-27T14:59:55.528Z - debug: Rendering engine handlebars requestId=204
+2016-07-27T14:59:55.660Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 16:59:55 GMT+0200 (CEST), requestId=204
+2016-07-27T14:59:55.662Z - debug: Replaced images [] requestId=204
+2016-07-27T14:59:55.663Z - debug: Executing recipe phantom-pdf requestId=204
+2016-07-27T14:59:55.663Z - debug: Starting child request to render pdf footer requestId=204
+2016-07-27T14:59:55.666Z - info: Starting rendering request 205 (user: null) requestId=205
+2016-07-27T14:59:55.668Z - info: Rendering template {shortid:rJPUhdmv, recipe:html,engine:handlebars} requestId=205
+2016-07-27T14:59:55.668Z - debug: Inline data specified. requestId=205
+2016-07-27T14:59:55.669Z - debug: Executing script HJesfUxlL requestId=205
+2016-07-27T14:59:55.728Z - debug: Resources not defined for this template. requestId=205
+2016-07-27T14:59:55.730Z - debug: Rendering engine handlebars requestId=205
+2016-07-27T14:59:55.842Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 16:59:55 GMT+0200 (CEST), requestId=205
+2016-07-27T14:59:55.843Z - debug: Replaced images [] requestId=205
+2016-07-27T14:59:55.845Z - debug: Executing recipe html requestId=205
+2016-07-27T14:59:55.850Z - debug: Skipping storing report. requestId=205
+2016-07-27T14:59:55.910Z - info: Rendering request 205 finished in 244 ms requestId=205
+2016-07-27T14:59:56.193Z - debug: Converting in dedicated phantomjs 1.9.8 timestamp=Wed Jul 27 2016 16:59:56 GMT+0200 (CEST), requestId=204
+2016-07-27T14:59:56.193Z - debug: Request file:///%2Fhome%2Fchnn%2Foraclejetapplication2%2Fjsreport-temp%2Fc7c12970-540a-11e6-b894-4b2836b36b5dhtml.html timestamp=Wed Jul 27 2016 16:59:56 GMT+0200 (CEST), requestId=204
+2016-07-27T14:59:56.195Z - debug: phantom-pdf recipe finished with 1 pages generated requestId=204
+2016-07-27T14:59:56.217Z - debug: Report storeed as 2RGu2qGGTr3ugKqV.pdf requestId=204
+2016-07-27T14:59:56.279Z - info: Rendering request 205 finished in 885 ms requestId=204
+2016-07-27T15:21:17.038Z - info: Starting rendering request 206 (user: null) requestId=206
+2016-07-27T15:21:17.044Z - info: Rendering template {shortid:rJPUhdmv, recipe:phantom-pdf,engine:handlebars} requestId=206
+2016-07-27T15:21:17.044Z - debug: Inline data specified. requestId=206
+2016-07-27T15:21:17.047Z - debug: Executing script HJesfUxlL requestId=206
+2016-07-27T15:21:17.910Z - debug: Resources not defined for this template. requestId=206
+2016-07-27T15:21:17.913Z - debug: Rendering engine handlebars requestId=206
+2016-07-27T15:21:18.243Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 17:21:18 GMT+0200 (CEST), requestId=206
+2016-07-27T15:21:18.245Z - debug: Replaced images [] requestId=206
+2016-07-27T15:21:18.246Z - debug: Executing recipe phantom-pdf requestId=206
+2016-07-27T15:21:18.246Z - debug: Starting child request to render pdf footer requestId=206
+2016-07-27T15:21:18.249Z - info: Starting rendering request 207 (user: null) requestId=207
+2016-07-27T15:21:18.252Z - info: Rendering template {shortid:rJPUhdmv, recipe:html,engine:handlebars} requestId=207
+2016-07-27T15:21:18.252Z - debug: Inline data specified. requestId=207
+2016-07-27T15:21:18.254Z - debug: Executing script HJesfUxlL requestId=207
+2016-07-27T15:21:18.310Z - debug: Resources not defined for this template. requestId=207
+2016-07-27T15:21:18.311Z - debug: Rendering engine handlebars requestId=207
+2016-07-27T15:21:18.422Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 17:21:18 GMT+0200 (CEST), requestId=207
+2016-07-27T15:21:18.424Z - debug: Replaced images [] requestId=207
+2016-07-27T15:21:18.425Z - debug: Executing recipe html requestId=207
+2016-07-27T15:21:18.478Z - debug: Skipping storing report. requestId=207
+2016-07-27T15:21:18.538Z - info: Rendering request 207 finished in 289 ms requestId=207
+2016-07-27T15:21:22.627Z - info: Starting rendering request 208 (user: null) requestId=208
+2016-07-27T15:21:22.629Z - info: Rendering template {shortid:rJPUhdmv, recipe:phantom-pdf,engine:handlebars} requestId=208
+2016-07-27T15:21:22.629Z - debug: Inline data specified. requestId=208
+2016-07-27T15:21:22.631Z - debug: Executing script HJesfUxlL requestId=208
+2016-07-27T15:21:22.685Z - debug: Resources not defined for this template. requestId=208
+2016-07-27T15:21:22.687Z - debug: Rendering engine handlebars requestId=208
+2016-07-27T15:21:22.806Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 17:21:22 GMT+0200 (CEST), requestId=208
+2016-07-27T15:21:22.807Z - debug: Replaced images [] requestId=208
+2016-07-27T15:21:22.808Z - debug: Executing recipe phantom-pdf requestId=208
+2016-07-27T15:21:22.808Z - debug: Starting child request to render pdf footer requestId=208
+2016-07-27T15:21:22.810Z - info: Starting rendering request 209 (user: null) requestId=209
+2016-07-27T15:21:22.812Z - info: Rendering template {shortid:rJPUhdmv, recipe:html,engine:handlebars} requestId=209
+2016-07-27T15:21:22.812Z - debug: Inline data specified. requestId=209
+2016-07-27T15:21:22.814Z - debug: Executing script HJesfUxlL requestId=209
+2016-07-27T15:21:22.868Z - debug: Resources not defined for this template. requestId=209
+2016-07-27T15:21:22.869Z - debug: Rendering engine handlebars requestId=209
+2016-07-27T15:21:22.975Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 17:21:22 GMT+0200 (CEST), requestId=209
+2016-07-27T15:21:22.976Z - debug: Replaced images [] requestId=209
+2016-07-27T15:21:22.979Z - debug: Executing recipe html requestId=209
+2016-07-27T15:21:22.982Z - debug: Skipping storing report. requestId=209
+2016-07-27T15:21:23.035Z - info: Rendering request 209 finished in 225 ms requestId=209
+2016-07-27T15:21:24.395Z - debug: Converting in dedicated phantomjs 1.9.8 timestamp=Wed Jul 27 2016 17:21:23 GMT+0200 (CEST), requestId=208
+2016-07-27T15:21:24.395Z - debug: Request file:///%2Fhome%2Fchnn%2Foraclejetapplication2%2Fjsreport-temp%2Fc6f0d9c0-540d-11e6-b894-4b2836b36b5dhtml.html timestamp=Wed Jul 27 2016 17:21:23 GMT+0200 (CEST), requestId=208
+2016-07-27T15:21:24.396Z - debug: Converting in dedicated phantomjs 1.9.8 timestamp=Wed Jul 27 2016 17:21:23 GMT+0200 (CEST), requestId=206
+2016-07-27T15:21:24.396Z - debug: Request file:///%2Fhome%2Fchnn%2Foraclejetapplication2%2Fjsreport-temp%2Fc442a9b0-540d-11e6-b894-4b2836b36b5dhtml.html timestamp=Wed Jul 27 2016 17:21:23 GMT+0200 (CEST), requestId=206
+2016-07-27T15:21:24.397Z - debug: phantom-pdf recipe finished with 1 pages generated requestId=208
+2016-07-27T15:21:24.398Z - debug: phantom-pdf recipe finished with 1 pages generated requestId=206
+2016-07-27T15:21:24.478Z - debug: Report storeed as UCSvj09xnRaPGiqR.pdf requestId=208
+2016-07-27T15:21:24.650Z - info: Rendering request 209 finished in 2023 ms requestId=208
+2016-07-27T15:21:24.651Z - debug: Report storeed as FftAmhTJDhJ5wt70.pdf requestId=206
+2016-07-27T15:21:24.710Z - info: Rendering request 209 finished in 7673 ms requestId=206
+2016-07-27T15:21:49.631Z - info: Starting rendering request 210 (user: null) requestId=210
+2016-07-27T15:21:49.634Z - info: Rendering template {shortid:rJPUhdmv, recipe:phantom-pdf,engine:handlebars} requestId=210
+2016-07-27T15:21:49.634Z - debug: Inline data specified. requestId=210
+2016-07-27T15:21:49.636Z - debug: Executing script HJesfUxlL requestId=210
+2016-07-27T15:21:49.721Z - debug: Resources not defined for this template. requestId=210
+2016-07-27T15:21:49.723Z - debug: Rendering engine handlebars requestId=210
+2016-07-27T15:21:49.901Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 17:21:49 GMT+0200 (CEST), requestId=210
+2016-07-27T15:21:49.902Z - debug: Replaced images [] requestId=210
+2016-07-27T15:21:49.904Z - debug: Executing recipe phantom-pdf requestId=210
+2016-07-27T15:21:49.904Z - debug: Starting child request to render pdf footer requestId=210
+2016-07-27T15:21:49.956Z - info: Starting rendering request 211 (user: null) requestId=211
+2016-07-27T15:21:49.957Z - info: Rendering template {shortid:rJPUhdmv, recipe:html,engine:handlebars} requestId=211
+2016-07-27T15:21:49.958Z - debug: Inline data specified. requestId=211
+2016-07-27T15:21:49.959Z - debug: Executing script HJesfUxlL requestId=211
+2016-07-27T15:21:50.053Z - debug: Resources not defined for this template. requestId=211
+2016-07-27T15:21:50.055Z - debug: Rendering engine handlebars requestId=211
+2016-07-27T15:21:50.172Z - debug: Compiled template not found in the cache, compiling timestamp=Wed Jul 27 2016 17:21:50 GMT+0200 (CEST), requestId=211
+2016-07-27T15:21:50.173Z - debug: Replaced images [] requestId=211
+2016-07-27T15:21:50.174Z - debug: Executing recipe html requestId=211
+2016-07-27T15:21:50.180Z - debug: Skipping storing report. requestId=211
+2016-07-27T15:21:50.271Z - info: Rendering request 211 finished in 315 ms requestId=211
+2016-07-27T15:21:50.482Z - debug: Converting in dedicated phantomjs 1.9.8 timestamp=Wed Jul 27 2016 17:21:50 GMT+0200 (CEST), requestId=210
+2016-07-27T15:21:50.482Z - debug: Request file:///%2Fhome%2Fchnn%2Foraclejetapplication2%2Fjsreport-temp%2Fd72cbc00-540d-11e6-b894-4b2836b36b5dhtml.html timestamp=Wed Jul 27 2016 17:21:50 GMT+0200 (CEST), requestId=210
+2016-07-27T15:21:50.483Z - debug: phantom-pdf recipe finished with 17 pages generated requestId=210
+2016-07-27T15:21:50.493Z - debug: Report storeed as qVt0ddERuk5STKsQ.pdf requestId=210
+2016-07-27T15:21:50.610Z - info: Rendering request 211 finished in 979 ms requestId=210
+2016-08-01T07:23:44.445Z - warn: Node environment not set - using development configuration. Use options --production or --development to ensure exact configuration.
+2016-08-01T07:23:44.446Z - info: Using configuration file dev.config.json
+2016-08-01T07:23:44.509Z - info: Searching for available extensions in /home/chnn/oraclejetapplication2/
+2016-08-01T07:23:45.367Z - info: Extensions location cache contains up to date information, skipping crawling in /home/chnn/oraclejetapplication2/node_modules/
+2016-08-01T07:23:50.102Z - info: Found 25 extensions
+2016-08-01T07:23:51.904Z - debug: Writing extension locations cache to /home/chnn/oraclejetapplication2/jsreport-temp/extensions/locations.json
+2016-08-01T07:23:52.343Z - debug: Discovered 25 extensions
+2016-08-01T07:23:52.346Z - info: Using extension jsrender
+2016-08-01T07:23:52.366Z - debug: Extension authentication is disabled, skipping
+2016-08-01T07:23:52.367Z - info: Using extension browser-client
+2016-08-01T07:23:55.377Z - info: Using extension templates
+2016-08-01T07:23:56.091Z - info: Using extension studio
+2016-08-01T07:23:57.679Z - info: Using extension debug
+2016-08-01T07:23:57.691Z - info: Using extension express
+2016-08-01T07:23:57.729Z - info: Using extension fop-pdf
+2016-08-01T07:23:57.836Z - info: Using extension handlebars
+2016-08-01T07:23:57.837Z - info: Using extension resources
+2016-08-01T07:23:57.850Z - info: Using extension fs-store
+2016-08-01T07:24:01.462Z - info: Using extension images
+2016-08-01T07:24:02.399Z - info: Using extension authorization
+2016-08-01T07:24:02.400Z - debug: Extension authorization was disabled
+2016-08-01T07:24:02.400Z - info: Using extension licensing
+2016-08-01T07:24:02.472Z - info: Using extension phantom-pdf
+2016-08-01T07:24:02.636Z - info: Using extension text
+2016-08-01T07:24:02.649Z - info: Using extension reports
+2016-08-01T07:24:02.651Z - info: Using extension html-to-xlsx
+2016-08-01T07:24:03.498Z - info: Using extension child-templates
+2016-08-01T07:24:03.633Z - info: Using extension data
+2016-08-01T07:24:03.634Z - info: Using extension scripts
+2016-08-01T07:24:03.635Z - info: Using extension scheduling
+2016-08-01T07:24:04.107Z - info: Using extension xlsx
+2016-08-01T07:24:06.345Z - info: Using extension sample-template
+2016-08-01T07:24:06.347Z - info: Using extension public-templates
+2016-08-01T07:24:06.352Z - debug: Extension public-templates was disabled
+2016-08-01T07:24:06.354Z - info: Initializing fs storage at /home/chnn/oraclejetapplication2/data
+2016-08-01T07:24:07.505Z - info: Creating default express app.
+2016-08-01T07:24:07.877Z - info: jsreport server successfully started on http port: 5488
+2016-08-01T07:24:07.882Z - warn: License not found, using free
+2016-08-01T07:24:07.886Z - info: reporter initialized
+2016-08-01T07:24:14.164Z - debug: OData query on templates
+2016-08-01T07:24:14.172Z - debug: OData query on images
+2016-08-01T07:24:14.173Z - debug: OData query on data
+2016-08-01T07:24:14.174Z - debug: OData query on scripts
+2016-08-01T07:24:14.179Z - debug: OData query on schedules
+2016-08-01T07:24:14.181Z - debug: OData query on xlsxTemplates
+2016-08-01T07:24:14.190Z - debug: OData query on settings
+2016-08-01T07:24:14.373Z - debug: OData update on images
+2016-08-01T07:24:14.375Z - debug: OData query on templates
+2016-08-01T07:24:14.388Z - debug: OData query on settings
+2016-08-01T07:24:24.233Z - debug: OData query on templates
+2016-08-01T07:24:24.254Z - debug: OData query on templates
+2016-08-01T07:24:24.500Z - debug: OData query on settings
+2016-08-01T07:24:25.916Z - debug: OData query on templates
+2016-08-01T07:24:26.826Z - debug: OData query on templates

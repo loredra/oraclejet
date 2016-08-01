@@ -1,5 +1,7 @@
+{"_id":"2RGu2qGGTr3ugKqV","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469631596200},"contentType":"application/pdf","blobName":"2RGu2qGGTr3ugKqV.pdf"}
 {"_id":"2qCP3VV9gWj0nYNm","recipe":"phantom-pdf","name":"Sample report","fileExtension":"pdf","templateShortid":"BJbsfLxl8","creationDate":{"$$date":1467725413984},"contentType":"application/pdf","blobName":"2qCP3VV9gWj0nYNm.pdf"}
 {"_id":"51dko2EcgEwSTx7g","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792370700},"contentType":"application/pdf","blobName":"51dko2EcgEwSTx7g.pdf"}
+{"_id":"6Y2Gipr7lV8kRING","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469609368541},"contentType":"application/pdf","blobName":"6Y2Gipr7lV8kRING.pdf"}
 {"_id":"843J53zlLOdLE4lN","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467798687506},"contentType":"application/pdf","blobName":"843J53zlLOdLE4lN.pdf"}
 {"_id":"9F7NTthzYKlnQ3LV","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467798221918},"contentType":"application/pdf","blobName":"9F7NTthzYKlnQ3LV.pdf"}
 {"_id":"9YaA8FTIb9nmApCv","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792596705},"contentType":"application/pdf","blobName":"9YaA8FTIb9nmApCv.pdf"}
@@ -10,6 +12,7 @@
 {"_id":"DndXGkW62v7mBwQk","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791694901},"contentType":"application/pdf","blobName":"DndXGkW62v7mBwQk.pdf"}
 {"_id":"E7j7zEFtUycatK1t","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792487309},"contentType":"application/pdf","blobName":"E7j7zEFtUycatK1t.pdf"}
 {"_id":"EigoNW46iQjzJ68W","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791792567},"contentType":"application/pdf","blobName":"EigoNW46iQjzJ68W.pdf"}
+{"_id":"FftAmhTJDhJ5wt70","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469632884410},"contentType":"application/pdf","blobName":"FftAmhTJDhJ5wt70.pdf"}
 {"_id":"FgbB9wUoR9E6a4OO","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792618853},"contentType":"application/pdf","blobName":"FgbB9wUoR9E6a4OO.pdf"}
 {"_id":"GxCfMlQplZYq2MQj","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467790826370},"contentType":"application/pdf","blobName":"GxCfMlQplZYq2MQj.pdf"}
 {"_id":"HpVcToFkHggDeH3N","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467795147471},"contentType":"application/pdf","blobName":"HpVcToFkHggDeH3N.pdf"}
@@ -21,6 +24,7 @@
 {"_id":"Q9bADB6ILZ95A8ig","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791705938},"contentType":"application/pdf","blobName":"Q9bADB6ILZ95A8ig.pdf"}
 {"_id":"S6SZVby9HnpRiPZX","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791737482},"contentType":"application/pdf","blobName":"S6SZVby9HnpRiPZX.pdf"}
 {"_id":"S8nouspcm5nxyjps","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792915247},"contentType":"application/pdf","blobName":"S8nouspcm5nxyjps.pdf"}
+{"_id":"UCSvj09xnRaPGiqR","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469632884405},"contentType":"application/pdf","blobName":"UCSvj09xnRaPGiqR.pdf"}
 {"_id":"V28aZlxVD5QvL4QV","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467795223949},"contentType":"application/pdf","blobName":"V28aZlxVD5QvL4QV.pdf"}
 {"_id":"Xk42dFrir49hJRsA","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467797940774},"contentType":"application/pdf","blobName":"Xk42dFrir49hJRsA.pdf"}
 {"_id":"XyNXsa8o8X8xhNe7","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792764428},"contentType":"application/pdf","blobName":"XyNXsa8o8X8xhNe7.pdf"}
@@ -37,17 +41,14 @@
 {"_id":"obbOR5LhMQM5JDdy","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467800367295},"contentType":"application/pdf","blobName":"obbOR5LhMQM5JDdy.pdf"}
 {"_id":"pjbKGPNnA8B5YxOe","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792740175},"contentType":"application/pdf","blobName":"pjbKGPNnA8B5YxOe.pdf"}
 {"_id":"q4mUVOJHwAhRKugU","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791207825},"contentType":"application/pdf","blobName":"q4mUVOJHwAhRKugU.pdf"}
+{"_id":"qVt0ddERuk5STKsQ","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469632910488},"contentType":"application/pdf","blobName":"qVt0ddERuk5STKsQ.pdf"}
 {"_id":"qf9S1M6ec8f6Zume","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791406409},"contentType":"application/pdf","blobName":"qf9S1M6ec8f6Zume.pdf"}
 {"_id":"rQ3LcxnoV0XxjUiB","recipe":"phantom-pdf","name":"Sample report","fileExtension":"pdf","templateShortid":"BJbsfLxl8","creationDate":{"$$date":1467716161123},"contentType":"application/pdf","blobName":"rQ3LcxnoV0XxjUiB.pdf"}
+{"_id":"sFQEdD1Xz9Rp184F","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469622500078},"contentType":"application/pdf","blobName":"sFQEdD1Xz9Rp184F.pdf"}
 {"_id":"tS5A9xstOAhZR883","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791387606},"contentType":"application/pdf","blobName":"tS5A9xstOAhZR883.pdf"}
 {"_id":"tX0GpM3ipPsYpVnT","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467791745524},"contentType":"application/pdf","blobName":"tX0GpM3ipPsYpVnT.pdf"}
 {"_id":"tizlzRG4hKdeizal","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467798613554},"contentType":"application/pdf","blobName":"tizlzRG4hKdeizal.pdf"}
 {"_id":"uT1PqmdSrjEvGygy","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792482131},"contentType":"application/pdf","blobName":"uT1PqmdSrjEvGygy.pdf"}
+{"_id":"uimW78Qx1W6ifrR0","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469621576657},"contentType":"application/pdf","blobName":"uimW78Qx1W6ifrR0.pdf"}
 {"_id":"xyX70vFqWT9zTzvu","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467792319220},"contentType":"application/pdf","blobName":"xyX70vFqWT9zTzvu.pdf"}
 {"_id":"zPcZgj4G1ru18TWm","recipe":"phantom-pdf","name":"test","fileExtension":"pdf","templateShortid":"HyxGwrYI","creationDate":{"$$date":1467798632890},"contentType":"application/pdf","blobName":"zPcZgj4G1ru18TWm.pdf"}
-{"_id":"6Y2Gipr7lV8kRING"}
-{"_id":"6Y2Gipr7lV8kRING","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469609368541},"contentType":"application/pdf","blobName":"6Y2Gipr7lV8kRING.pdf"}
-{"_id":"uimW78Qx1W6ifrR0"}
-{"_id":"uimW78Qx1W6ifrR0","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469621576657},"contentType":"application/pdf","blobName":"uimW78Qx1W6ifrR0.pdf"}
-{"_id":"sFQEdD1Xz9Rp184F"}
-{"_id":"sFQEdD1Xz9Rp184F","recipe":"phantom-pdf","name":"defaul_style","fileExtension":"pdf","templateShortid":"rJPUhdmv","creationDate":{"$$date":1469622500078},"contentType":"application/pdf","blobName":"sFQEdD1Xz9Rp184F.pdf"}

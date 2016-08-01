@@ -22,6 +22,7 @@ requirejs.config({
         'arangodb' : 'libs/arango/arangojs.min',
         'aql' : 'libs/arango/aql-query',
         'datatables' : 'libs/dataTables/jquery.dataTables',
+        'jstree' : 'libs/jsTree/jstree.min',
         'knockout-postbox' : 'libs/knockout-postbox/knockout-postbox',
         'promise': 'libs/es6-promise/promise-1.0.0.min',
         'jquery-ui': 'libs/jquery/jquery-ui.min',
